@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include"one.h"
+#include "one.h"
 
 void main()
 {
