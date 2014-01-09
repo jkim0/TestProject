@@ -2,5 +2,5 @@
 
 void main()
 {
-    printf("1번 째 Commit\n");
+    printf("2번 째 Commit\n");
 }
