@@ -9,6 +9,6 @@ libmy_lib.so: my_lib.o
 main: main.c 
 	gcc -o main main.c -lmy_lib
 
-clear :
-	rm libmy_lib.so.1.0.1 libmy_lib.so main my_lib.o
+clean :
+	rm libmy_lib.so.1.0.1 main my_lib.o
 	
