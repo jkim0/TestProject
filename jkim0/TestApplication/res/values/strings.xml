@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TestApplication</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="subject1">Value From Dialog :</string>
+    <string name="subject2">Value From Activity :</string>
+    <string name="button1">Input from Dialog</string>
+    <string name="button2">Input from Activity</string>
+    <string name="dialog_title">Input Value</string>
+    <string name="input_hind">Input value</string>
+    <string name="ok">Ok</string>
+    <string name="title_activity_input_test">InputTestActivity</string>
+    <string name="msg_no_input">There is no Input values.</string>
+    <string name="cancel">Cancel</string>
+
+</resources>
