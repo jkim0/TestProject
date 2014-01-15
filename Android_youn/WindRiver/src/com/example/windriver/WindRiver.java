@@ -24,7 +24,7 @@ public class WindRiver extends Activity {
 	public TextView view1;
 	public TextView view2;
 	public Intent intent;
-	
+
 	
 	
 	@Override
@@ -39,7 +39,7 @@ public class WindRiver extends Activity {
 		button2 = (Button) findViewById(R.id.text_call);
 		view1 = (TextView)findViewById(R.id.print);
 		view2 = (TextView)findViewById(R.id.text);
-		
+		intent = new Intent(WindRiver.this, Show_text.class);
 		
 		//button click 
 		button.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +66,11 @@ public class WindRiver extends Activity {
 	    });
 		
 		
-	    
+		button2.setOnClickListener(new View.OnClickListener() {
+	        public void onClick(View v) {
+	        	startActivity(intent);
+	       }
+	    });
 		
 		
 	}//OnCreate();
@@ -83,13 +87,6 @@ public class WindRiver extends Activity {
 		super.onResume();
 		Toast.makeText(this, "OnResume", Toast.LENGTH_SHORT).show();
 		
-		button2.setOnClickListener(new View.OnClickListener() {
-	        public void onClick(View v) {
-	        	startActivity(intent);
-	       }
-	    });
-		
-		intent = new Intent(WindRiver.this, Show_text.class);
 		Intent intent = getIntent();
 	    message = intent.getStringExtra(Show_text.EXTRA_MESSAGE);
 	    view1.setText(message);
