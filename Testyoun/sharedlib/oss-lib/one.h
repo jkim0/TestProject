@@ -1,0 +1,1 @@
+extern prtmsg(char *prt);
