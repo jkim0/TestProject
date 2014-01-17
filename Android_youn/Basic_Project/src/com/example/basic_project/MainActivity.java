@@ -100,6 +100,7 @@ public class MainActivity extends Activity
 					Dialog_Text.setText(null);
 				}
 			})
+			.setCancelable(false)		//뒤로가기 안먹히게 하기 Default값은 true
 			.create();
 		 }
 		
