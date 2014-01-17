@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
 		button1=(Button)findViewById(R.id.button1);
 		button2=(Button)findViewById(R.id.button2);
 		//Activity 두번째꺼로 넘겨주는 인텐트!
-		final Intent intent = new Intent(this, SecondActivity.class);
+		final Intent intent = new Intent(context, SecondActivity.class);
 		
 		button1.setOnClickListener(new View.OnClickListener() {
 			
@@ -108,8 +108,12 @@ public class MainActivity extends Activity {
 		TextView text1 = (TextView)findViewById(R.id.text11);
 		TextView text2 = (TextView)findViewById(R.id.text22);
 //이부분이해안감//
-		text1.setText(null);
-		text2.setText(null);
+		String reset=null;
+		
+		text1.setText(reset);
+		text2.setText(reset);
+		
+		Toast.makeText(this,"onDestroy", Toast.LENGTH_LONG).show();
 	}
 	/*
 	@Override
