@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Android1+Yang</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="button1_name">Button for Dialog</string>
+    <string name="button2_name">Button for Activity</string>
+    <string name="button_send">SEND</string>
+    <string name="button_quit">QUIT</string>
+    <string name="dialog_message">Putting Your Name :)</string>
+    <string name="title_activity_second">SecondActivity</string>
+
+</resources>
