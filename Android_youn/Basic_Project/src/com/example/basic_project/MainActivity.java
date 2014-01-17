@@ -6,12 +6,16 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.LinearLayout;
+
 
 
 public class MainActivity extends Activity 
@@ -20,7 +24,7 @@ public class MainActivity extends Activity
 	TextView view2;			//두 번째 TextView선언
 	Button button1;			//Dialog 버튼
 	Button button2;			//Activity 버튼
-
+	
 	int start_dialog =0;		//Show_Dialog Id값 설정
 	
 	@Override
@@ -59,6 +63,9 @@ public class MainActivity extends Activity
 				startActivityForResult(intent,0);			//Activity 불러오기
 			}
 		});
+		
+		LinearLayout linearLayoutMain = (LinearLayout)findViewById(R.id.Main_layout);
+	    registerForContextMenu(linearLayoutMain);
 	}
 
 		
@@ -170,6 +177,44 @@ public class MainActivity extends Activity
 		 		}
          }  
 	}	//메뉴가 Select 될 때마다 호출
+
+
+
+    //Context Menu(Long Press할 경우 메뉴가 생성된다)
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		// TODO Auto-generated method stub
+		super.onCreateContextMenu(menu, v, menuInfo);
+		
+		 menu.add("Dialog");
+        menu.add("Input_for_Acitivity");
+	}
+	
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		//return super.onContextItemSelected(item);
+		  if ("Dialog" == item.getTitle())
+		  {
+			  	showDialog(start_dialog);
+			  	return true;
+		  }
+		  
+	     else if ("Input_for_Acitivity" == item.getTitle())
+	      {
+	    	 	final Intent intent = new Intent(this, Input_data.class);
+	    	 	startActivityForResult(intent,0);
+	 			return true;
+	      }
+	            
+	     else
+	      {
+	    	   return false;
+	      }
+	     
+	}
 }
 
 
