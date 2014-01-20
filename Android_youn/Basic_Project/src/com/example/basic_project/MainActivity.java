@@ -39,7 +39,6 @@ public class MainActivity extends Activity {
 		
 		button1.setOnClickListener(new View.OnClickListener() 
 		{
-			
 			@Override
 			public void onClick(View arg0) 
 			{
