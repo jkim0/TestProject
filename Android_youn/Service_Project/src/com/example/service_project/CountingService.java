@@ -42,7 +42,7 @@ public class CountingService extends Service{
 	public int getCountingNumber()
 	{
 		//Toast.makeText(this, "GetCounter", Toast.LENGTH_SHORT).show();
-		return num;
+		return ++num;
 	}
 
 }

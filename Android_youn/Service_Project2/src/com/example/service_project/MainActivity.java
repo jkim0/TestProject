@@ -4,6 +4,7 @@ package com.example.service_project;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -28,11 +29,12 @@ public class MainActivity extends Activity {
 	public TextView view;
 	boolean mode = true;
 	
+	Handler handler;
 	PrintThread print;
 	
 	public class PrintThread extends Thread{
 		Handler handler;
-		int number=0;
+		
 		TextView view = (TextView)findViewById(R.id.Text);
 		public void run()
 		{
@@ -44,12 +46,13 @@ public class MainActivity extends Activity {
 				}
 				
 				try{   
-	    		    number = Iservice.getvalue();
+	    		    num = Iservice.getvalue();
 					} catch (RemoteException e){
 					e.printStackTrace();
 					}
-			
-	    	   Log.i("Number","number:"+number);
+				Message msg = new Message();
+				handler.sendMessage(msg);
+	    	   //Log.i("Number","num:"+num);
 			}
 		}
 		
@@ -81,9 +84,16 @@ public class MainActivity extends Activity {
 		view = (TextView)findViewById(R.id.Text);
 		button2 = (Button)findViewById(R.id.Change_Mode);		
 		
+		
+		handler = new Handler(){
+			public void handleMessage(Message msg){
+				view.setText("num"+num);
+			}
+		};
+		
 		button.setOnClickListener(new View.OnClickListener() {
 	       public void onClick(View v) {
-	   			print  = new PrintThread();
+	   			print  = new PrintThread(handler);
 	   			print.start();
 	    	   Toast.makeText(MainActivity.this, "Onclick", Toast.LENGTH_SHORT).show();
 	    	 

@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/yyoun/workingdirectory/Service_Project/src/com/example/service_project/service.aidl
+ * Original file: /home/yyoun/Repository/TestProject/Android_youn/Service_Project2/src/com/example/service_project/service.aidl
  */
 package com.example.service_project;
 public interface service extends android.os.IInterface
