@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
 					// TODO Auto-generated method stub
 					final EditText edit = (EditText)mCustomLayout.findViewById(R.id.edit_box_dialog);
 					final String text = edit.getText().toString();
-					Log.e(TAG, "##### text = " + text);
+					Log.i(TAG, "##### text = " + text);
 					mValue1.setText(text);
 				}
 			})
