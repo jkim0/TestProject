@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
 		
 		handler = new Handler(){
 			public void handleMessage(Message msg){
-				view.setText("num"+num);
+				view.setText(""+num);
 			}
 		};
 		
@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
 	       public void onClick(View v) {
 	   			print  = new PrintThread(handler);
 	   			print.start();
-	    	   Toast.makeText(MainActivity.this, "Onclick", Toast.LENGTH_SHORT).show();
+	    	   //Toast.makeText(MainActivity.this, "Onclick", Toast.LENGTH_SHORT).show();
 	    	 
 	    	   
 	    	   
@@ -115,6 +115,8 @@ public class MainActivity extends Activity {
 						} catch (RemoteException e){
 						e.printStackTrace();
 						}
+				print  = new PrintThread(handler);
+	   			print.start();
 			}
 		});
 	}
@@ -138,6 +140,7 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		Toast.makeText(MainActivity.this, "OnResume", Toast.LENGTH_SHORT).show();
 		
 	}
 		

@@ -73,6 +73,8 @@ public class CountingService extends Service{
 	@Override
 	public boolean onUnbind(Intent intent) {
 		// TODO Auto-generated method stub
-		return super.onUnbind(intent);
+		Toast.makeText(this, "OnUnbind", Toast.LENGTH_SHORT).show();
+		return false;
+		//return super.onUnbind(intent);
 	}
 }
