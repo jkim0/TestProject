@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/jyang4/workspace/adt-files/Service_y/src/com/example/service_y/ISimpleAIDL.aidl
+ * Original file: /home/hjeong/Jhs_Android.git/TestYang/Service_y/src/com/example/service_y/ISimpleAIDL.aidl
  */
 package com.example.service_y;
 public interface ISimpleAIDL extends android.os.IInterface

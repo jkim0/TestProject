@@ -38,9 +38,11 @@ public class SimpleService extends Service {
 	Toast.makeText(this, "onDestroy", Toast.LENGTH_LONG).show();
 	//	super.onDestroy();
 	}
+	
+	/*
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-	// TODO Auto-generated method stub
+		//TODO Auto-generated method stub
 		Toast.makeText(this, "onStartCommand", Toast.LENGTH_LONG).show();
 		IntentFilter filter = new IntentFilter("com.example.action.isAlive");
 		registerReceiver(mReceiver, filter);
@@ -48,14 +50,14 @@ public class SimpleService extends Service {
 		mThread sThread = new mThread();
 		sThread.start();
 		
-		/*for(int i=0; i<3; i++){
+		for(int i=0; i<3; i++){
 			Toast.makeText(this, i, Toast.LENGTH_LONG).show();
-		}*/
+		}
 		
 		
 		return Service.START_NOT_STICKY;
 		//	return super.onStartCommand(intent, flags, startId);
-	}
+	}*/
 		
 /****서비스에서 인터페이스 구현할 차례********
  * IsimpleAIDL.Stud()을 사용하여 AIDL에서 정의한 메서드를 구현하고, 
@@ -70,9 +72,9 @@ public class SimpleService extends Service {
 			// TODO Auto-generated method stub
 			mCount = value;
 	//		Toast.makeText(SimpleService.this, value +"", Toast.LENGTH_SHORT).show();
-			Toast.makeText(SimpleService.this, mCount +":add", Toast.LENGTH_SHORT).show();
+			//Toast.makeText(SimpleService.this, mCount +":add", Toast.LENGTH_SHORT).show();
 			Log.i("TEXT","333mcount:"+mCount);
-			return mCount;
+			return ++mCount;
 		}
 		public String add2(long timeInMillis)throws RemoteException{
 			Date date = new Date(timeInMillis);
@@ -80,7 +82,7 @@ public class SimpleService extends Service {
 			return sdf.format(date);
 		}
 	};
-	
+	/*
 	public class mThread extends Thread {
 		boolean mCheck=true;
 		@Override
@@ -96,7 +98,8 @@ public class SimpleService extends Service {
 				}
 			}
 		}
-	}
+	}*/
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub

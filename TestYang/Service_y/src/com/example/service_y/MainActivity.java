@@ -5,6 +5,7 @@ import com.example.service_y.R;
 import com.example.service_y.SimpleService;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.app.Activity;
@@ -27,6 +28,9 @@ public class MainActivity extends Activity implements OnClickListener {
 	private Button startServiceButton;
 	private Button stopServiceButton;
 	private Button checkAliveButton;
+	private Handler mHandler;
+	
+	int m_time=0;
 	
 	/****/
 	private boolean isBound;
@@ -35,6 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mHandler = new Handler();
 		
 		startServiceButton = (Button)findViewById(R.id.button1);		
 		stopServiceButton = (Button)findViewById(R.id.button2);
@@ -43,13 +48,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		startServiceButton.setOnClickListener(this);
 		stopServiceButton.setOnClickListener(this);
 		checkAliveButton.setOnClickListener(this);
+		mTextview = (TextView)findViewById(R.id.textView1);
 	/*	checkAliveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 			}
 		});*/ //정신차리길!!!
 		Intent intent = new Intent(this, SimpleService.class);
-		startService(intent); //바인드 서비스 해주고, 콜메서드 해줄거야
+//		startService(intent); //바인드 서비스 해주고, 콜메서드 해줄거야
 		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 	
 	}
@@ -77,7 +83,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 
 		Intent intent = new Intent(this, SimpleService.class);
-		int time=0;
+		//int time=0;
 				switch(v.getId()){
 					case R.id.button1: //
 						//Start service : 1)바인드 서비스 2)메서드 호출 3)toast
@@ -90,16 +96,23 @@ public class MainActivity extends Activity implements OnClickListener {
 								try {
 								//	time=mSimpleService.add(0);
 									Log.i("TEST", "mtime :" + mSimpleService.add(0));
-									Toast.makeText(this, "okay",Toast.LENGTH_SHORT).show();
-									for (time=0; time <10; time++){
-									 time =mSimpleService.add(time);
-										Toast.makeText(this, time + ":main", Toast.LENGTH_SHORT).show();	
+									//Toast.makeText(this, "okay",Toast.LENGTH_SHORT).show();
+									while(m_time<10){
+									 m_time =mSimpleService.add(m_time);
+										Toast.makeText(this," "+m_time, Toast.LENGTH_SHORT).show();
+										mHandler.post(mRunnable);
+										mHandler.postAtFrontOfQueue(mRunnable);
+										mHandler.postDelayed(mRunnable, 1000);
+										//mTextview.setText(""+m_time);
+										
 									}
 									} catch (RemoteException e) { //catch Blcok
 									// TODO Auto-generated catch block
 								//	e.printStackTrace(); //error흔적 만들어주는 것	
 								}
 						}
+						
+						
 						/*thread 구현 		
 						Thread  t = new mThread();
 						t.start(); */
@@ -141,8 +154,15 @@ public class MainActivity extends Activity implements OnClickListener {
 			}
 		}
 		*/
+	
+	private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mTextview.setText(""+m_time);
+        }
+    };
 		
-	}
+}
 	
 	
 
