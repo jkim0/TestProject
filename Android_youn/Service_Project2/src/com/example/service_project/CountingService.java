@@ -53,9 +53,8 @@ public class CountingService extends Service{
 		handler = new Handler(){
 			public void handleMessage(Message msg){
 				
-				Intent intent = new Intent();
-				intent.setAction("Count");
-				sendBroadcast(intent);
+				//Broadcastmode();
+				
 				
 			}
 		};
@@ -68,6 +67,12 @@ public class CountingService extends Service{
 	}
 
 
+	public void Broadcastmode(){
+		Intent intent = new Intent();
+		intent.setAction("Count");
+		sendBroadcast(intent);
+	}
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -86,7 +91,7 @@ public class CountingService extends Service{
 		}
 		
 		@Override
-		public boolean Change_Mode() throws RemoteException {
+		public void Change_Mode() throws RemoteException {
 			// TODO Auto-generated method stub
 			if(running==true)
 			{
@@ -98,9 +103,8 @@ public class CountingService extends Service{
 				running = true;
 				add = new CountingThread(handler);
 				add.start();
+				Count--;
 			}
-			
-			return running;
 		}
 	};
 	

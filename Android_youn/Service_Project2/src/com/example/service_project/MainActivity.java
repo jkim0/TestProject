@@ -1,6 +1,7 @@
 package com.example.service_project;
 
 
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -11,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +30,6 @@ public class MainActivity extends Activity {
 	private Button button;
 	private Button button2;
 	public TextView view;
-	boolean mode = true;
 	
 	
 	
@@ -46,12 +47,22 @@ public class MainActivity extends Activity {
 		}
 	};
 
-	public class MyReceiver extends BroadcastReceiver {
-		   @Override
+	private BroadcastReceiver MyReceiver = new BroadcastReceiver() {
+			
+			@Override
 		   public void onReceive(Context context, Intent intent) {
-		      Toast.makeText(context, "Intent Detected.", Toast.LENGTH_LONG).show();
+				if (intent.getAction() == "Count")
+				{
+					try{   
+		    		    num = Iservice.getvalue();
+						} catch (RemoteException e){
+						e.printStackTrace();
+						}
+					view.setText(" "+num);
+					//Toast.makeText(context, "Intent Detected.", Toast.LENGTH_LONG).show();
+				}
 		   }
-		}
+		};
 	
 	
 	@Override
@@ -79,23 +90,24 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				try{
 		    		   //Iservice.add();
-		    		   mode = Iservice.Change_Mode();
+		    		   Iservice.Change_Mode();
 						} catch (RemoteException e){
 						e.printStackTrace();
 						}
 			}
 		});
 	}
-		
-	
-	
-	
 	
 	
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
+		
+		 IntentFilter filter = new IntentFilter();
+		 filter.addAction("Count");
+	    registerReceiver(MyReceiver, filter);
+		
 		Intent intent = new Intent(this, CountingService.class);
 		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 		Toast.makeText(MainActivity.this, "OnStart", Toast.LENGTH_SHORT).show();
