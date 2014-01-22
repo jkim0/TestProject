@@ -39,6 +39,11 @@ public class MainActivity extends Activity {
 		{
 			Iservice = service.Stub.asInterface(service1);			
 			//onBind에서 Return받은 Ibinder값으로 aidl의 Interface와 연동.
+			try{   
+    		    Iservice.register(mListen);
+				} catch (RemoteException e){
+				//e.printStackTrace();
+				}
 		}
 		
 		@Override
@@ -122,7 +127,6 @@ public class MainActivity extends Activity {
 		
 	}
 		
-	
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -137,7 +141,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void Print_Count() throws RemoteException {
 			// TODO Auto-generated method stub
-			Toast.makeText(MainActivity.this, "Listen", Toast.LENGTH_SHORT).show();
+			//Toast.makeText(MainActivity.this, "Listen", Toast.LENGTH_SHORT).show();
 			try{   
     		    num = Iservice.getvalue();
 				} catch (RemoteException e){

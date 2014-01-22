@@ -55,7 +55,7 @@ public class CountingService extends Service{
 				
 				//Broadcastmode();
 				
-				//Linstener();
+				Linstener();
 			}
 		};
 		
