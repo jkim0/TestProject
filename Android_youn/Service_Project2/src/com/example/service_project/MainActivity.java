@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -29,43 +30,14 @@ public class MainActivity extends Activity {
 	public TextView view;
 	boolean mode = true;
 	
-	Handler handler;
-	PrintThread print;
-	
-	public class PrintThread extends Thread{
-		Handler handler;
-		
-		TextView view = (TextView)findViewById(R.id.Text);
-		public void run()
-		{
-			while(mode == true)
-			{
-				try{
-					Thread.sleep(1000);
-				}catch (InterruptedException e){
-				}
-				
-				try{   
-	    		    num = Iservice.getvalue();
-					} catch (RemoteException e){
-					e.printStackTrace();
-					}
-				Message msg = new Message();
-				handler.sendMessage(msg);
-	    	   //Log.i("Number","num:"+num);
-			}
-		}
-		
-		PrintThread(Handler handler)
-		{this.handler = handler;}
-	}
 	
 	
 	private ServiceConnection mConnection = new ServiceConnection(){
 		@Override
 		public void onServiceConnected(ComponentName classname, IBinder service1)
 		{
-			Iservice = service.Stub.asInterface(service1);
+			Iservice = service.Stub.asInterface(service1);			
+			//onBind에서 Return받은 Ibinder값으로 aidl의 Interface와 연동.
 		}
 		
 		@Override
@@ -74,6 +46,14 @@ public class MainActivity extends Activity {
 		}
 	};
 
+	public class MyReceiver extends BroadcastReceiver {
+		   @Override
+		   public void onReceive(Context context, Intent intent) {
+		      Toast.makeText(context, "Intent Detected.", Toast.LENGTH_LONG).show();
+		   }
+		}
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -83,26 +63,14 @@ public class MainActivity extends Activity {
 		button = (Button)findViewById(R.id.StartService);
 		view = (TextView)findViewById(R.id.Text);
 		button2 = (Button)findViewById(R.id.Change_Mode);		
-		
-		
-		handler = new Handler(){
-			public void handleMessage(Message msg){
-				view.setText(""+num);
-			}
-		};
-		
+
+		/*
 		button.setOnClickListener(new View.OnClickListener() {
 	       public void onClick(View v) {
-	   			print  = new PrintThread(handler);
-	   			print.start();
-	    	   //Toast.makeText(MainActivity.this, "Onclick", Toast.LENGTH_SHORT).show();
-	    	 
 	    	   
-	    	   
-	    	   //view.setText(" "+num);   
 	        }
 	    });
-		
+		*/
 		
 		button2.setOnClickListener(new View.OnClickListener() {
 			
@@ -115,8 +83,6 @@ public class MainActivity extends Activity {
 						} catch (RemoteException e){
 						e.printStackTrace();
 						}
-				print  = new PrintThread(handler);
-	   			print.start();
 			}
 		});
 	}
