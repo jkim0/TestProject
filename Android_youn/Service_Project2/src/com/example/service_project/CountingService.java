@@ -1,5 +1,6 @@
 package com.example.service_project;
 
+import java.util.ArrayList;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -19,6 +20,7 @@ public class CountingService extends Service{
 	boolean running = true;
 	CountingThread add;
 	Handler handler;
+	public CountingListener mListen;
 	
 	
 	class CountingThread extends Thread{
@@ -41,8 +43,6 @@ public class CountingService extends Service{
 		{this.handler = handler;}
 	}
 
-
-	
 	
 	@Override
 	public void onCreate() {
@@ -55,7 +55,7 @@ public class CountingService extends Service{
 				
 				//Broadcastmode();
 				
-				
+				//Linstener();
 			}
 		};
 		
@@ -73,6 +73,15 @@ public class CountingService extends Service{
 		sendBroadcast(intent);
 	}
 	
+	public void Linstener(){
+		CountingListener cl = mListen;
+		try {
+			cl.Print_Count();
+		} catch (RemoteException ex) {
+			
+		}
+	}
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -82,7 +91,13 @@ public class CountingService extends Service{
 	}
 	
 
-	service.Stub mbinder = new service.Stub() {
+	private final service.Stub mbinder = new service.Stub() {
+		
+		@Override
+		public void register(CountingListener register) throws RemoteException {
+			// TODO Auto-generated method stub
+			mListen = register;
+		}
 		
 		@Override
 		public int getvalue() throws RemoteException {

@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 	private Button button;
 	private Button button2;
 	public TextView view;
-	
+	IBinder activitybinder;
 	
 	
 	private ServiceConnection mConnection = new ServiceConnection(){
@@ -131,8 +131,24 @@ public class MainActivity extends Activity {
 	
 		unbindService(mConnection);
 	}
-	
 
+
+	CountingListener.Stub mListen = new CountingListener.Stub() {
+		@Override
+		public void Print_Count() throws RemoteException {
+			// TODO Auto-generated method stub
+			Toast.makeText(MainActivity.this, "Listen", Toast.LENGTH_SHORT).show();
+			try{   
+    		    num = Iservice.getvalue();
+				} catch (RemoteException e){
+				e.printStackTrace();
+				}
+			view.setText(" "+num);
+		}
+	}; 
+	
+	
+	
 /*
 
 	@Override
