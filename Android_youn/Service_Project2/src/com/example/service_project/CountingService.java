@@ -48,9 +48,7 @@ public class CountingService extends Service{
 		
 		
 		handler = new Handler(){
-			public void handleMessage(Message msg){
-				
-				
+			public void handleMessage(Message msg){		
 				if(running == true)
 				{
 					if(B_mode)
