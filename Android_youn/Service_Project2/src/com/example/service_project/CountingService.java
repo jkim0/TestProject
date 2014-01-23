@@ -1,24 +1,23 @@
 package com.example.service_project;
 
+
 import android.app.Service;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
 
 public class CountingService extends Service{
 	//private final IBinder mBinder = new LocalBinder();
 	
-	int Count=1;
-	boolean running = true;
+	int Count=0;
+	boolean running = false;
+	boolean B_mode = false;
+	boolean L_mode = false;
 	CountingThread add;
 	Handler handler;
+	public CountingListener mListen;
 	
 	
 	class CountingThread extends Thread{
@@ -41,8 +40,6 @@ public class CountingService extends Service{
 		{this.handler = handler;}
 	}
 
-
-	
 	
 	@Override
 	public void onCreate() {
@@ -51,19 +48,20 @@ public class CountingService extends Service{
 		
 		
 		handler = new Handler(){
-			public void handleMessage(Message msg){
-				
-				//Broadcastmode();
-				
-				
+			public void handleMessage(Message msg){		
+				if(running == true)
+				{
+					if(B_mode)
+					{
+						Broadcastmode();
+					}
+					if(L_mode)
+					{
+						Linstener();
+					}
+				}
 			}
 		};
-		
-		
-		Toast.makeText(this, "ServiceOnCreate", Toast.LENGTH_SHORT).show();
-		
-		add = new CountingThread(handler);
-		add.start();
 	}
 
 
@@ -73,16 +71,29 @@ public class CountingService extends Service{
 		sendBroadcast(intent);
 	}
 	
+	public void Linstener(){
+		try {
+			mListen.Print_Count();
+		} catch (RemoteException ex) {
+		}
+	}
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, "OnBind", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "OnBind", Toast.LENGTH_SHORT).show();
 		
 		return mbinder;
 	}
 	
 
-	service.Stub mbinder = new service.Stub() {
+	   service.Stub mbinder = new service.Stub() {
+		
+		@Override
+		public void register(CountingListener register) throws RemoteException {
+			// TODO Auto-generated method stub
+			mListen = register;
+		}
 		
 		@Override
 		public int getvalue() throws RemoteException {
@@ -101,10 +112,34 @@ public class CountingService extends Service{
 			else
 			{
 				running = true;
+				
 				add = new CountingThread(handler);
 				add.start();
 				Count--;
 			}
+		}
+		
+		@Override
+		public void Listener_Mode() throws RemoteException {
+			// TODO Auto-generated method stub
+			B_mode = false;
+			L_mode = true;
+		}
+		
+		
+		@Override
+		public void Broadcast_Mode() throws RemoteException {
+			// TODO Auto-generated method stub
+			B_mode = true;
+			L_mode = false;
+		}
+		
+		@Override
+		public void Start() throws RemoteException {
+			// TODO Auto-generated method stub
+			running = true;
+			add = new CountingThread(handler);
+			add.start();
 		}
 	};
 	
@@ -112,7 +147,7 @@ public class CountingService extends Service{
 	@Override
 	public boolean onUnbind(Intent intent) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, "OnUnbind", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "OnUnbind", Toast.LENGTH_SHORT).show();
 		return false;
 		//return super.onUnbind(intent);
 	}
