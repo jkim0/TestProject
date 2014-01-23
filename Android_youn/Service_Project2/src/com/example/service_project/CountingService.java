@@ -74,9 +74,8 @@ public class CountingService extends Service{
 	}
 	
 	public void Linstener(){
-		CountingListener cl = mListen;
 		try {
-			cl.Print_Count();
+			mListen.Print_Count();
 		} catch (RemoteException ex) {
 		}
 	}

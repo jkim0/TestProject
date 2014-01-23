@@ -51,18 +51,22 @@ public class MainActivity extends Activity {
 		}
 	};
 
+	public void Text_Printf(){
+		try{   
+		    num = Iservice.getvalue();
+			} catch (RemoteException e){
+			e.printStackTrace();
+			}
+		view.setText(" "+num);
+	}
+	
 	private BroadcastReceiver MyReceiver = new BroadcastReceiver() {
 			
 			@Override
 		   public void onReceive(Context context, Intent intent) {
 				if (intent.getAction() == "Count")
 				{
-					try{   
-		    		    num = Iservice.getvalue();
-						} catch (RemoteException e){
-						e.printStackTrace();
-						}
-					view.setText(" "+num);
+					Text_Printf();
 					//Toast.makeText(context, "Intent Detected.", Toast.LENGTH_LONG).show();
 				}
 		   }
@@ -179,12 +183,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void Print_Count() throws RemoteException {
 			// TODO Auto-generated method stub
-			try{   
-    		    num = Iservice.getvalue();
-				} catch (RemoteException e){
-				
-				}
-				view.setText(" "+num);
+			Text_Printf();
 		}
 	}; 
 	
