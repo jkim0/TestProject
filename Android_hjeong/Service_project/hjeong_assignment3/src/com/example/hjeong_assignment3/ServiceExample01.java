@@ -19,34 +19,30 @@ public class ServiceExample01 extends Service{
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
+		Toast.makeText(this, "Oncreate", Toast.LENGTH_SHORT);
 		IncreaingValue(mCount2);
 		Log.e("onCreate","onCreate" );
-	
 	}
 	
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		Toast.makeText(ServiceExample01.this, "OnDestroy", Toast.LENGTH_LONG).show();
-	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
-		ADD_Thread add_Thread = new ADD_Thread();
+//		ADD_Thread add_Thread = new ADD_Thread();
 //		add_Thread.setDaemon(true);
 //		add_Thread.start();
-		Toast.makeText(ServiceExample01.this, "OnCreate", Toast.LENGTH_LONG).show();	
-		Toast.makeText(ServiceExample01.this, "OnStartCommand", Toast.LENGTH_LONG).show();			
+		//Toast.makeText(ServiceExample01.this, "OnCreate", Toast.LENGTH_LONG).show();	
+		Toast.makeText(ServiceExample01.this, "OnStartCommand", Toast.LENGTH_LONG).show();
+		//Toast  만들어주고  show를 하지 않으면 error
 		return START_NOT_STICKY;
 	}
 
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
+		Toast.makeText(this, "Onbind", Toast.LENGTH_SHORT).show();
 		Log.e("OnBinder", "OnBinder");
-		return (IBinder) mBinder;
+		return mBinder;
 	}
 	
 	private final IRemoteService.Stub mBinder =new IRemoteService.Stub() {
@@ -70,7 +66,7 @@ public class ServiceExample01 extends Service{
 	
 	private void IncreaingValue(int mCount2) {
 		// TODO Auto-generated method stub
-		final int N = mCallbacks.beginBroadcast();
+		final int N = mCallbacks.beginBroadcast();//register에 등록된 함수의 계수를 받아온다.
 		for(int i=0; i<N; i++){
 			
 			try {

@@ -22,23 +22,24 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
 	
+	 
+	Intent m_intent= null;
 	Button m_Button_start = null;
 	Button m_Button_stop = null;
 	Button m_Button_bindSatrt=null;
 	Button m_Button_getValue=null;
-	Intent m_intent=null;
 	TextView m_ValuePrint=null;
 	//ISend_Value mISend_Value;
 	int mValue=0;
-		
+	
 	private IRemoteService mService = null;
+	
 	private Handler handler = new Handler(){
 		public void handleMessage(Message msg){
 			if(msg.what == 1)
 				m_ValuePrint.setText(mValue);
 			else
-				m_ValuePrint.setText("error");
-			
+				m_ValuePrint.setText("error");		
 		}
 	};
 	
@@ -58,7 +59,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		
+//		Toast.makeText(MainActivity.this, "OnCreate", Toast.LENGTH_LONG).show();
 		m_Button_start = (Button)findViewById(R.id.start);
 		m_Button_stop = (Button)findViewById(R.id.stop);
 		m_Button_bindSatrt=(Button)findViewById(R.id.bind_start);
@@ -70,9 +71,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		m_Button_bindSatrt.setOnClickListener(this);
 		m_Button_getValue.setOnClickListener(this);
 		
-		m_intent = new Intent(MainActivity.this, ServiceExample01.class);
-		
-		
+		m_intent = new Intent(MainActivity.this, ServiceExample01.class);	
 		IntentFilter filter = new IntentFilter("start");//filter 정의
 		registerReceiver(Receiver, filter);
 	}
@@ -87,15 +86,17 @@ private BroadcastReceiver Receiver = new BroadcastReceiver() {
 			m_ValuePrint.setText(""+getValue);
 		}
 	};
+	
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		
 		switch(v.getId())
 		{
+		
 		case R.id.start:
 			Toast.makeText(MainActivity.this, "Start Service", Toast.LENGTH_SHORT).show();
-			startService(m_intent);
+			startService(m_intent);startService(m_intent);startService(m_intent);startService(m_intent);startService(m_intent);
 			Log.e("Start", "Start");
 			break;
 			
@@ -105,8 +106,10 @@ private BroadcastReceiver Receiver = new BroadcastReceiver() {
 			break;	
 			
 		case R.id.bind_start:
+			
+			Intent m_intent = new Intent(MainActivity.this, ServiceExample01.class);
 			Toast.makeText(MainActivity.this, "bind Service", Toast.LENGTH_LONG).show();
-			bindService(m_intent, mConnection, BIND_AUTO_CREATE);
+			bindService(m_intent, mConnection, Context.BIND_AUTO_CREATE);
 			break;
 			
 		case R.id.getValue:
@@ -146,7 +149,7 @@ private BroadcastReceiver Receiver = new BroadcastReceiver() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			// TODO Auto-generated method stub
-			
+			Toast.makeText(MainActivity.this, "OnServiceConnected", Toast.LENGTH_SHORT);
 			mService = IRemoteService.Stub.asInterface(service);
 			try {
 				mService.Registercallback(mISend_Value);
