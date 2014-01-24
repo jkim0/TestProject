@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/hjeong/WindRiver/hjeong_assignment3/src/com/example/hjeong_assignment3/ISend_Value.aidl
+ * Original file: /home/hjeong/Jhs_Android.git/TestProject/Android_hjeong/Service_project/hjeong_assignment3/src/com/example/hjeong_assignment3/ISend_Value.aidl
  */
 package com.example.hjeong_assignment3;
 public interface ISend_Value extends android.os.IInterface

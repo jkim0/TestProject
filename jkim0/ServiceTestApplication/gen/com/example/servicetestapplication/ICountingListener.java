@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/jkim0/eclipse_workspace/ServiceTestApplication/src/com/example/servicetestapplication/ICountingListener.aidl
+ * Original file: /home/hjeong/Jhs_Android.git/TestProject/jkim0/ServiceTestApplication/src/com/example/servicetestapplication/ICountingListener.aidl
  */
 package com.example.servicetestapplication;
 public interface ICountingListener extends android.os.IInterface
