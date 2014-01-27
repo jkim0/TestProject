@@ -52,7 +52,7 @@ public class Emulator extends Activity {
 			public void onServiceConnected(ComponentName arg0, IBinder arg1) {
 				// TODO Auto-generated method stub
 
-				mService=Emulator.Stub.asInterface(arg1);
+				mService=EmulatorAIDL.Stub.asInterface(arg1);
 			}
 		};
 		
