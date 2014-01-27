@@ -2,8 +2,10 @@ package com.example.emulator;
 
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.view.Menu;
@@ -12,9 +14,23 @@ import android.widget.Button;
 
 public class Emulator extends Activity {
 
-	private Button btn_start,btn_stop;
+	private Button btn_start,btn_stop,btn_screen_on,btn_screen_off;
 	private Intent intent = new Intent(Emulator.this, EmulatorService.class);
 	private EmulatorAIDL mService = null;
+	
+	PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+
+	
+	/*
+	PowerManager pm = (PowerManager) getSystemService( Context.POWER_SERVICE );
+
+PowerManager.WakeLock wakeLock = pm.newWakeLock( PowerManager.SCREEN_DIM_WAKE_LOCK, "MY TAG" );
+
+	wakeLock.acquire();
+  // do something. 
+  // the screen will stay on during this section.
+	wakeLock.release();
+*/
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +39,9 @@ public class Emulator extends Activity {
 		
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
+		btn_screen_on=(Button) findViewById(R.id.btn_screen_on);
+		btn_screen_off=(Button) findViewById(R.id.btn_screen_off);
+		
 		
 		
 		btn_start.setOnClickListener(new View.OnClickListener() {
@@ -37,6 +56,23 @@ public class Emulator extends Activity {
 			public void onClick(View v) {
 			
 				unbindService(mConnection);
+			}
+		});
+
+		btn_screen_on.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				pm.userActivity(2000,true);
+			}
+		});
+
+		
+		btn_screen_off.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+			
+				pm.goToSleep(2000);
 			}
 		});
 		
