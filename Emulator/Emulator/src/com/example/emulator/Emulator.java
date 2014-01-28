@@ -1,11 +1,9 @@
 package com.example.emulator;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.RemoteException;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -13,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,8 +27,9 @@ public class Emulator extends Activity {
 	private EmulatorAIDL mService = null;
 //질문, 여기에 intent 나 powermanager 할당하면, 에러나 ! 왜그럴까
 	
-	private PowerManager Pm;
-//	PowerManager.WakeLock mWakeLock, mWakeLock2;
+	//////////////
+	PowerManager mPm;
+	PowerManager.WakeLock mWakeLock, mWakeLock2;
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		@Override
@@ -49,11 +47,13 @@ public class Emulator extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_emulator);
-
-	
+		//setKeepScreenOn(true);
 		
+		mPm = (PowerManager) getApplication().getSystemService( Context.POWER_SERVICE );
 		//ACQUIRED_로 받으면 또 에러...
-	//	mWakeLock = mPm.newWakeLock(PowerManager.FULL_WAKE_LOCK , "power");
+		mWakeLock = mPm.newWakeLock(PowerManager.FULL_WAKE_LOCK , "power");
+		mWakeLock2=  mPm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK ,"power");
+
 //		mWakeLock = mPm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "power");
 	//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
@@ -86,45 +86,46 @@ public class Emulator extends Activity {
 		btn_screen_on.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-
-				pm.userActivity(SCREEN_ON, true);
-				// (long when, boolean noChangeLights)
-				/* 실패 1*/
-				//mWakeLock.acquire(); 
-				//boolean inScreenon= mPm.isScreenOn();
-		    	//	getCurrentFocus().setKeepScreenOn(true);
-				/* 실패 2*/
-				//setKeepScreenOn(true);
-				//getWindow().addFlags(WindowManager.)//
+				mWakeLock.acquire(); 
+				boolean inScreenon= mPm.isScreenOn();
+				Toast.makeText(Emulator.this, inScreenon+":",Toast.LENGTH_SHORT).show();
+			//	getCurrentFocus().setKeepScreenOn(true);
+			//	getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 			}
 		});
 	//Screen_off	
 		btn_screen_off.setOnClickListener(new View.OnClickListener() {
-			@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 			@Override
 			public void onClick(View v) {	
-				PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-				pm.goToSleep(2000);
-		//		pm.wakeUp(2000);
-				//API 17이상 지원함, 나중에 wakeup할때 사용해보기
-				//time 	The time when the request to go to sleep was issued, in the uptimeMillis() time base.
+			
+				Toast.makeText(Emulator.this,":-1",Toast.LENGTH_SHORT).show();
+				Toast.makeText(Emulator.this,":0",Toast.LENGTH_SHORT).show();
+				mWakeLock.release(); 
+				if(mWakeLock==null){Toast.makeText(Emulator.this,"null",Toast.LENGTH_LONG).show();}
+				Toast.makeText(Emulator.this,mWakeLock+":0",Toast.LENGTH_SHORT).show();
 				
-				
-				
-//				if(mWakeLock==null){Toast.makeText(Emulator.this,"null",Toast.LENGTH_LONG).show();}
-//				Toast.makeText(Emulator.this,mWakeLock+":0",Toast.LENGTH_SHORT).show();
-//				mWakeLock2.acquire();
-//			
+				Toast.makeText(Emulator.this,":1",Toast.LENGTH_SHORT).show();
+				mWakeLock2.acquire();
+				Toast.makeText(Emulator.this,":2",Toast.LENGTH_SHORT).show();
+				boolean inScreenon= mPm.isScreenOn();
+				Toast.makeText(Emulator.this,inScreenon+":4",Toast.LENGTH_SHORT).show();
+			
 //				wakeLock.release();
 //				PowerManager pm = (PowerManager) getSystemService( Context.POWER_SERVICE );
-//				PowerManager.WakeLock wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, EmulatorService.TAG );		
+//				PowerManager.WakeLock wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, EmulatorService.TAG );
+//				wakeLock.acquire();
+//				  // do something. 
+//				  // the screen will stay on during this section.
+//					wakeLock.release();
+//					PARTIAL_WAKE_LOCK				
+//				PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+//				pm.goToSleep(2000);
+				// 안드로이드 상위버전에서는 슬립 안쓴다, wake 어쩌고저쩌고
 			}
 		});
 	
 		
 	}	
-	/* 나중에는 하나의 intent로 해서, 쫙 받을거야! (later)
 	private BroadcastReceiver scrReceiver= new BroadcastReceiver() {
 		
 		@Override
@@ -135,10 +136,11 @@ public class Emulator extends Activity {
 			int cases = intent.getIntExtra("number",0);
 			switch(cases){
 			case SCREEN_ON:
+
 				break;
 			case SCREEN_OFF:
 				  PowerManager pm= (PowerManager)getSystemService(Context.POWER_SERVICE);
-				pm.goToSleep(2000);
+				  PowerManager.WakeLock wakeLock= pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,EmulatorService.TAG);
 		
 				break;
 			}
@@ -147,7 +149,8 @@ public class Emulator extends Activity {
 			//	screenFilter = new IntentFilter(EmulatorService.TAG);
 		}
 	};
-*/
+
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
