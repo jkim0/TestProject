@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/jhs/WindRiver_Project.git/TestProject/Emulator/src/com/example/emulator/EmulatorAIDL.aidl
+ * Original file: /home/jyang4/workspace/adt-files/Emulator/src/com/example/emulator/EmulatorAIDL.aidl
  */
 package com.example.emulator;
 public interface EmulatorAIDL extends android.os.IInterface
@@ -60,6 +60,20 @@ this.unregisterCallback(_arg0);
 reply.writeNoException();
 return true;
 }
+case TRANSACTION_openfile:
+{
+data.enforceInterface(DESCRIPTOR);
+this.openfile();
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_closefile:
+{
+data.enforceInterface(DESCRIPTOR);
+this.closefile();
+reply.writeNoException();
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -108,10 +122,42 @@ _reply.recycle();
 _data.recycle();
 }
 }
+@Override public void openfile() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_openfile, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+@Override public void closefile() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_closefile, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
 }
 static final int TRANSACTION_registerCallback = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_unregisterCallback = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
+static final int TRANSACTION_openfile = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
+static final int TRANSACTION_closefile = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
 }
 public void registerCallback(com.example.emulator.EmulatorAIDLCallback cb) throws android.os.RemoteException;
 public void unregisterCallback(com.example.emulator.EmulatorAIDLCallback cb) throws android.os.RemoteException;
+public void openfile() throws android.os.RemoteException;
+public void closefile() throws android.os.RemoteException;
 }

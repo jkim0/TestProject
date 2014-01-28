@@ -201,7 +201,7 @@ class NanoHTTPD
 		myThread.start();
 	}
 
-	/**
+	/**import NanoHTTPD.java;
 	 * Stops the server.
 	 */
 	public void stop()
