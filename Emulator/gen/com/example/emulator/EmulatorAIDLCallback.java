@@ -1,10 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
-<<<<<<< HEAD
  * Original file: /home/hjeong/WindRiver_Project01.git/TestProject/Emulator/src/com/example/emulator/EmulatorAIDLCallback.aidl
-=======
- * Original file: /home/jyang4/workspace/adt-files/Emulator/src/com/example/emulator/EmulatorAIDLCallback.aidl
->>>>>>> 3e938b24639f369e410dd5a42ab19c3cce853f1d
  */
 package com.example.emulator;
 public interface EmulatorAIDLCallback extends android.os.IInterface
