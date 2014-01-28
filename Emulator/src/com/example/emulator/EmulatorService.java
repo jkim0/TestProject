@@ -1,6 +1,8 @@
 package com.example.emulator;
 
 import java.io.File;
+import java.io.IOException;
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -10,7 +12,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
-import com.example.emulator.NanoHTTPD;
+import android.util.Log;
+
 
 @SuppressLint("NewApi")
 public class EmulatorService extends Service {
@@ -47,10 +50,29 @@ public class EmulatorService extends Service {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-		
-		showNotification();	
+		showNotification();
+		NanoHttpd();
 	}
 	
+	private void NanoHttpd() {
+		// TODO Auto-generated method stub
+		Log.e("onCreate","onCreate");
+	       // File path = Environment.getExternalStorageDirectory();
+	        //
+	        File path = new File("/mnt");
+	        Log.e("Nano_Server", "############## path = " + path);
+	        File wwwroot = path.getAbsoluteFile();
+	        //File file = new File(path, "filename");
+	        /**/
+	        try {
+				NanoHTTPD Nano = new NanoHTTPD(8090, wwwroot);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		
+	}
+
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
@@ -59,9 +81,6 @@ public class EmulatorService extends Service {
 		mNM.cancel(R.string.remote_service_started);
 		mCallbacks.kill();
 	}
-
-	
-	
 
 	private void showNotification() {
 		// TODO Auto-generated method stub
@@ -77,6 +96,5 @@ public class EmulatorService extends Service {
 				text, contentIntent);
 		
 		mNM.notify(R.string.remote_service_started, notification);
-
 	}
 }
