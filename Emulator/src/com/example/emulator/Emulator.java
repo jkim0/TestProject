@@ -1,5 +1,6 @@
 package com.example.emulator;
 
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -69,6 +70,11 @@ public class Emulator extends Activity {
 				Intent intent = new Intent(Emulator.this, EmulatorService.class);
 				bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
 				Toast.makeText(Emulator.this, "Bind()" ,Toast.LENGTH_SHORT).show();
+//				Intent i = new Intent(Intent.ACTION_VIEW);
+//				Uri u= Uri.parse("http://google.com");
+//				i.setData(u);
+//				startActivity(i);
+				
 			}
 		});
 	//unBindService
@@ -79,8 +85,6 @@ public class Emulator extends Activity {
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
-
-	
 	
 	//Screen_on
 		btn_screen_on.setOnClickListener(new View.OnClickListener() {
@@ -106,11 +110,10 @@ public class Emulator extends Activity {
 			public void onClick(View v) {	
 				PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
 				pm.goToSleep(2000);
-		//		pm.wakeUp(2000);
+				pm.wakeUp(2000);
+				
 				//API 17이상 지원함, 나중에 wakeup할때 사용해보기
-				//time 	The time when the request to go to sleep was issued, in the uptimeMillis() time base.
-				
-				
+				//time 	The time when the request to go to sleep was issued, in the uptimeMillis() time base.			
 				
 //				if(mWakeLock==null){Toast.makeText(Emulator.this,"null",Toast.LENGTH_LONG).show();}
 //				Toast.makeText(Emulator.this,mWakeLock+":0",Toast.LENGTH_SHORT).show();
@@ -125,8 +128,7 @@ public class Emulator extends Activity {
 		
 	}	
 	/* 나중에는 하나의 intent로 해서, 쫙 받을거야! (later)
-	private BroadcastReceiver scrReceiver= new BroadcastReceiver() {
-		
+	private BroadcastReceiver scrReceiver= new BroadcastReceiver() {	
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
@@ -139,10 +141,8 @@ public class Emulator extends Activity {
 			case SCREEN_OFF:
 				  PowerManager pm= (PowerManager)getSystemService(Context.POWER_SERVICE);
 				pm.goToSleep(2000);
-		
 				break;
-			}
-			
+			}	
 		}
 			//	screenFilter = new IntentFilter(EmulatorService.TAG);
 		}

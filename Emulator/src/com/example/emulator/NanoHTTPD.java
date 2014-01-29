@@ -26,15 +26,11 @@ import java.util.Vector;
 
 import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
-
-
-
 class NanoHTTPD
 {
 	// ==================================================
 	// API parts
 	// ==================================================
-
 	/**
 	 * Override this to customize the server.<p>
 	 *
@@ -98,7 +94,6 @@ class NanoHTTPD
 			this.mimeType = mimeType;
 			this.data = data;
 		}
-
 		/**
 		 * Convenience method that makes an InputStream out of
 		 * given text.
@@ -221,7 +216,10 @@ class NanoHTTPD
 	 */
 	
 
-	/**
+	/** HTTP request를 파싱하고, 반응을 return해 준다.
+	 * 소켓에서의 아웃풋스트림을, 인풋스트림으로 받아와서 파싱한다. 
+	 * 소켓을 열면, 거기에 html파일이있었잖아, 그러면 그거를 파싱해주는거지???
+	 * 그래서 response를 보내준다~~~
 	 * Handles one session, i.e. parses the HTTP request
 	 * and returns the response.
 	 */
@@ -238,7 +236,7 @@ class NanoHTTPD
 		public void run()
 		{
 			try
-			{
+			{	//그 포트의 인풋스트림을 받는다???
 				InputStream is = mySocket.getInputStream();
 				if ( is == null) return;
 
@@ -246,14 +244,16 @@ class NanoHTTPD
 				// The full header should fit in here.
 				// Apache's default header limit is 8KB.
 				int bufsize = 8192;
-				byte[] buf = new byte[bufsize];
-				int rlen = is.read(buf, 0, bufsize);
+				byte[] buf = new byte[bufsize]; 
+				//rlen is not 8192, it stores 312.
+				int rlen = is.read(buf, 0, bufsize); //save data in byte array, buf from 0 to bufsize 
 				if (rlen <= 0) return;
 
 				// Create a BufferedReader for parsing the header.
-				ByteArrayInputStream hbis = new ByteArrayInputStream(buf, 0, rlen);
-				BufferedReader hin = new BufferedReader( new InputStreamReader( hbis ));
-				Properties pre = new Properties();
+				ByteArrayInputStream hbis = new ByteArrayInputStream(buf, 0, rlen); //기반스트림으로부터 처리하는거야
+				BufferedReader hin = new BufferedReader( new InputStreamReader( hbis )); //reader는 문자기반 스트림
+			
+				Properties pre = new Properties(); 
 				Properties parms = new Properties();
 				Properties header = new Properties();
 				Properties files = new Properties();
@@ -267,7 +267,8 @@ class NanoHTTPD
 				String contentLength = header.getProperty("content-length");
 				if (contentLength != null)
 				{
-					try { size = Integer.parseInt(contentLength); }
+					try { size = Integer.parseInt(contentLength); } //size = Integer.paseInt(String)/콘텐트 길이
+					//Parses the specified string as a signed decimal integer value.
 					catch (NumberFormatException ex) {}
 				}
 
@@ -280,7 +281,7 @@ class NanoHTTPD
 					if (buf[splitbyte] == '\r' && buf[++splitbyte] == '\n' && buf[++splitbyte] == '\r' && buf[++splitbyte] == '\n') {
 						sbfound = true;
 						break;
-					}
+					} // r,n,을 발견한지점에서 탈츌!!
 					splitbyte++;
 				}
 				splitbyte++;
@@ -288,29 +289,29 @@ class NanoHTTPD
 				// Write the part of body already read to ByteArrayOutputStream f
 				ByteArrayOutputStream f = new ByteArrayOutputStream();
 				if (splitbyte < rlen) f.write(buf, splitbyte, rlen-splitbyte);
-
+			//이게 뭐냐면~~~ 주어진 배열에 10이고, 2번재인덱스에서 발견했음, 3을가지고 탈츌, (3,7)
 				// While Firefox sends on the first read all the data fitting
 				// our buffer, Chrome and Opera sends only the headers even if
 				// there is data for the body. So we do some magic here to find
 				// out whether we have already consumed part of body, if we
 				// have reached the end of the data to be sent or we should
 				// expect the first byte of the body at the next read.
-				if (splitbyte < rlen)
-					size -= rlen - splitbyte +1;
-				else if (!sbfound || size == 0x7FFFFFFFFFFFFFFFl)
+				if (splitbyte < rlen) //3<10
+					size -= rlen - splitbyte +1; //size = size - rlen+splitbyte-1;
+													//size = 10 - (10)+3-1=2 ; 
+				else if (!sbfound || size == 0x7FFFFFFFFFFFFFFFl) //-1, 즉 아무것도 없을때
 					size = 0;
-
 				// Now read all the body and write it to f
-				buf = new byte[512];
-				while ( rlen >= 0 && size > 0 )
+				buf = new byte[512];  //512개, 
+				while ( rlen >= 0 && size > 0 ) //size = 2, rlen= 10;
 				{
-					rlen = is.read(buf, 0, 512);
-					size -= rlen;
+					rlen = is.read(buf, 0, 512);  //reln = 512;
+					size -= rlen;	// size=2 ; size = size-rlen; 
 					if (rlen > 0)
 						f.write(buf, 0, rlen);
 				}
-
-				// Get the raw body as a byte []
+			//DATA중에 우리가 잘라낸 것같아...
+			// Get the raw body as a byte []
 				byte [] fbuf = f.toByteArray();
 
 				// Create a BufferedReader for easily reading it as string.
@@ -321,7 +322,7 @@ class NanoHTTPD
 				// in data section, too, read it:
 				if ( method.equalsIgnoreCase( "POST" ))
 				{
-					String contentType = "";
+					String contentType = ""; 
 					String contentTypeHeader = header.getProperty("content-type");
 					StringTokenizer st = new StringTokenizer( contentTypeHeader , "; " );
 					if ( st.hasMoreTokens()) {
@@ -342,7 +343,7 @@ class NanoHTTPD
 
 						decodeMultipartData(boundary, fbuf, in, parms, files);
 					}
-					else
+					else //multi-part가 아닐경우~~
 					{
 						// Handle application/x-www-form-urlencoded
 						String postLine = "";
@@ -353,10 +354,10 @@ class NanoHTTPD
 							postLine += String.valueOf(pbuf, 0, read);
 							read = in.read(pbuf);
 						}
-						postLine = postLine.trim();
+						postLine = postLine.trim(); //postLine에서 좌우 빈공간 스페이스 제거하고 
 						decodeParms( postLine, parms );
-					}
-				}
+					}//end of MULTI_PART아닐 경우 
+				} //end of cast method==POST
 
 				if ( method.equalsIgnoreCase( "PUT" ))
 					files.put("content", saveTmpFile( fbuf, 0, f.size()));
@@ -427,7 +428,7 @@ class NanoHTTPD
 					while ( line != null && line.trim().length() > 0 )
 					{
 						int p = line.indexOf( ':' );
-						if ( p >= 0 )
+						if ( p >= 0 ) //상대편이 받으면, 그걸 보고 상대편이 header값을 받아가지고, 파싱해서 그사람들이 헤더에 맞는 동작을 한
 							header.put( line.substring(0,p).trim().toLowerCase(), line.substring(p+1).trim());
 						line = in.readLine();
 					}
@@ -969,6 +970,7 @@ class NanoHTTPD
 	private static Hashtable theMimeTypes = new Hashtable();
 	static
 	{
+		
 		StringTokenizer st = new StringTokenizer(
 			"css		text/css "+
 			"htm		text/html "+

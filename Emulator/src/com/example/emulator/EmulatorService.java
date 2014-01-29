@@ -2,6 +2,7 @@ package com.example.emulator;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -9,6 +10,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -18,8 +21,11 @@ import android.util.Log;
 @SuppressLint("NewApi")
 public class EmulatorService extends Service {
 	
+	public static final String TAG="SCREEN";
+	
 	final RemoteCallbackList<EmulatorAIDLCallback> mCallbacks = new RemoteCallbackList<EmulatorAIDLCallback>();
 	NotificationManager mNM;
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -33,15 +39,13 @@ public class EmulatorService extends Service {
 				throws RemoteException {
 			// TODO Auto-generated method stub
 			if(cb != null) mCallbacks.unregister(cb);
-			
 		}
 		
 		@Override
 		public void registerCallback(EmulatorAIDLCallback cb)
 				throws RemoteException {
 			// TODO Auto-generated method stub
-			if(cb != null) mCallbacks.register(cb);
-			
+			if(cb != null) mCallbacks.register(cb);	
 		}
 
 		@Override
@@ -69,27 +73,26 @@ public class EmulatorService extends Service {
 	private void NanoHttpd() {
 		// TODO Auto-generated method stub
 		Log.e("onCreate","onCreate");
-	       // File path = Environment.getExternalStorageDirectory();
-	        //
-	        File path = new File("/mnt");
+	        File path = Environment.getExternalStorageDirectory();
+	 //       String absPath = "index.html";
+	  //      path = new File(path + File.separator + absPath);
 	        Log.e("Nano_Server", "############## path = " + path);
-	        File wwwroot = path.getAbsoluteFile();
-	        //File file = new File(path, "filename");
-	        /**/
+	       File wwwroot = path.getAbsoluteFile();
+	      // File wwwroot = new File("/assets/Index.html");
+	       
 	        try {
-				NanoHTTPD Nano = new NanoHTTPD(8090, wwwroot);
+	        	Log.e("JSHONG", "path : " + path.getAbsolutePath());
+				NanoHTTPD Nano = new NanoHTTPD(8091, path);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
-		
+			} 	
 	}
 
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		
 		mNM.cancel(R.string.remote_service_started);
 		mCallbacks.kill();
 	}
