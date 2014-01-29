@@ -70,10 +70,10 @@ public class Emulator extends Activity {
 				Intent intent = new Intent(Emulator.this, EmulatorService.class);
 				bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
 				Toast.makeText(Emulator.this, "Bind()" ,Toast.LENGTH_SHORT).show();
-//				Intent i = new Intent(Intent.ACTION_VIEW);
-//				Uri u= Uri.parse("http://google.com");
-//				i.setData(u);
-//				startActivity(i);
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				Uri u= Uri.parse("http://localhost:8091");
+				i.setData(u);
+				startActivity(i);
 				
 			}
 		});
