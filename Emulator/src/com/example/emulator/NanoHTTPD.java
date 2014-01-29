@@ -24,6 +24,8 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import android.util.Log;
+
 import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
 class NanoHTTPD
@@ -267,7 +269,10 @@ class NanoHTTPD
 				String contentLength = header.getProperty("content-length");
 				if (contentLength != null)
 				{
-					try { size = Integer.parseInt(contentLength); } //size = Integer.paseInt(String)/콘텐트 길이
+					try { size = Integer.parseInt(contentLength); 
+						Log.i("HEAD","size:"+size+"contentLength"+contentLength);
+						
+					} //size = Integer.paseInt(String)/콘텐트 길이
 					//Parses the specified string as a signed decimal integer value.
 					catch (NumberFormatException ex) {}
 				}
@@ -322,13 +327,16 @@ class NanoHTTPD
 				// in data section, too, read it:
 				if ( method.equalsIgnoreCase( "POST" ))
 				{
+					Log.i("POST","inside");
+
 					String contentType = ""; 
 					String contentTypeHeader = header.getProperty("content-type");
+					Log.i("POST","contentTypeHeader"+contentTypeHeader);
 					StringTokenizer st = new StringTokenizer( contentTypeHeader , "; " );
 					if ( st.hasMoreTokens()) {
 						contentType = st.nextToken();
 					}
-
+					Log.i("POST","contentType:"+contentType);
 					if (contentType.equalsIgnoreCase("multipart/form-data"))
 					{
 						// Handle multipart/form-data
@@ -340,7 +348,8 @@ class NanoHTTPD
 							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary syntax error. Usage: GET /example/file.html" );
 						st.nextToken();
 						String boundary = st.nextToken();
-
+						Log.i("POST","boundary:"+boundary+"fbuf:"+fbuf+"in:"+in+"parms:"+parms+"files:"+files);
+						
 						decodeMultipartData(boundary, fbuf, in, parms, files);
 					}
 					else //multi-part가 아닐경우~~
@@ -354,8 +363,12 @@ class NanoHTTPD
 							postLine += String.valueOf(pbuf, 0, read);
 							read = in.read(pbuf);
 						}
+						Log.i("POST","postLine:b4:"+postLine);
 						postLine = postLine.trim(); //postLine에서 좌우 빈공간 스페이스 제거하고 
+						Log.i("POST","postLine:a4:"+postLine);
+						Log.i("POST","parms"+parms);
 						decodeParms( postLine, parms );
+					
 					}//end of MULTI_PART아닐 경우 
 				} //end of cast method==POST
 

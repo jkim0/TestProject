@@ -1,34 +1,58 @@
+
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>Emulator ver 0.1</title>
-			<textarea row ="4" cols = "24">
-			Emulator ver 0.1
-			Made by Intern
-			</textarea>
-	</head>
-	
-	<SCRIPT LANGUAGE = 'JAVASCRIPT'>
-	
-		function Screen_On()
-		{
-			alert("Screen On Button Check");
-		}
+<head>
+<meta charset="EUC-KR">
+<title>html5-tag-list</title>
+<style>
+        body {     font-size : small;
+                   line-height : 1.4em;  
+       }
+ 
+</style>
+ 
 
-		function Screen_Off()
-		{
-			alert("Screen Off Button Check");
-		}
+<body>          
+ 
 
-	</SCRIPT> 
-	
+<form name="testform" enctype="multipart"
+                                       action="index2.html" method="post">
+ 
+        
+    Choose site    
+    <input type="checkbox" name="blogsite" value="naver" checked>Naver
+    <input type="checkbox" name="blogsite" value="daum">Daum
+    <input type="checkbox" name="blogsite" value="google">Google  <br><br>
+   
 
-	<body>
-	    <form method = "post">
-		<p><input type = "submit" size = "20" value ="Screen On">
-		<input type = "submit" size = "20" value ="Screen Off"></p>
-		
-	    </form>
-	</body>
-	
+    Which site do you usually use?    
+    <input type="radio" name="findsite" value="naver" checked>Naver
+    <input type="radio" name="findsite" value="daum">Daum
+    <input type="radio" name="findsite" value="google">Google<br>
+ 
+    Mail Account 
+    <select name="mailsite">
+        <option value="naver">naver.com
+        <option value="daum">hammail.net
+        <option value="google">google.com       
+    </select><br>
+    
+    <textarea name="memosite" cols="30" rows="10">
+        textarea  
+    </textarea><br><br>   
+
+    Add files<input type="file" name="filesite" size="20"><br><br>
+ 
+     id : <input type="text" name="idsite" size="20" value="text"> 
+     pw : <input type="password" name="pwsite" size="10" maxlength="5" value="12345"><br>
+    <input type="hidden" name="hdsite">     <br><br>
+ 
+    <input type="button" value="BUTTON">          
+    <input type="reset" value="RESET">   
+    <input type="submit" value="SUBMIT"><br>
+ 
+
+</form>
+
+</body>
 </html>
-
