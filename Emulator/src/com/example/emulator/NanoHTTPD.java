@@ -674,16 +674,29 @@ class NanoHTTPD
 		{
 			if ( parms == null )
 				return;
-
+			
+			String Compare = null;
+			
 			StringTokenizer st = new StringTokenizer( parms, "&" );
 			while ( st.hasMoreTokens())
 			{
 				String e = st.nextToken();
+				Log.e("e",""+e);
 				int sep = e.indexOf( '=' );
 				if ( sep >= 0 )
 					p.put( decodePercent( e.substring( 0, sep )).trim(),
 						   decodePercent( e.substring( sep+1 )));
+				Compare = e.substring( 0, sep ).trim();
 			}
+			Log.e("NanoHttpdError",""+Compare);
+			EmulatorService mService = new EmulatorService();
+			
+			if(Compare.equalsIgnoreCase("screen"))
+			{
+				Log.e("NanoHttpdError","COME");
+				mService.ScreenOnOff(p.getProperty(Compare));
+			}
+			
 		}
 
 		/**
