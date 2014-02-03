@@ -129,9 +129,7 @@ public class EmulatorService extends Service {
 	
 	private void NanoHttpd() {
 		 Log.e(TAG, "############## come####  " );
-	  File wwwroot = doCopy();
-
-	    
+	  File wwwroot = doCopy();    
 	        try {
 				NanoHTTPD Nano = new NanoHTTPD(8091,wwwroot);
 			} catch (IOException e) {

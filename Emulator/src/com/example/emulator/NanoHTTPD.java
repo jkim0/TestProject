@@ -190,7 +190,7 @@ class NanoHTTPD
 	{
 		myTcpPort = port;
 		this.myRootDir = wwwroot;
-		myServerSocket = new ServerSocket( myTcpPort );
+		myServerSocket = new ServerSocket( myTcpPort ); //myTcpPort로 소켓 생성
 		myThread = new Thread( new Runnable()
 			{
 				public void run()
@@ -198,7 +198,7 @@ class NanoHTTPD
 					try
 					{
 						while( true )
-							new HTTPSession( myServerSocket.accept());
+							new HTTPSession( myServerSocket.accept());//로컬 호스트에 접속할 때 까지 대기
 					}
 					catch ( IOException ioe )
 					{}
