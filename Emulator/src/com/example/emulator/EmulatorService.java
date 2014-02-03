@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 
 @SuppressLint("NewApi")
-public class EmulatorService extends Service implements Listener{
+public class EmulatorService extends Service {
 	
 	public static final String TAG="SCREEN";
 	public final static int SCREEN_ON=1;
@@ -162,7 +162,7 @@ public class EmulatorService extends Service implements Listener{
 		mNM.notify(R.string.remote_service_started, notification);
 	}
 	
-	@Override
+	
 	public void ScreenOnOff(String value) {
 		// TODO Auto-generated method stub
 		
