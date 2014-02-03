@@ -48,9 +48,14 @@ class NanoHTTPD
 	{
 		myOut.println( method + " '" + uri + "' " );
 
+
 		Enumeration e = header.propertyNames();
+		Log.i("check","header.propertyNames:"+header.propertyNames());
+		Log.i("check","e:"+e);
+	 	
 		while ( e.hasMoreElements())
 		{
+			Log.e("CHECK","e.has");
 			String value = (String)e.nextElement();
 			myOut.println( "  HDR: '" + value + "' = '" +
 								header.getProperty( value ) + "'" );
@@ -69,22 +74,23 @@ class NanoHTTPD
 			myOut.println( "  UPLOADED: '" + value + "' = '" +
 								files.getProperty( value ) + "'" );
 		}
-
+		Log.e("CHECK","myRootDir:"+myRootDir);
 		return serveFile( uri, header, myRootDir, true );
 	}
-
 	/**
 	 * HTTP response.
 	 * Return one of these from serve().
 	 */
 	public class Response
 	{
+	
 		/**
 		 * Default constructor: response = HTTP_OK, data = mime = 'null'
 		 */
 		public Response()
 		{
 			this.status = HTTP_OK;
+			Log.i("RESPONSE","response_0");
 		}
 
 		/**
@@ -95,6 +101,8 @@ class NanoHTTPD
 			this.status = status;
 			this.mimeType = mimeType;
 			this.data = data;
+
+			Log.i("RESPONSE","response_1");
 		}
 		/**
 		 * Convenience method that makes an InputStream out of
@@ -112,6 +120,8 @@ class NanoHTTPD
 			{
 				uee.printStackTrace();
 			}
+
+			Log.i("RESPONSE","response2");
 		}
 
 		/**
@@ -331,7 +341,7 @@ class NanoHTTPD
 
 					String contentType = ""; 
 					String contentTypeHeader = header.getProperty("content-type");
-					Log.i("POST","contentTypeHeader"+contentTypeHeader);
+					Log.i("POST","contentTypeHeader:"+contentTypeHeader);
 					StringTokenizer st = new StringTokenizer( contentTypeHeader , "; " );
 					if ( st.hasMoreTokens()) {
 						contentType = st.nextToken();
@@ -375,11 +385,12 @@ class NanoHTTPD
 				if ( method.equalsIgnoreCase( "PUT" ))
 					files.put("content", saveTmpFile( fbuf, 0, f.size()));
 
-				// Ok, now do the serve()
+	//////// Ok, now do the serve()
 				Response r = serve( uri, method, header, parms, files );
 				if ( r == null )
 					sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: Serve() returned a null response." );
 				else
+		////////////////			
 					sendResponse( r.status, r.mimeType, r.header, r.data );
 
 				in.close();
@@ -483,6 +494,7 @@ class NanoHTTPD
 					}
 					if (mpline != null)
 					{
+						
 						String contentDisposition = item.getProperty("content-disposition");
 						if (contentDisposition == null)
 						{
@@ -787,7 +799,14 @@ class NanoHTTPD
 							   boolean allowDirectoryListing )
 	{
 		Response res = null;
-
+		Log.e("CHECK","uri:"+uri);
+		Log.e("CHECK","header:"+header);
+		Log.e("CHECK","homeDir:"+homeDir);
+		Log.e("CHECK","ADL:"+allowDirectoryListing);
+		
+	
+		
+	//	파일이 디렉토리면 트루, 근데 fulse야 그렇다면 디렉토리 아니라는거지. 
 		// Make sure we won't die of an exception later
 		if ( !homeDir.isDirectory())
 			res = new Response( HTTP_INTERNALERROR, MIME_PLAINTEXT,
