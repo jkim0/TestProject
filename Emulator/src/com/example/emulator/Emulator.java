@@ -30,8 +30,7 @@ public class Emulator extends Activity {
 	public final static int SCREEN_OFF=2;
 	public final static int FOR_SPINNER=3;
 	private IntentFilter screenFilter;
-	private Spinner mSpinner;
-	
+	private Intent forSpinner;
 	private Button btn_start,btn_stop,btn_screen_on,btn_screen_off;
 	private Button btn_spinner;
 	//	private Button key_1,key_2,key_3,key_space,key_enter,key_up;
@@ -69,9 +68,6 @@ public class Emulator extends Activity {
 		btn_screen_on=(Button) findViewById(R.id.btn_screen_on);
 		btn_screen_off=(Button) findViewById(R.id.btn_screen_off);
 		btn_spinner=(Button) findViewById(R.id.btn_spinner);
-
-		
-		
 		
 	  // PowerManager pm = (PowerManager) getSystemService( Context.POWER_SERVICE );
 	  // PowerManager.WakeLock wakeLock = pm.newWakeLock( PowerManager.SCREEN_DIM_WAKE_LOCK, "MY TAG" );
@@ -85,8 +81,7 @@ public class Emulator extends Activity {
 				Intent i = new Intent(Intent.ACTION_VIEW);
 				Uri u= Uri.parse("http://localhost:8091");
 				i.setData(u);
-				startActivity(i);
-				
+				startActivity(i);	
 			}
 		});
 	//unBindService
@@ -103,7 +98,6 @@ public class Emulator extends Activity {
 			@Override
 			public void onClick(View v) {
 				PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-
 				pm.userActivity(SCREEN_ON, true);
 				// (long when, boolean noChangeLights)
 				/* 실패 1*/
@@ -139,13 +133,11 @@ public class Emulator extends Activity {
 	
 
 		btn_spinner.setOnClickListener(new View.OnClickListener() {
-	
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent forSpinner= new Intent(Emulator.this, Spinner.class);
+				forSpinner= new Intent(Emulator.this, EmulatorSpinner.class);
 				startActivity(forSpinner);
-				
 			}
 		});
 	
@@ -177,7 +169,9 @@ public class Emulator extends Activity {
 				break;
 			case SCREEN_OFF:
 				  PowerManager pm= (PowerManager)getSystemService(Context.POWER_SERVICE);
-				pm.goToSleep(2000);
+			ArrayAdapter.createFromResource(this, R.array.number, android.R.layout.simple_spinner_item);
+	  
+	  adapter3 = 	pm.goToSleep(2000);
 				break;
 			}	
 		}

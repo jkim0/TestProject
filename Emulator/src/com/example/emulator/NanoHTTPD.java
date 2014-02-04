@@ -190,7 +190,7 @@ class NanoHTTPD
 	{
 		myTcpPort = port;
 		this.myRootDir = wwwroot;
-		myServerSocket = new ServerSocket( myTcpPort );
+		myServerSocket = new ServerSocket( myTcpPort ); //myTcpPort로 소켓 생성
 		myThread = new Thread( new Runnable()
 			{
 				public void run()
@@ -198,7 +198,7 @@ class NanoHTTPD
 					try
 					{
 						while( true )
-							new HTTPSession( myServerSocket.accept());
+							new HTTPSession( myServerSocket.accept());//로컬 호스트에 접속할 때 까지 대기
 					}
 					catch ( IOException ioe )
 					{}
@@ -674,16 +674,29 @@ class NanoHTTPD
 		{
 			if ( parms == null )
 				return;
-
+			
+			String Compare = null;
+			
 			StringTokenizer st = new StringTokenizer( parms, "&" );
 			while ( st.hasMoreTokens())
 			{
 				String e = st.nextToken();
+				Log.e("e",""+e);
 				int sep = e.indexOf( '=' );
 				if ( sep >= 0 )
 					p.put( decodePercent( e.substring( 0, sep )).trim(),
 						   decodePercent( e.substring( sep+1 )));
+				Compare = e.substring( 0, sep ).trim();
 			}
+			Log.e("NanoHttpdError",""+Compare);
+			EmulatorService mService = new EmulatorService();
+			
+			if(Compare.equalsIgnoreCase("screen"))
+			{
+				Log.e("NanoHttpdError","COME");
+				mService.ScreenOnOff(p.getProperty(Compare));
+			}
+			
 		}
 
 		/**
