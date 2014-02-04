@@ -28,7 +28,7 @@ import android.util.Log;
 
 import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
-class NanoHTTPD
+class NanoHTTPD 
 {
 	// ==================================================
 	// API parts
@@ -47,6 +47,7 @@ class NanoHTTPD
 	public Response serve( String uri, String method, Properties header, Properties parms, Properties files )
 	{
 		myOut.println( method + " '" + uri + "' " );
+		
 
 
 		Enumeration e = header.propertyNames();
@@ -235,7 +236,7 @@ class NanoHTTPD
 	 * Handles one session, i.e. parses the HTTP request
 	 * and returns the response.
 	 */
-	public class HTTPSession implements Runnable
+	public class HTTPSession extends EmulatorService implements Runnable 
 	{
 		public HTTPSession( Socket s )
 		{
@@ -392,7 +393,8 @@ class NanoHTTPD
 				else
 		////////////////			
 					sendResponse( r.status, r.mimeType, r.header, r.data );
-
+				
+				
 				in.close();
 				is.close();
 			}
@@ -541,9 +543,11 @@ class NanoHTTPD
 							} while (mpline != null && mpline.indexOf(boundary) == -1);
 						}
 						parms.put(pname, value);
+						
 					}
 				}
 			}
+			
 			catch ( IOException ioe )
 			{
 				sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
@@ -689,12 +693,14 @@ class NanoHTTPD
 				Compare = e.substring( 0, sep ).trim();
 			}
 			Log.e("NanoHttpdError",""+Compare);
-			EmulatorService mService = new EmulatorService();
+			
 			
 			if(Compare.equalsIgnoreCase("screen"))
-			{
+			{	
 				Log.e("NanoHttpdError","COME");
-				mService.ScreenOnOff(p.getProperty(Compare));
+				super.ScreenOnOff(p.getProperty(Compare));
+				//HTTPSession 에서 extends로 EmulatorService를 상속받아서 suepr를 이용하여 
+				//상위 클레스인 EmulatorService의 ScreenOnOff를 실행 
 			}
 			
 		}
