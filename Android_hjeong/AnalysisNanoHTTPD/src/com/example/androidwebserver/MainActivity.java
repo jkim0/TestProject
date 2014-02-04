@@ -89,7 +89,7 @@ class NanoHTTPD
 			
 			myOut.println( "  HDR: '" + value + "' = '" +
 								header.getProperty( value ) + "'" );
-		}
+		}//header key값 확인! 안드로이드 에서는 println 출력 안됨.!
 		e = parms.propertyNames();
 		while ( e.hasMoreElements())
 		{
@@ -97,7 +97,7 @@ class NanoHTTPD
 			Log.e("parms_value",""+value);
 			myOut.println( "  PRM: '" + value + "' = '" +
 								parms.getProperty( value ) + "'" );
-		}
+		}//parms의 key값 확인
 		e = files.propertyNames();
 		while ( e.hasMoreElements())
 		{
@@ -106,7 +106,7 @@ class NanoHTTPD
 			Log.e("files_value",""+value);
 			myOut.println( "  UPLOADED: '" + value + "' = '" +
 								files.getProperty( value ) + "'" );
-		}
+		}//files의 key값 확인. 
 		
 		Log.e("myRootDir",""+myRootDir);// /storage/sdcard  출력
 		Log.e("serve_uri",""+uri); //  method가 POST 일때 / ,
@@ -1161,9 +1161,6 @@ class NanoHTTPD
 		// This method initializes a new File object to represent a file in the specified directory(homeDir).
 		// file이 생성된것은 아니다.! File  object 만 생성된 것이다.! 가상 경로만 설정된것이다.!
 		
-		
-		//Log.e("test_f",""+test_f);
-		//Log.e("f",""+f);
 				
 		if(test_f.exists())
 			Log.e("test_f_file",""+test_f);		
