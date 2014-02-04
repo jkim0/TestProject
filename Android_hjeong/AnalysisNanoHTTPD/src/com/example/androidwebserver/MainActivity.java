@@ -81,9 +81,12 @@ class NanoHTTPD
 		myOut.println( method + " '" + uri + "' " );
 
 		Enumeration e = header.propertyNames();
+		Log.e("Enumeration_e",""+e);
 		while ( e.hasMoreElements())
 		{
 			String value = (String)e.nextElement();
+			Log.e("headers_value",""+value);
+			
 			myOut.println( "  HDR: '" + value + "' = '" +
 								header.getProperty( value ) + "'" );
 		}
@@ -91,16 +94,22 @@ class NanoHTTPD
 		while ( e.hasMoreElements())
 		{
 			String value = (String)e.nextElement();
+			Log.e("parms_value",""+value);
 			myOut.println( "  PRM: '" + value + "' = '" +
 								parms.getProperty( value ) + "'" );
 		}
 		e = files.propertyNames();
 		while ( e.hasMoreElements())
 		{
+			
 			String value = (String)e.nextElement();
+			Log.e("files_value",""+value);
 			myOut.println( "  UPLOADED: '" + value + "' = '" +
 								files.getProperty( value ) + "'" );
 		}
+		
+		Log.e("myRootDir",""+myRootDir);// /storage/sdcard  출력
+		Log.e("serve_uri",""+uri); //  method가 POST 일때 / ,
 
 		return serveFile( uri, header, myRootDir, true );
 	}
@@ -495,18 +504,18 @@ class NanoHTTPD
 					size = 0;
 				}
 				
-				Log.e("check_size",""+ size); // 0 출력, 클릭 후 8 출력
+				Log.e("check_size",""+ size); // 0 출력, 클릭 후 -1 출력
 				
-				Log.e("olde_rlen",""+rlen); // 436 , 클릭 후 552
+				Log.e("olde_rlen",""+rlen); // 436 , 클릭 후 533
 
 				// Now read all the body and write it to f
 				buf = new byte[512];
 				Log.e("bufsize=512",""+buf);
-				while ( rlen >= 0 && size > 0 ) // size가 0 이어서 while에 못들어감. , 클릭후 size가 8  조건을 만족함!
+				while ( rlen >= 0 && size > 0 ) // size가 0 이어서 while에 못들어감. , 클릭후 size가 -1  조건을 만족 못!
 				{
 					rlen = is.read(buf, 0, 512);
 					// This method read bytes from a stream and stores them into a caller supplied buffer. 
-					// It starts storing the data at index off into the buffer and attempts to read len bytes. 
+					// It starts storing the data at ind함ex off into the buffer and attempts to read len bytes. 
 					// 512 byte로 읽은것과 8192byte로 읽는것이 나르게 나왔다.
 					Log.e("changed_rlen","changed_rlen="+rlen+" changed_size= "+size);
 					char[] change_check_buf = new char[rlen+1];
@@ -609,8 +618,10 @@ class NanoHTTPD
 				Response r = serve( uri, method, header, parms, files );
 				if ( r == null )
 					sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: Serve() returned a null response." );
-				else
+				else{
+					Log.e("sendResponse","sendResponse");
 					sendResponse( r.status, r.mimeType, r.header, r.data );
+				}
 
 				in.close();
 				is.close();
@@ -1108,33 +1119,82 @@ class NanoHTTPD
 	{
 		Log.e("serveFile","start_serveFile");
 		Response res = null;
+		Log.e("homeDir",""+homeDir); // 디렉토리!!
 
 		// Make sure we won't die of an exception later
-		if ( !homeDir.isDirectory())
+		if ( !homeDir.isDirectory()){ //homeDir 경로에  directory가 있는지 확인.
+			Log.e("homeDir_true",""+true);
 			res = new Response( HTTP_INTERNALERROR, MIME_PLAINTEXT,
 				"INTERNAL ERRROR: serveFile(): given homeDir is not a directory." );
+		}
 
 		if ( res == null )
 		{
 			// Remove URL arguments
+			
+			Log.e("File.separatorChar",""+File.separatorChar);  // / 출력
+			// This is the first character of the file separator string. 
+			// file 경로의 첫번째 문자 출력
+			
 			uri = uri.trim().replace( File.separatorChar, '/' );
+			//Replaces every instance of a character in this String with a new character( '/' ).
+			// uri에 File.separatorChar 경로가 있으면 '/'로 바꾼다!		
+			Log.e("file.separatorChar",""+uri); // / 출력
+			
 			if ( uri.indexOf( '?' ) >= 0 )
 				uri = uri.substring(0, uri.indexOf( '?' ));
 
 			// Prohibit getting out of current directory
-			if ( uri.startsWith( ".." ) || uri.endsWith( ".." ) || uri.indexOf( "../" ) >= 0 )
+			if ( uri.startsWith( ".." ) || uri.endsWith( ".." ) || uri.indexOf( "../" ) >= 0 ){
+				Log.e("uri.startsWith",""+true);
 				res = new Response( HTTP_FORBIDDEN, MIME_PLAINTEXT,
 					"FORBIDDEN: Won't serve ../ for security reasons." );
+			}
 		}
 
-		File f = new File( homeDir, uri );
-		if ( res == null && !f.exists())
+		File f = new File( homeDir, uri ); 
+		File test_f = new File("/storage/sdcard/test");
+		File test_f2 = new File("/storage/sdcard/");
+		// homeDir -> File 이다 ! string  아님!  uri->string
+		// Constructs a new file using the specified directory and name.
+		// uri가 '/' 여서  f는 디렉토리다!
+		// This method initializes a new File object to represent a file in the specified directory(homeDir).
+		// file이 생성된것은 아니다.! File  object 만 생성된 것이다.! 가상 경로만 설정된것이다.!
+		
+		
+		//Log.e("test_f",""+test_f);
+		//Log.e("f",""+f);
+				
+		if(test_f.exists())
+			Log.e("test_f_file",""+test_f);		
+		//This method tests whether or not the file represented 
+		//by the object actually exists on the filesystem.
+		//경로가 존재하는지 확인 존재 x
+		if(test_f.isDirectory() || test_f.isFile())
+			Log.e("test_f_file1",""+test_f );
+		//경로가 존재하지 않아 함수 호출 x
+		
+		if(test_f2.exists())
+			Log.e("test_f_file2",""+test_f2);		
+		//This method tests whether or not the file represented 
+		//by the object actually exists on the filesystem.
+		//경로가 존재하는지 확인 존재 x
+		if(test_f2.isDirectory() || test_f.isFile())
+			Log.e("test_f_file2",""+true );
+		//경로가 존재하지 않아 함수 호출 x
+	
+		Log.e("File_uri",""+uri);
+		Log.e("File_homeDir",""+homeDir);
+		if ( res == null && !f.exists()){
+			Log.e("new File",""+true);
 			res = new Response( HTTP_NOTFOUND, MIME_PLAINTEXT,
-				"Error 404, file not found." );
+				"Error 404, file not found." ); // method가 GET 일 때   호
+		}
 
 		// List the directory, if necessary
 		if ( res == null && f.isDirectory())
 		{
+			Log.e("directory_res",""+true); //method 가 put일 때 true.
 			// Browsers get confused without '/' after the
 			// directory, send a redirect.
 			if ( !uri.endsWith( "/" ))
