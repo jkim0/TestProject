@@ -1159,7 +1159,7 @@ class NanoHTTPD
 		// Constructs a new file using the specified directory and name.
 		// uri가 '/' 여서  f는 디렉토리다!
 		// This method initializes a new File object to represent a file in the specified directory(homeDir).
-		// file이 생성된것은 아니다.! File  object 만 생성된 것이다.! 가상 경로만 설정된것이다.!
+		// file이 생성된것은 아니다.! File  object 만 생성된 것이다.! 경로만 설정된것이다.!
 		
 				
 		if(test_f.exists())
@@ -1173,8 +1173,6 @@ class NanoHTTPD
 		
 		if(test_f2.exists())
 			Log.e("test_f_file2",""+test_f2);		
-		//This method tests whether or not the file represented 
-		//by the object actually exists on the filesystem.
 		//경로가 존재하는지 확인 존재 x
 		if(test_f2.isDirectory() || test_f.isFile())
 			Log.e("test_f_file2",""+true );
@@ -1182,20 +1180,23 @@ class NanoHTTPD
 	
 		Log.e("File_uri",""+uri);
 		Log.e("File_homeDir",""+homeDir);
-		if ( res == null && !f.exists()){
+		if ( res == null && !f.exists()){ //f의 경로가 존재해서 조건 만족x
 			Log.e("new File",""+true);
 			res = new Response( HTTP_NOTFOUND, MIME_PLAINTEXT,
-				"Error 404, file not found." ); // method가 GET 일 때   호
+				"Error 404, file not found." ); // method가 GET 일 때   호출
 		}
 
 		// List the directory, if necessary
 		if ( res == null && f.isDirectory())
 		{
 			Log.e("directory_res",""+true); //method 가 put일 때 true.
+			
 			// Browsers get confused without '/' after the
 			// directory, send a redirect.
-			if ( !uri.endsWith( "/" ))
+			if ( !uri.endsWith( "/" )) 
 			{
+				// This method tests if this string ends with the specified suffix( / ).
+				Log.e("uri.endsWith", ""+true);
 				uri += "/";
 				res = new Response( HTTP_REDIRECT, MIME_HTML,
 					"<html><body>Redirected: <a href=\"" + uri + "\">" +
@@ -1205,14 +1206,26 @@ class NanoHTTPD
 
 			if ( res == null )
 			{
+				Log.e("res==null",""+true);
 				// First try index.html and index.htm
-				if ( new File( f, "index.html" ).exists())
+				if ( new File( f, "index.html" ).exists()){
 					f = new File( homeDir, uri + "/index.html" );
-				else if ( new File( f, "index.htm" ).exists())
+					Log.e("new File( f, index.html ).exists()", ""+f);
+					// uri 가 / 인데  + /index.html 하면 //index.html  이 아닌가?
+				}
+				else if ( new File( f, "index.htm" ).exists()){
 					f = new File( homeDir, uri + "/index.htm" );
+					Log.e("new File( f, index.htm ).exists()", ""+f);
+				}
 				// No index file, list the directory if it is readable
 				else if ( allowDirectoryListing && f.canRead() )
 				{
+					// 위에 if문을 하나라도 실행했으면 나머지 else if 실행 x
+					// allowDirectoryListing true serve()에서 true로 넘겨주었다.
+					// f.canRead() This method tests whether or not the current 
+					// thread is allowed to to read the file pointed to by this object.
+					Log.e("allowDirectoryListing && f.canRead()", ""+true);
+					
 					String[] files = f.list();
 					String msg = "<html><body><h1>Directory " + uri + "</h1><br/>";
 
@@ -1273,12 +1286,36 @@ class NanoHTTPD
 			if ( res == null )
 			{
 				// Get MIME type from file name extension, if possible
+				Log.e("res == null", ""+true);
 				String mime = null;
 				int dot = f.getCanonicalPath().lastIndexOf( '.' );
-				if ( dot >= 0 )
+				Log.e("f",""+f);
+				Log.e("f.getCanonicalPath()",""+f.getCanonicalPath());
+				// This method returns a canonical representation of the pathname of this file.
+				Log.e("f.getCanonicalPath().lastIndexOf( '.' )",""+f.getCanonicalPath().lastIndexOf( '.' ));
+				// '.'가 string 에서 마지막으로 존재하는 곳의 인덱스를 반환 
+				// 17
+				Log.e("dot",""+dot);
+				// 17
+				
+				if ( dot >= 0 ){
+					
+					Log.e("dot >= 0 f getc,subs,tolower",""+f.getCanonicalPath().substring( dot + 1 ).toLowerCase());
+					//html
+					
 					mime = (String)theMimeTypes.get( f.getCanonicalPath().substring( dot + 1 ).toLowerCase());
-				if ( mime == null )
+					//The get(Object key) method is used to get the value 
+					//to which the specified key is mapped in this hashtable.
+					//The method call returns the value to which the key is mapped in this hashtable.
+					
+					Log.e("dot >= 0", ""+mime);
+					//text/html
+					// theMimeTypes hashtable을 이용해서  파일의 종류를 검색하는것 같다.
+				}
+				if ( mime == null ){
 					mime = MIME_DEFAULT_BINARY;
+					Log.e("mime == null", ""+mime);
+				}
 
 				// Calculate etag
 				String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
