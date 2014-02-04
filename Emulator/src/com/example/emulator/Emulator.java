@@ -8,6 +8,7 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,19 +16,24 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 public class Emulator extends Activity {
 
 	public final static int SCREEN_ON=1;
 	public final static int SCREEN_OFF=2;
+	public final static int FOR_SPINNER=3;
 	private IntentFilter screenFilter;
-	
+	private Intent forSpinner;
 	private Button btn_start,btn_stop,btn_screen_on,btn_screen_off;
+	private Button btn_spinner;
+	//	private Button key_1,key_2,key_3,key_space,key_enter,key_up;
 	private EmulatorAIDL mService = null;
 //질문, 여기에 intent 나 powermanager 할당하면, 에러나 ! 왜그럴까
 	
@@ -61,6 +67,8 @@ public class Emulator extends Activity {
 		btn_stop= (Button) findViewById(R.id.btn_stop);
 		btn_screen_on=(Button) findViewById(R.id.btn_screen_on);
 		btn_screen_off=(Button) findViewById(R.id.btn_screen_off);
+		btn_spinner=(Button) findViewById(R.id.btn_spinner);
+		
 	  // PowerManager pm = (PowerManager) getSystemService( Context.POWER_SERVICE );
 	  // PowerManager.WakeLock wakeLock = pm.newWakeLock( PowerManager.SCREEN_DIM_WAKE_LOCK, "MY TAG" );
 	//BindService	
@@ -73,8 +81,7 @@ public class Emulator extends Activity {
 				Intent i = new Intent(Intent.ACTION_VIEW);
 				Uri u= Uri.parse("http://localhost:8091");
 				i.setData(u);
-				startActivity(i);
-				
+				startActivity(i);	
 			}
 		});
 	//unBindService
@@ -91,7 +98,6 @@ public class Emulator extends Activity {
 			@Override
 			public void onClick(View v) {
 				PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-
 				pm.userActivity(SCREEN_ON, true);
 				// (long when, boolean noChangeLights)
 				/* 실패 1*/
@@ -125,8 +131,31 @@ public class Emulator extends Activity {
 			}
 		});
 	
+
+		btn_spinner.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				forSpinner= new Intent(Emulator.this, EmulatorSpinner.class);
+				startActivity(forSpinner);
+			}
+		});
+	
 		
-	}	
+		
+	}
+/*
+	 protected void onActivityResult(int requestCode, int resultCode,
+	             Intent forspinner) {
+	         if (requestCode == FOR_SPINNER) {
+	             if (resultCode == RESULT_OK) {
+	                 // A contact was picked.  Here we will just display it
+	                 // to the user.
+	                 startActivityForResult(forspinner, requestCode);
+	                 }
+	         }
+	     }
+*/
 	/* 나중에는 하나의 intent로 해서, 쫙 받을거야! (later)
 	private BroadcastReceiver scrReceiver= new BroadcastReceiver() {	
 		@Override
@@ -140,7 +169,9 @@ public class Emulator extends Activity {
 				break;
 			case SCREEN_OFF:
 				  PowerManager pm= (PowerManager)getSystemService(Context.POWER_SERVICE);
-				pm.goToSleep(2000);
+			ArrayAdapter.createFromResource(this, R.array.number, android.R.layout.simple_spinner_item);
+	  
+	  adapter3 = 	pm.goToSleep(2000);
 				break;
 			}	
 		}
@@ -154,5 +185,7 @@ public class Emulator extends Activity {
 		getMenuInflater().inflate(R.menu.emulator, menu);
 		return true;
 	}
+	
+	
 
 }
