@@ -133,6 +133,9 @@ class NanoHTTPD
 		 */
 		public Response( String status, String mimeType, InputStream data )
 		{
+			Log.e("Response_status",""+status);
+			Log.e("Response_mimeType",""+mimeType);
+			Log.e("Response_data",""+data);
 			this.status = status;
 			this.mimeType = mimeType;
 			this.data = data;
@@ -161,7 +164,18 @@ class NanoHTTPD
 		 */
 		public void addHeader( String name, String value )
 		{
+			Log.e("addHeader_name",""+name);
+			Log.e("addHeader_value",""+value);
 			header.put( name, value );
+			Enumeration addHeader = header.propertyNames();
+			while ( addHeader.hasMoreElements())
+			{
+				String check_addvalue = (String)addHeader.nextElement();
+				Log.e("headers_value",""+check_addvalue);
+				
+				Log.e( "addHeader",""+header.getProperty( check_addvalue ));
+			}
+			// ETag -> 7ac7d491, Accept-Ranges -> bytes
 		}
 
 		/**
@@ -1028,6 +1042,8 @@ class NanoHTTPD
 				OutputStream out = mySocket.getOutputStream();
 				PrintWriter pw = new PrintWriter( out );
 				pw.print("HTTP/1.0 " + status + " \r\n");
+				// This method prints a String to the stream. 
+				//The actual value printed depends on the system default encoding. 
 
 				if ( mime != null )
 					pw.print("Content-Type: " + mime + "\r\n");
@@ -1052,10 +1068,15 @@ class NanoHTTPD
 				if ( data != null )
 				{
 					int pending = data.available();	// This is to support partial sends, see serveFile()
-					byte[] buff = new byte[theBufferSize];
+					Log.e("pending",""+pending);
+					// This method returns the number of bytes that can be read from this stream before a read can block. 
+					// 403 출력
+					byte[] buff = new byte[theBufferSize];  // theBufferSize = 16* 1024 
 					while (pending>0)
 					{
 						int read = data.read( buff, 0, ( (pending>theBufferSize) ?  theBufferSize : pending ));
+						// This method read bytes from a stream and stores them into a caller supplied buffer. 
+						Log.e("sendResponse_read",""+read);
 						if (read <= 0)	break;
 						out.write( buff, 0, read );
 						pending -= read;
@@ -1212,6 +1233,7 @@ class NanoHTTPD
 					f = new File( homeDir, uri + "/index.html" );
 					Log.e("new File( f, index.html ).exists()", ""+f);
 					// uri 가 / 인데  + /index.html 하면 //index.html  이 아닌가?
+					// /storage/sdacrd/index.html 출력
 				}
 				else if ( new File( f, "index.htm" ).exists()){
 					f = new File( homeDir, uri + "/index.htm" );
@@ -1294,9 +1316,9 @@ class NanoHTTPD
 				// This method returns a canonical representation of the pathname of this file.
 				Log.e("f.getCanonicalPath().lastIndexOf( '.' )",""+f.getCanonicalPath().lastIndexOf( '.' ));
 				// '.'가 string 에서 마지막으로 존재하는 곳의 인덱스를 반환 
-				// 17
+				// 21
 				Log.e("dot",""+dot);
-				// 17
+				// 21
 				
 				if ( dot >= 0 ){
 					
@@ -1309,21 +1331,48 @@ class NanoHTTPD
 					//The method call returns the value to which the key is mapped in this hashtable.
 					
 					Log.e("dot >= 0", ""+mime);
-					//text/html
+					// text/html
 					// theMimeTypes hashtable을 이용해서  파일의 종류를 검색하는것 같다.
 				}
 				if ( mime == null ){
 					mime = MIME_DEFAULT_BINARY;
 					Log.e("mime == null", ""+mime);
 				}
-
+				
 				// Calculate etag
 				String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
-
+				
+				//etag test			
+				Log.e("etag",""+etag); //7ac7d491
+				Log.e("f.getAbsolutePath()",""+f.getAbsolutePath());
+				// /storage/sdcard/index.html 파일 경로 출력
+				
+				Log.e("f.lastModified()",""+f.lastModified());
+				// 파일경로의 파일이 마지막으로 수정된 시간을 리턴한다. 
+				// 1391388496000 출력
+				
+				long millisec=f.lastModified();
+				Date dt = new Date(millisec);
+				Log.e("f_Date",""+dt); // Sun Feb 02 19:48:16 EST 2014
+				
+				Log.e("f.length()",""+f.length()); 
+				// f경로의 파일의 길이를 리턴한다. 파일의 저장된 내용의 길이를 리턴 ex) ABCD 이면 4 리턴
+				Log.e("f.g,las,leng",""+(f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
+				// string을 hashcode로 변환해서 리턴한다. 2059916433
+				// hashcode를 왜 만들었을까?..
+			
+				Log.e("string etag",""+Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode()));
+				//The java.lang.Integer.toHexString() method 
+				//returns a string representation of the integer argument as an unsigned integer in base 16
+				// 7ac7d491 출력
 				// Support (simple) skipping:
+				
+				//etag test
+				
 				long startFrom = 0;
 				long endAt = -1;
-				String range = header.getProperty( "range" );
+				String range = header.getProperty( "range" ); // range가 무엇인가?
+				Log.e("range",""+range); // null
 				if ( range != null )
 				{
 					if ( range.startsWith( "bytes=" ))
@@ -1345,6 +1394,7 @@ class NanoHTTPD
 				long fileLen = f.length();
 				if (range != null && startFrom >= 0)
 				{
+					Log.e("range != null && startFrom >= 0",""+true); 
 					if ( startFrom >= fileLen)
 					{
 						res = new Response( HTTP_RANGE_NOT_SATISFIABLE, MIME_PLAINTEXT, "" );
@@ -1372,11 +1422,17 @@ class NanoHTTPD
 				}
 				else
 				{
-					if (etag.equals(header.getProperty("if-none-match")))
+					if (etag.equals(header.getProperty("if-none-match"))){
+						Log.e("etag.equals",""+true);
 						res = new Response( HTTP_NOTMODIFIED, mime, "");
+					}
 					else
-					{
+					{ 
+						// res -> Response type
+						Log.e("etag.equals",""+false);
+						Log.e("string_mime",""+mime);
 						res = new Response( HTTP_OK, mime, new FileInputStream( f ));
+						// status -> HTTP_OK, mimeType->text/html, data -> f
 						res.addHeader( "Content-Length", "" + fileLen);
 						res.addHeader( "ETag", etag);
 					}
@@ -1387,8 +1443,11 @@ class NanoHTTPD
 		{
 			res = new Response( HTTP_FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Reading file failed." );
 		}
+		
+		
 
 		res.addHeader( "Accept-Ranges", "bytes"); // Announce that the file server accepts partial content requestes
+		Log.e("return_res","return_res");
 		return res;
 	}
 
