@@ -968,7 +968,6 @@ class NanoHTTPD
 							public int available() throws IOException { return (int)dataLen; }
 						};
 						fis.skip( startFrom );
-
 						res = new Response( HTTP_PARTIALCONTENT, mime, fis );
 						res.addHeader( "Content-Length", "" + dataLen);
 						res.addHeader( "Content-Range", "bytes " + startFrom + "-" + endAt + "/" + fileLen);

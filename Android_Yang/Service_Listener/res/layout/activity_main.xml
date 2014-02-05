@@ -1,0 +1,148 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
+
+    <Button
+        android:id="@+id/btn_bind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_listener"
+        android:layout_alignLeft="@+id/btn_listener"
+        android:layout_marginBottom="17dp"
+        android:text="Bind" />
+
+    <Button
+        android:id="@+id/btn_bind_plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btn_bind"
+        android:layout_alignBottom="@+id/btn_bind"
+        android:layout_toRightOf="@+id/btn_bind"
+        android:text="bind ++" />
+
+    <Button
+        android:id="@+id/btn_bind_minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btn_bind_plus"
+        android:layout_alignBottom="@+id/btn_bind_plus"
+        android:layout_toRightOf="@+id/btn_bind_plus"
+        android:text="bind --" />
+
+    <TextView
+        android:id="@+id/tv_bindservice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button3"
+        android:layout_below="@+id/btn_increase"
+        android:text="BindService" />
+
+    <TextView
+        android:id="@+id/tv.ipc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_listener"
+        android:layout_alignLeft="@+id/btn_listener"
+        android:text="select your IPC" />
+
+    <Button
+        android:id="@+id/btn_broadcast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/btn_unbind"
+        android:layout_marginBottom="28dp"
+        android:text="BRoadcast" />
+
+    <Button
+        android:id="@+id/btn_listener"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btn_broadcast"
+        android:layout_alignLeft="@+id/start_counting"
+        android:text="Listner" />
+
+    <Button
+        android:id="@+id/btn_unbind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btn_bind_minus"
+        android:layout_toRightOf="@+id/btn_bind_minus"
+        android:text="Unbind" />
+
+    <Button
+        android:id="@+id/btn_reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/start_counting"
+        android:layout_below="@+id/start_counting"
+        android:layout_marginTop="20dp"
+        android:text="RESET" />
+
+    <Button
+        android:id="@+id/btn_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btn_reset"
+        android:layout_alignBottom="@+id/btn_reset"
+        android:layout_alignLeft="@+id/stop_counting"
+        android:text="Stop" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv.startservice"
+        android:layout_alignBottom="@+id/tv.startservice"
+        android:layout_alignRight="@+id/btn_unbind"
+        android:text="Screen" />
+
+    <TextView
+        android:id="@+id/tv.startservice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/start_counting"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="44dp"
+        android:text="Startservice/" />
+
+    <Button
+        android:id="@+id/start_counting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv.startservice"
+        android:layout_marginTop="48dp"
+        android:text="Start_Counting" />
+
+    <Button
+        android:id="@+id/btn_increase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_unbind"
+        android:layout_alignLeft="@+id/tv_bindservice"
+        android:text="INCREASE" />
+
+    <Button
+        android:id="@+id/stop_counting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_reset"
+        android:layout_toRightOf="@+id/start_counting"
+        android:text="stop_counting" />
+
+    <Button
+        android:id="@+id/btn_decrease"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btn_bind_minus"
+        android:layout_below="@+id/btn_stop"
+        android:text="DECREASE" />
+
+</RelativeLayout>

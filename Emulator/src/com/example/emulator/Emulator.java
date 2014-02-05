@@ -33,7 +33,6 @@ public class Emulator extends Activity {
 	private Intent forSpinner;
 	private Button btn_start,btn_stop,btn_screen_on,btn_screen_off;
 	private Button btn_spinner;
-	//	private Button key_1,key_2,key_3,key_space,key_enter,key_up;
 	private EmulatorAIDL mService = null;
 //질문, 여기에 intent 나 powermanager 할당하면, 에러나 ! 왜그럴까
 	
@@ -56,8 +55,6 @@ public class Emulator extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_emulator);
-
-	
 		
 		//ACQUIRED_로 받으면 또 에러...
 	//	mWakeLock = mPm.newWakeLock(PowerManager.FULL_WAKE_LOCK , "power");
@@ -69,9 +66,7 @@ public class Emulator extends Activity {
 		btn_screen_off=(Button) findViewById(R.id.btn_screen_off);
 		btn_spinner=(Button) findViewById(R.id.btn_spinner);
 		
-	  // PowerManager pm = (PowerManager) getSystemService( Context.POWER_SERVICE );
-	  // PowerManager.WakeLock wakeLock = pm.newWakeLock( PowerManager.SCREEN_DIM_WAKE_LOCK, "MY TAG" );
-	//BindService	
+//BindService	
 		btn_start.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {		
@@ -92,35 +87,10 @@ public class Emulator extends Activity {
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
-	
-	//Screen_on
-		btn_screen_on.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-				pm.userActivity(SCREEN_ON, true);
-				// (long when, boolean noChangeLights)
-				/* 실패 1*/
-				//mWakeLock.acquire(); 
-				//boolean inScreenon= mPm.isScreenOn();
-		    	//	getCurrentFocus().setKeepScreenOn(true);
-				/* 실패 2*/
-				//setKeepScreenOn(true);
-				//getWindow().addFlags(WindowManager.)//
-			}
-		});
-	//Screen_off	
-		btn_screen_off.setOnClickListener(new View.OnClickListener() {
-			@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-			@Override
-			public void onClick(View v) {	
-				PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-				pm.goToSleep(2000);
-				pm.wakeUp(2000);
+
 				
 				//API 17이상 지원함, 나중에 wakeup할때 사용해보기
 				//time 	The time when the request to go to sleep was issued, in the uptimeMillis() time base.			
-				
 //				if(mWakeLock==null){Toast.makeText(Emulator.this,"null",Toast.LENGTH_LONG).show();}
 //				Toast.makeText(Emulator.this,mWakeLock+":0",Toast.LENGTH_SHORT).show();
 //				mWakeLock2.acquire();
@@ -128,8 +98,7 @@ public class Emulator extends Activity {
 //				wakeLock.release();
 //				PowerManager pm = (PowerManager) getSystemService( Context.POWER_SERVICE );
 //				PowerManager.WakeLock wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, EmulatorService.TAG );		
-			}
-		});
+			
 	
 
 		btn_spinner.setOnClickListener(new View.OnClickListener() {
@@ -139,46 +108,10 @@ public class Emulator extends Activity {
 				forSpinner= new Intent(Emulator.this, EmulatorSpinner.class);
 				startActivity(forSpinner);
 			}
-		});
-	
-		
+		});		
 		
 	}
-/*
-	 protected void onActivityResult(int requestCode, int resultCode,
-	             Intent forspinner) {
-	         if (requestCode == FOR_SPINNER) {
-	             if (resultCode == RESULT_OK) {
-	                 // A contact was picked.  Here we will just display it
-	                 // to the user.
-	                 startActivityForResult(forspinner, requestCode);
-	                 }
-	         }
-	     }
-*/
-	/* 나중에는 하나의 intent로 해서, 쫙 받을거야! (later)
-	private BroadcastReceiver scrReceiver= new BroadcastReceiver() {	
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-		String action = intent.getAction();
-		if(action.equals(EmulatorService.TAG)){
-			int cases = intent.getIntExtra("number",0);
-			switch(cases){
-			case SCREEN_ON:
-				break;
-			case SCREEN_OFF:
-				  PowerManager pm= (PowerManager)getSystemService(Context.POWER_SERVICE);
-			ArrayAdapter.createFromResource(this, R.array.number, android.R.layout.simple_spinner_item);
-	  
-	  adapter3 = 	pm.goToSleep(2000);
-				break;
-			}	
-		}
-			//	screenFilter = new IntentFilter(EmulatorService.TAG);
-		}
-	};
-*/
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

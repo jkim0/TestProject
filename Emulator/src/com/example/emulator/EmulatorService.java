@@ -26,119 +26,98 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
-
-
 @SuppressLint("NewApi")
 public class EmulatorService extends Service {
-	
-	public static final String TAG="SCREEN";
-	public final static int SCREEN_ON=1;
-	
+
+	public static final String TAG = "SCREEN";
+	public final static int SCREEN_ON = 1;
 	final RemoteCallbackList<EmulatorAIDLCallback> mCallbacks = new RemoteCallbackList<EmulatorAIDLCallback>();
 	NotificationManager mNM;
-	
+	PowerManager pm;
+
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
 		return mBinder;
 	}
-	
+
 	private final EmulatorAIDL.Stub mBinder = new EmulatorAIDL.Stub() {
-		
 		@Override
 		public void unregisterCallback(EmulatorAIDLCallback cb)
 				throws RemoteException {
 			// TODO Auto-generated method stub
-			if(cb != null) mCallbacks.unregister(cb);
+			if (cb != null)
+				mCallbacks.unregister(cb);
 		}
-		
+
 		@Override
 		public void registerCallback(EmulatorAIDLCallback cb)
 				throws RemoteException {
-			// TODO Auto-generated method stub
-			if(cb != null) mCallbacks.register(cb);	
+			if (cb != null)
+				mCallbacks.register(cb);
 		}
 
 		@Override
 		public void openfile() throws RemoteException {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void closefile() throws RemoteException {
-			// TODO Auto-generated method stub
-			
 		}
 	};
 
 	@Override
 	public void onCreate() {
-		// TODO Auto-generated method stub
 		super.onCreate();
-		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification();
+		Log.i("Power", "check1");
+		pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+		Toast.makeText(getBaseContext(), "pm = " + pm, Toast.LENGTH_LONG)
+				.show();
 		NanoHttpd();
+		Log.i("Power", "check2");
 	}
-	/*	 private void readText(String file) throws IOException {
-		  InputStream is = getAssets().open(file);
-		  int size = is.available();
-		  byte[] buffer = new byte[size];
-		  is.read(buffer);
-		  is.close();
-		//  String text = new String(buffer);
-		 // return text;
-		 } */
+
 	public static final String from = "sdcard/index.html";
 	public static final String to = "/data/data/com.example.emulator/";
-	public static final String copy_name="index.html";
-	   
-	   /*   public static final String DATABASE_NAME = "db/testdb.sqlite";
-	    public static final String COPY2DATABASE_NAME = "testdb.sqlite";
-	   */              
-	 public File doCopy() {
+	public static final String copy_name = "index.html";
 
-		 File folder = new File(to+"files/");
-		 folder.mkdirs();
-		 File outfile = new File(to+"files/"+copy_name);
-	        try {
-	      	  //   AssetManager assetManager = getResources().getAssets();
-	         //   InputStream is = assetManager.open(HTML_NAME, AssetManager.ACCESS_BUFFER);
-	        	InputStream is = new FileInputStream(from);	
-	            long filesize = is.available();
-	            byte[] tempdata = new byte[(int) filesize];
-	            is.read(tempdata);
-	       /* char change[]= new char[(int)filesize];
-	             for(int i=0; i< filesize;i++)
-	            	 change[i]= (char)tempdata[i];
-	             String cannot = new String(change);   
-	            Log.e("check","tempdata:"+cannot);*/
-	            is.close();
-	            outfile.createNewFile();
-	               FileOutputStream fo = new FileOutputStream(outfile);
-	            fo.write(tempdata);
-	            fo.close();
-	           
-	        } catch (IOException e) {
-	                    e.printStackTrace();
-	            }
-	 
-			return folder;
-	    }
-	
-	
+	public File doCopy() {
+
+		File folder = new File(to + "files/");
+		folder.mkdirs();
+		File outfile = new File(to + "files/" + copy_name);
+		try {
+			// AssetManager assetManager = getResources().getAssets();
+			// InputStream is = assetManager.open(HTML_NAME,
+			// AssetManager.ACCESS_BUFFER);
+			InputStream is = new FileInputStream(from);
+			long filesize = is.available();
+			byte[] tempdata = new byte[(int) filesize];
+			is.read(tempdata);
+			is.close();
+			outfile.createNewFile();
+			FileOutputStream fo = new FileOutputStream(outfile);
+			fo.write(tempdata);
+			fo.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return folder;
+	}
+
 	private void NanoHttpd() {
-		 Log.e(TAG, "############## come####  " );
-<<<<<<< HEAD
-	  File wwwroot = doCopy();	    
-=======
-	  File wwwroot = doCopy();    
->>>>>>> aac1ee5aac8f137edcace2d8a600ff2a8ab9b25f
-	        try {
-				NanoHTTPD Nano = new NanoHTTPD(8091,wwwroot);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 	
+		Log.e(TAG, "############## come####  ");
+		File wwwroot = doCopy();
+
+		try {
+			NanoHTTPD Nano = new NanoHTTPD(8091, wwwroot);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -151,43 +130,44 @@ public class EmulatorService extends Service {
 	private void showNotification() {
 		// TODO Auto-generated method stub
 		CharSequence text = getText(R.string.remote_service_started);
-		
-		Notification notification = new Notification(R.drawable.stat_sample, text, 
-				System.currentTimeMillis());
-		
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, 
-				new Intent(this, Emulator.class), 0);	
-		
-		notification.setLatestEventInfo(this, getText(R.string.remote_service_label),
-				text, contentIntent);
-		
+
+		Notification notification = new Notification(R.drawable.stat_sample,
+				text, System.currentTimeMillis());
+
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, Emulator.class), 0);
+
+		notification.setLatestEventInfo(this,
+				getText(R.string.remote_service_label), text, contentIntent);
+
 		mNM.notify(R.string.remote_service_started, notification);
 	}
-	
-	
+
 	public void ScreenOnOff(String value) {
-		// TODO Auto-generated method stub
-		
-		//AndroidManifext.xml에 android:sharedUserId="android.uid.system"를 지우지 않고 실행하면. 
-		//시스템 권한이 없어서 emulator 실행이 되지 않는다.
-		
-		int Screen_value=Integer.parseInt(value);
-		Log.e("Service & NanoHttpd",""+value);
-		Log.e("Service & NanoHttpd","OK");
-		if(Screen_value == 1)
-		{
-			Log.e("Screen_on",""+Screen_value);
-			PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+		// AndroidManifext.xml에 android:sharedUserId="android.uid.system"를 지우지
+		// 않고 실행하면.
+		// 시스템 권한이 없어서 emulator 실행이 되지 않는다.
+
+		int Screen_value = Integer.parseInt(value);
+		Log.e("Service & NanoHttpd", "" + value);
+		Log.e("Service & NanoHttpd", "OK");
+
+		if (Screen_value == 1) {
+			Log.e("Screen_on", "screenon:" + Screen_value);
+
+			Log.e("Screen_on", "1)screenon:" + Screen_value);
 			pm.userActivity(SCREEN_ON, true);
+			Log.e("Screen_on", "2screenon:" + Screen_value);
 		}
-		
-		else if(Screen_value == 0)
-		{
-			Log.e("Screen_off",""+Screen_value);
-			PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+
+		else if (Screen_value == 0) {
+			Log.e("Screen_off", "screenoff:" + Screen_value);
+			Log.e("Screen_off", "screenoff1:" + Screen_value);
+			Log.e("ss", "pm = " + pm);
 			pm.goToSleep(2000);
+			Log.e("Screen_off", "screenoff2:" + Screen_value);
 			pm.wakeUp(2000);
-			
-		}	
+			Log.e("Screen_off", "screenoff3:" + Screen_value);
+		}
 	}
 }

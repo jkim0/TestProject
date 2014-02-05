@@ -24,6 +24,8 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import android.content.Context;
+import android.os.PowerManager;
 import android.util.Log;
 
 import com.example.emulator.NanoHTTPD.HTTPSession;
@@ -689,6 +691,7 @@ class NanoHTTPD
 				Compare = e.substring( 0, sep ).trim();
 			}
 			Log.e("NanoHttpdError",""+Compare);
+			//bindtoService로 연결하기
 			EmulatorService mService = new EmulatorService();
 			
 			if(Compare.equalsIgnoreCase("screen"))
@@ -698,6 +701,8 @@ class NanoHTTPD
 			}
 			
 		}
+
+	
 
 		/**
 		 * Returns an error message as a HTTP response and

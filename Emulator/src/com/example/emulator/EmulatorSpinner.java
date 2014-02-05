@@ -36,7 +36,7 @@ public class EmulatorSpinner extends Activity {
 				         	  Toast.makeText(EmulatorSpinner.this, "unselected", Toast.LENGTH_SHORT).show();
 				       }
 				   });
-	  
+	//  finish();
 	}
 	
 	void choose_spinner(int position){
@@ -111,7 +111,7 @@ public class EmulatorSpinner extends Activity {
 		}
 		
 	}
-	
+
 	void get_key_number(int list, int position){
 		int set_number = 0;
 		
