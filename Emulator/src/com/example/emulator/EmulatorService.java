@@ -30,7 +30,7 @@ import android.widget.Toast;
 @SuppressLint("NewApi")
 public class EmulatorService extends Service {
 
-	public static final String TAG = "SCREEN";
+	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
 	final RemoteCallbackList<EmulatorAIDLCallback> mCallbacks = new RemoteCallbackList<EmulatorAIDLCallback>();
 	NotificationManager mNM;
@@ -69,17 +69,14 @@ public class EmulatorService extends Service {
 		}
 	};
 
+	private NanoHTTPD mHttpd = null;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification();
-		Log.i("Power", "check1");
-//		pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
-//		Toast.makeText(getBaseContext(), "pm = " + pm, Toast.LENGTH_LONG)
-//				.show();
 		NanoHttpd();
-		Log.i("Power", "check2");
 	}
 	
 
@@ -118,11 +115,30 @@ public class EmulatorService extends Service {
 		File wwwroot = doCopy();
 
 		try {
-			NanoHTTPD Nano = new NanoHTTPD(8091, wwwroot);
+			mHttpd = new NanoHTTPD(8091, wwwroot);
+			//mHttpd = new NanoHTTPD(this, 8091, wwwroot);
+			mHttpd.registerCommandReceiver(mCommandReceiver);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
+		
+		@Override
+		public void onCommandReceived(String cmd, String value) {
+			// TODO Auto-generated method stub
+			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
+			if (cmd.equalsIgnoreCase("screen")) {
+				if (value.equalsIgnoreCase("0")) {
+					//screen off
+				} else if (value.equalsIgnoreCase("1")) {
+					//screen on
+				}
+			}
+			
+		}
+	};
 
 	@Override
 	public void onDestroy() {
@@ -130,33 +146,10 @@ public class EmulatorService extends Service {
 		mNM.cancel(R.string.remote_service_started);
 		mCallbacks.kill();
 	}
-//	public void ScreenOnOff(String value) throws RemoteException {
-//		// AndroidManifext.xml에 android:sharedUserId="android.uid.system"를 지우지
-//		// 않고 실행하면.
-//		// 시스템 권한이 없어서 emulator 실행이 되지 않는다.
-//
-//		int Screen_value = Integer.parseInt(value);
-//		Log.e("Service & NanoHttpd", "" + value);
-//		Log.e("Service & NanoHttpd", "OK");
-//
-//		if (Screen_value == 1) {
-//			Log.e("Screen_on", "screenon:" + Screen_value);
-//
-//			Log.e("Screen_on", "1)screenon:" + Screen_value);
-//			pm.userActivity(SCREEN_ON, true);
-//			Log.e("Screen_on", "2screenon:" + Screen_value);
-//		}
-//
-//		else if (Screen_value == 0) {
-//			Log.e("Screen_off", "screenoff:" + Screen_value);
-//			Log.e("Screen_off", "screenoff1:" + Screen_value);
-//			Log.e("ss", "pm = " + pm);
-//			pm.goToSleep(2000);
-//			Log.e("Screen_off", "screenoff2:" + Screen_value);
-//			pm.wakeUp(2000);
-//			Log.e("Screen_off", "screenoff3:" + Screen_value);
-//		}
-//	}
+	
+	public void screenOnOff(String value) throws RemoteException {
+		Log.e(TAG, "ScreenOnOff value = " + value);
+	}
 
 	private void showNotification() {
 		// TODO Auto-generated method stub

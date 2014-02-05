@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -28,7 +29,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.TransactionTooLargeException;
@@ -39,6 +43,7 @@ import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
 class NanoHTTPD 
 {
+	private final String TAG = "NanoHTTPD";
 	// ==================================================
 	// API parts
 	// ==================================================
@@ -195,10 +200,85 @@ class NanoHTTPD
 	 * Starts a HTTP server to given port.<p>
 	 * Throws an IOException if the socket is already in use
 	 */
-	public NanoHTTPD( int port, File wwwroot ) throws IOException
+	
+	public interface CommandReceiver {
+		public void onCommandReceived(String cmd, String value);
+	}
+	
+	private ArrayList<CommandReceiver> mCommandReceivers = new ArrayList<CommandReceiver>();
+	
+	public void registerCommandReceiver(CommandReceiver cr) {
+		if (!mCommandReceivers.contains(cr))
+			mCommandReceivers.add(cr);
+	}
+	
+	public void unregisterCommandReceiver(CommandReceiver cr) {
+		if (mCommandReceivers.contains(cr))
+			mCommandReceivers.remove(cr);
+	}
+	
+	private void notifyCommandReceived(String cmd, String value) {
+		if (mService != null) {
+			if (cmd.equalsIgnoreCase("screen")) {
+				try {
+				mService.screenOnOff(value);
+				} catch (RemoteException ex) {
+					Log.e(TAG, "exception occured when request screen on/off.", ex);
+				}
+				return;
+			}
+		}
+		for (int i = 0; i < mCommandReceivers.size(); i++) {
+			CommandReceiver cr = mCommandReceivers.get(i);
+			if (cr != null)
+				cr.onCommandReceived(cmd, value);
+		}
+	}
+		
+	private EmulatorService mService = null;
+	
+	private HandlerThread mHandlerThread = null;
+	private Handler mHandler = null;
+	
+	public class MyHandler extends Handler {
+		
+	}
+	
+	private final int NOTIFY_CMD_RECEIVED = 0;
+	private class CmdData {
+		public String mCmd;
+		public String mValue;
+		
+		public CmdData(String cmd, String value) {
+			mCmd = cmd;
+			mValue = value;
+		}
+	}
+	
+	public NanoHTTPD(int port, File wwwroot ) throws IOException
 	{
+		this(null, port, wwwroot);
+	}
+	
+	public NanoHTTPD(EmulatorService service, int port, File wwwroot ) throws IOException
+	{		
+		mService = service;
 		myTcpPort = port;
 		this.myRootDir = wwwroot;
+
+		mHandlerThread = new HandlerThread("PgsServiceHandler");
+       mHandlerThread.start();
+       mHandler = new Handler(mHandlerThread.getLooper()) {
+    	   @Override
+    	   public void handleMessage(Message msg) {
+    		   switch (msg.what) {
+    		   case NOTIFY_CMD_RECEIVED:
+    			   CmdData cd = (CmdData)msg.obj;
+    			   notifyCommandReceived(cd.mCmd, cd.mValue);
+    		   }
+    	   }
+       };
+        
 		myServerSocket = new ServerSocket( myTcpPort ); //myTcpPort로 소켓 생성
 		myThread = new Thread( new Runnable()
 			{
@@ -244,7 +324,7 @@ class NanoHTTPD
 	 * Handles one session, i.e. parses the HTTP request
 	 * and returns the response.
 	 */
-	public class HTTPSession extends EmulatorService implements Runnable 
+	public class HTTPSession implements Runnable 
 	{
 		private EmulatorAIDL mService = null;	
 		public HTTPSession( Socket s )
@@ -721,30 +801,9 @@ class NanoHTTPD
 		
 			if(Compare.equalsIgnoreCase("screen"))
 			{//바인드서비스도안되....powermanger호출도, context도 못잡겟
-				if(p.getProperty(Compare)=="on"){
-					Log.i("COME","1");
-				}
-				else{
-					Log.i("COME","PM1");
-					PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-					Log.i("COME","PM2");
-					pm.goToSleep(2000);
-					Log.i("COME","PM3");
-					//DISABLED FILEL HERE ONLY
-					pm.wakeUp(2000);
-					Log.i("COME","4");
-					
-				}
-		/*
-				try {
-		
-					ScreenOnOff(p.getProperty(Compare));
-					Log.i("COME","2");
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch bloc
-					Log.i("COME","");
-					e.printStackTrace();
-				}*/
+				//notifyCommandReceived(Compare, p.getProperty(Compare));
+				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
 			}	
 		}	
 
