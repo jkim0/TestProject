@@ -79,6 +79,9 @@ class NanoHTTPD
 	{
 		Log.e("Respose_serve","_serve_start");
 		myOut.println( method + " '" + uri + "' " );
+		//adp locgcat으로 출력 내용을 볼수 있다.
+		// myOut = System.out;
+		
 
 		Enumeration e = header.propertyNames();
 		Log.e("Enumeration_e",""+e);
@@ -89,7 +92,8 @@ class NanoHTTPD
 			
 			myOut.println( "  HDR: '" + value + "' = '" +
 								header.getProperty( value ) + "'" );
-		}//header key값 확인! 안드로이드 에서는 println 출력 안됨.!
+		}//header key, value확인! 안드로이드 애플리케이션 프로젝트는 콘솔창에 
+		 //println  출력 안됨.! adb logcat으로 확인 할 수 있다. HDR->header
 		e = parms.propertyNames();
 		while ( e.hasMoreElements())
 		{
@@ -97,7 +101,7 @@ class NanoHTTPD
 			Log.e("parms_value",""+value);
 			myOut.println( "  PRM: '" + value + "' = '" +
 								parms.getProperty( value ) + "'" );
-		}//parms의 key값 확인
+		}//parms의 key, value확인 PRM->parms , PRM:'screen' = '1'
 		e = files.propertyNames();
 		while ( e.hasMoreElements())
 		{
@@ -106,7 +110,7 @@ class NanoHTTPD
 			Log.e("files_value",""+value);
 			myOut.println( "  UPLOADED: '" + value + "' = '" +
 								files.getProperty( value ) + "'" );
-		}//files의 key값 확인. 
+		}//files의 key, value 확인. UPLOADED -> files , 업로드한 파일이 없으므로 출력되지 않는다.
 		
 		Log.e("myRootDir",""+myRootDir);// /storage/sdcard  출력
 		Log.e("serve_uri",""+uri); //  method가 POST 일때 / ,
@@ -337,6 +341,7 @@ class NanoHTTPD
 				//Returns the number of bytes actually read 
 				//or -1 if the end of the stream has been reached.
 				// This method read bytes from a stream and stores them into a caller supplied buffer.
+				// 0 ~ 8192까지 읽는 것인가? 
 
 				if (rlen <= 0) return;
 				char[] check_buf = new char[rlen+1];
@@ -388,6 +393,9 @@ class NanoHTTPD
 				//with the initial position set to offset(0) 
 				//and the number of bytes available set to offset(0) + length(rlen).
 				// Create a new ByteArrayInputStream that will read bytes from the passed in byte array.
+				// ByteArrayInputStream 의 buf가 buf를 참고 할 수 있게 한다.this.buf = buf;
+				// /libcore/luni/src/main/java/java/io/ByteArrayInputStream.java 참고!
+				
 				Log.e( "ByteArrayInputStream hbis_buf.length",""+buf.length); //8192
 
 				Log.e("ByteArrayInputSream_hbis",""+hbis);
@@ -396,7 +404,8 @@ class NanoHTTPD
 				//The Java.io.BufferedReader class reads text from a character-input stream, 
 				//buffering characters so as to provide for the efficient reading of characters, arrays, 
 				//and lines.Following are the important points about BufferedReader:
-				//InputStreamReader 헷갈림. 
+				// InputStreamReader는  Charset을 이용하여 8bit(byte)로된 InputStream 내용을 Char(16bits)로 변환
+				// BufferedReader는 char배열은 만든다.! buf = new char[size]; size는 defalut일 경우 8192!
 						
 				Properties pre = new Properties();		
 				Properties parms = new Properties();		
@@ -1140,11 +1149,12 @@ class NanoHTTPD
 	{
 		Log.e("serveFile","start_serveFile");
 		Response res = null;
-		Log.e("homeDir",""+homeDir); // 디렉토리!!
+		Log.e("homeDir",""+homeDir); // homeDir -> myRootDir 
+		// 여기어 index.html file을 저장했었다.
 
 		// Make sure we won't die of an exception later
-		if ( !homeDir.isDirectory()){ //homeDir 경로에  directory가 있는지 확인.
-			Log.e("homeDir_true",""+true);
+		if ( !homeDir.isDirectory()){ //homeDir가  directory인지 확인. 
+			Log.e("homeDir_true",""+false);
 			res = new Response( HTTP_INTERNALERROR, MIME_PLAINTEXT,
 				"INTERNAL ERRROR: serveFile(): given homeDir is not a directory." );
 		}
@@ -1154,15 +1164,22 @@ class NanoHTTPD
 			// Remove URL arguments
 			
 			Log.e("File.separatorChar",""+File.separatorChar);  // / 출력
-			// This is the first character of the file separator string. 
-			// file 경로의 첫번째 문자 출력
+			// File.separatorChar
+			// separatorChar = System.getProperty("file.separator", "/").charAt(0);
+			// / 만 출력하는것 같다. 
+			// System.getProperty("file.separator", "/")  -> Character that separates components of a file path.
+			// This is "/" on UNIX and "\" on Windows.
+			//  실행되는 정보를 얻을 수 있다.
+			Log.e("system_get_property",""+System.getProperty("file.separator")); // / 출력!
 			
 			uri = uri.trim().replace( File.separatorChar, '/' );
 			//Replaces every instance of a character in this String with a new character( '/' ).
-			// uri에 File.separatorChar 경로가 있으면 '/'로 바꾼다!		
-			Log.e("file.separatorChar",""+uri); // / 출력
+			// uri에 File.separatorChar 경로가 있으면 '/'로 바꾼다!
+			// 파일 upload를 하면 uri가 / 가 변경 되는것 같다. uri는   GET, /(uri 내용) , HTTP/1.1 
+			// File.separatorChar는 / 만 출력하는데 왜 replace를 이용해서 '/' 로 다시 바꾸는지 잘 모르겠다. 
+			Log.e("uri_file.separatorChar",""+uri); // / 출력
 			
-			if ( uri.indexOf( '?' ) >= 0 )
+			if ( uri.indexOf( '?' ) >= 0 ) 
 				uri = uri.substring(0, uri.indexOf( '?' ));
 
 			// Prohibit getting out of current directory
@@ -1174,6 +1191,7 @@ class NanoHTTPD
 		}
 
 		File f = new File( homeDir, uri ); 
+		//homeDir 경로와 uri의 이름으로 path를 설정.  home경로 뒤에 uri가 붙여짐
 		File test_f = new File("/storage/sdcard/test");
 		File test_f2 = new File("/storage/sdcard/");
 		// homeDir -> File 이다 ! string  아님!  uri->string
@@ -1217,7 +1235,7 @@ class NanoHTTPD
 			if ( !uri.endsWith( "/" )) 
 			{
 				// This method tests if this string ends with the specified suffix( / ).
-				Log.e("uri.endsWith", ""+true);
+				Log.e("uri.endsWith", ""+false);
 				uri += "/";
 				res = new Response( HTTP_REDIRECT, MIME_HTML,
 					"<html><body>Redirected: <a href=\"" + uri + "\">" +
@@ -1234,10 +1252,11 @@ class NanoHTTPD
 					Log.e("new File( f, index.html ).exists()", ""+f);
 					// uri 가 / 인데  + /index.html 하면 //index.html  이 아닌가?
 					// /storage/sdacrd/index.html 출력
+					// uri가 index.html을 upload하고 싶은곳??
 				}
 				else if ( new File( f, "index.htm" ).exists()){
 					f = new File( homeDir, uri + "/index.htm" );
-					Log.e("new File( f, index.htm ).exists()", ""+f);
+					Log.e("new File( f, index.htm ).exists()", ""+f); // 왜 이 부분이 또 추가 되었는지?
 				}
 				// No index file, list the directory if it is readable
 				else if ( allowDirectoryListing && f.canRead() )
@@ -1311,9 +1330,10 @@ class NanoHTTPD
 				Log.e("res == null", ""+true);
 				String mime = null;
 				int dot = f.getCanonicalPath().lastIndexOf( '.' );
-				Log.e("f",""+f);
+				Log.e("f",""+f); // /mnt/sdcard/index.html
 				Log.e("f.getCanonicalPath()",""+f.getCanonicalPath());
 				// This method returns a canonical representation of the pathname of this file.
+				// /mnt/sdcard/index.html
 				Log.e("f.getCanonicalPath().lastIndexOf( '.' )",""+f.getCanonicalPath().lastIndexOf( '.' ));
 				// '.'가 string 에서 마지막으로 존재하는 곳의 인덱스를 반환 
 				// 21
