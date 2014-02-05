@@ -20,6 +20,7 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.os.PowerManager;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -33,7 +34,7 @@ public class EmulatorService extends Service {
 	public final static int SCREEN_ON = 1;
 	final RemoteCallbackList<EmulatorAIDLCallback> mCallbacks = new RemoteCallbackList<EmulatorAIDLCallback>();
 	NotificationManager mNM;
-	PowerManager pm;
+	//PowerManager pm;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -42,6 +43,8 @@ public class EmulatorService extends Service {
 	}
 
 	private final EmulatorAIDL.Stub mBinder = new EmulatorAIDL.Stub() {
+		
+			
 		@Override
 		public void unregisterCallback(EmulatorAIDLCallback cb)
 				throws RemoteException {
@@ -72,12 +75,13 @@ public class EmulatorService extends Service {
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification();
 		Log.i("Power", "check1");
-		pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
-		Toast.makeText(getBaseContext(), "pm = " + pm, Toast.LENGTH_LONG)
-				.show();
+//		pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+//		Toast.makeText(getBaseContext(), "pm = " + pm, Toast.LENGTH_LONG)
+//				.show();
 		NanoHttpd();
 		Log.i("Power", "check2");
 	}
+	
 
 	public static final String from = "sdcard/index.html";
 	public static final String to = "/data/data/com.example.emulator/";
@@ -126,6 +130,33 @@ public class EmulatorService extends Service {
 		mNM.cancel(R.string.remote_service_started);
 		mCallbacks.kill();
 	}
+//	public void ScreenOnOff(String value) throws RemoteException {
+//		// AndroidManifext.xml에 android:sharedUserId="android.uid.system"를 지우지
+//		// 않고 실행하면.
+//		// 시스템 권한이 없어서 emulator 실행이 되지 않는다.
+//
+//		int Screen_value = Integer.parseInt(value);
+//		Log.e("Service & NanoHttpd", "" + value);
+//		Log.e("Service & NanoHttpd", "OK");
+//
+//		if (Screen_value == 1) {
+//			Log.e("Screen_on", "screenon:" + Screen_value);
+//
+//			Log.e("Screen_on", "1)screenon:" + Screen_value);
+//			pm.userActivity(SCREEN_ON, true);
+//			Log.e("Screen_on", "2screenon:" + Screen_value);
+//		}
+//
+//		else if (Screen_value == 0) {
+//			Log.e("Screen_off", "screenoff:" + Screen_value);
+//			Log.e("Screen_off", "screenoff1:" + Screen_value);
+//			Log.e("ss", "pm = " + pm);
+//			pm.goToSleep(2000);
+//			Log.e("Screen_off", "screenoff2:" + Screen_value);
+//			pm.wakeUp(2000);
+//			Log.e("Screen_off", "screenoff3:" + Screen_value);
+//		}
+//	}
 
 	private void showNotification() {
 		// TODO Auto-generated method stub
@@ -143,31 +174,6 @@ public class EmulatorService extends Service {
 		mNM.notify(R.string.remote_service_started, notification);
 	}
 
-	public void ScreenOnOff(String value) {
-		// AndroidManifext.xml에 android:sharedUserId="android.uid.system"를 지우지
-		// 않고 실행하면.
-		// 시스템 권한이 없어서 emulator 실행이 되지 않는다.
-
-		int Screen_value = Integer.parseInt(value);
-		Log.e("Service & NanoHttpd", "" + value);
-		Log.e("Service & NanoHttpd", "OK");
-
-		if (Screen_value == 1) {
-			Log.e("Screen_on", "screenon:" + Screen_value);
-
-			Log.e("Screen_on", "1)screenon:" + Screen_value);
-			pm.userActivity(SCREEN_ON, true);
-			Log.e("Screen_on", "2screenon:" + Screen_value);
-		}
-
-		else if (Screen_value == 0) {
-			Log.e("Screen_off", "screenoff:" + Screen_value);
-			Log.e("Screen_off", "screenoff1:" + Screen_value);
-			Log.e("ss", "pm = " + pm);
-			pm.goToSleep(2000);
-			Log.e("Screen_off", "screenoff2:" + Screen_value);
-			pm.wakeUp(2000);
-			Log.e("Screen_off", "screenoff3:" + Screen_value);
-		}
-	}
+	
+	
 }

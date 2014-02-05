@@ -134,7 +134,12 @@ public class EmulatorSpinner extends Activity {
 			//errorcheck
 			Log.e("SPINNEr","spinner error");
 		}
-
+		/*cannot refer a non-fianl variable set_number inside an inner class defined in a different method)
+		new Thread(new Runnable(){
+			public void run(){
+				new Instrumentation().sendKeyDownUpSync(set_number);
+			}
+		}).start();*/
 		press_key(set_number);
 		
 	}

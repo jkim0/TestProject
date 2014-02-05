@@ -6,5 +6,4 @@ interface EmulatorAIDL {
 	void unregisterCallback(EmulatorAIDLCallback cb); 
 	void openfile();
 	void closefile();
-	
 	}

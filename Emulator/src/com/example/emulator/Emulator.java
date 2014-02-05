@@ -33,11 +33,7 @@ public class Emulator extends Activity {
 	private Intent forSpinner;
 	private Button btn_start,btn_stop,btn_screen_on,btn_screen_off;
 	private Button btn_spinner;
-	private EmulatorAIDL mService = null;
-//질문, 여기에 intent 나 powermanager 할당하면, 에러나 ! 왜그럴까
-	
-	private PowerManager Pm;
-//	PowerManager.WakeLock mWakeLock, mWakeLock2;
+	private EmulatorAIDL mService = null;	
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		@Override
@@ -55,11 +51,8 @@ public class Emulator extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_emulator);
-		
-		//ACQUIRED_로 받으면 또 에러...
-	//	mWakeLock = mPm.newWakeLock(PowerManager.FULL_WAKE_LOCK , "power");
-//		mWakeLock = mPm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "power");
-	//make Button	
+
+		//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
 		btn_screen_on=(Button) findViewById(R.id.btn_screen_on);
@@ -87,20 +80,7 @@ public class Emulator extends Activity {
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
-
-				
-				//API 17이상 지원함, 나중에 wakeup할때 사용해보기
-				//time 	The time when the request to go to sleep was issued, in the uptimeMillis() time base.			
-//				if(mWakeLock==null){Toast.makeText(Emulator.this,"null",Toast.LENGTH_LONG).show();}
-//				Toast.makeText(Emulator.this,mWakeLock+":0",Toast.LENGTH_SHORT).show();
-//				mWakeLock2.acquire();
-//			
-//				wakeLock.release();
-//				PowerManager pm = (PowerManager) getSystemService( Context.POWER_SERVICE );
-//				PowerManager.WakeLock wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, EmulatorService.TAG );		
-			
 	
-
 		btn_spinner.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -111,7 +91,6 @@ public class Emulator extends Activity {
 		});		
 		
 	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
