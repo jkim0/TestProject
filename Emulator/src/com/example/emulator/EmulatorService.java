@@ -24,6 +24,7 @@ import android.os.Parcel;
 import android.os.PowerManager;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -34,7 +35,6 @@ public class EmulatorService extends Service {
 	public final static int SCREEN_ON = 1;
 	final RemoteCallbackList<EmulatorAIDLCallback> mCallbacks = new RemoteCallbackList<EmulatorAIDLCallback>();
 	NotificationManager mNM;
-	//PowerManager pm;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -43,8 +43,6 @@ public class EmulatorService extends Service {
 	}
 
 	private final EmulatorAIDL.Stub mBinder = new EmulatorAIDL.Stub() {
-		
-			
 		@Override
 		public void unregisterCallback(EmulatorAIDLCallback cb)
 				throws RemoteException {
@@ -69,8 +67,6 @@ public class EmulatorService extends Service {
 		}
 	};
 
-	private NanoHTTPD mHttpd = null;
-	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -78,7 +74,6 @@ public class EmulatorService extends Service {
 		showNotification();
 		NanoHttpd();
 	}
-	
 
 	public static final String from = "sdcard/index.html";
 	public static final String to = "/data/data/com.example.emulator/";
@@ -109,14 +104,12 @@ public class EmulatorService extends Service {
 
 		return folder;
 	}
-
+	private NanoHTTPD mHttpd = null;
 	private void NanoHttpd() {
-		Log.e(TAG, "############## come####  ");
 		File wwwroot = doCopy();
-
 		try {
 			mHttpd = new NanoHTTPD(8091, wwwroot);
-			//mHttpd = new NanoHTTPD(this, 8091, wwwroot);
+		 //mHttpd = new NanoHTTPD(this, 8091, wwwroot);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -124,19 +117,20 @@ public class EmulatorService extends Service {
 	}
 	
 	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
-		
 		@Override
 		public void onCommandReceived(String cmd, String value) {
-			// TODO Auto-generated method stub
 			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
 			if (cmd.equalsIgnoreCase("screen")) {
-				if (value.equalsIgnoreCase("0")) {
-					//screen off
-				} else if (value.equalsIgnoreCase("1")) {
+				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+				if (value.equalsIgnoreCase("1")) {
 					//screen on
+					pm.userActivity(SystemClock.uptimeMillis(), false);			
+				} else if (value.equalsIgnoreCase("0")) {
+					//screen off
+					pm.goToSleep(2000);
+					pm.wakeUp(2000);
 				}
-			}
-			
+			}	
 		}
 	};
 

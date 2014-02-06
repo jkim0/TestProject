@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
       <string-array name="select">
-        <item>Command_KEY</item>
+		<item > </item>
+         <item>Command_KEY</item>
         <item>Number_KEY</item>
         <item>Character_KEY</item>
          </string-array>
     
     <string-array name="command">
+        <item > </item>
         <item>HOME</item>
         <item>BACK</item>
         <item>CALL</item>
@@ -17,6 +19,7 @@
     </string-array>
 
     <string-array name="number">
+        <item > </item>
         <item>KEY_0</item>
         <item>KEY_1</item>
         <item>KEY_2</item>
@@ -30,6 +33,7 @@
        
     </string-array>
        <string-array name="character">
+           <item > </item>
         <item>KEY_A</item>
         <item>KEY_B</item>    
         <item>KEY_C</item>

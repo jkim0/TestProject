@@ -31,7 +31,7 @@ public class Emulator extends Activity {
 	public final static int FOR_SPINNER=3;
 	private IntentFilter screenFilter;
 	private Intent forSpinner;
-	private Button btn_start,btn_stop,btn_screen_on,btn_screen_off;
+	private Button btn_start,btn_stop;
 	private Button btn_spinner;
 	private EmulatorAIDL mService = null;	
 	
@@ -55,8 +55,6 @@ public class Emulator extends Activity {
 		//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
-		btn_screen_on=(Button) findViewById(R.id.btn_screen_on);
-		btn_screen_off=(Button) findViewById(R.id.btn_screen_off);
 		btn_spinner=(Button) findViewById(R.id.btn_spinner);
 		
 //BindService	

@@ -237,12 +237,9 @@ class NanoHTTPD
 		
 	private EmulatorService mService = null;
 	
-	private HandlerThread mHandlerThread = null;
-	private Handler mHandler = null;
+	private HandlerThread mHandlerThread = null; //cuzof CTx
+	private Handler mHandler = null;				//
 	
-	public class MyHandler extends Handler {
-		
-	}
 	
 	private final int NOTIFY_CMD_RECEIVED = 0;
 	private class CmdData {
@@ -265,9 +262,14 @@ class NanoHTTPD
 		mService = service;
 		myTcpPort = port;
 		this.myRootDir = wwwroot;
-
+/////
 		mHandlerThread = new HandlerThread("PgsServiceHandler");
        mHandlerThread.start();
+        Log.d(TAG,"NanoHTTPD: mService = " + mService);
+        Log.d(TAG,"NanoHTTPD: myTcpPort = "+ myTcpPort);
+        Log.d(TAG,"NanoHTTPD: this = "+ this);
+        Log.d(TAG,"NanoHTTPD: this.myRootDir= wwwroot =" + wwwroot);
+        
        mHandler = new Handler(mHandlerThread.getLooper()) {
     	   @Override
     	   public void handleMessage(Message msg) {
@@ -333,32 +335,12 @@ class NanoHTTPD
 			Thread t = new Thread( this );
 			t.setDaemon( true );
 			t.start();
-			Log.i("COME","HTTP_START:1");/*
-		//여기 "ServiceConnection" private하면 invalid
-			ServiceConnection mConnection = new ServiceConnection() {
-				@Override
-				public void onServiceDisconnected(ComponentName arg0) {
-					Log.i("COME","service Disconnected");
-				}
-				@Override
-				public void onServiceConnected(ComponentName arg0, IBinder arg1) {
-						mService=EmulatorAIDL.Stub.asInterface(arg1);
-						Log.i("COME","service connected");
-				}
-			};
-//여기다가 intent하잖아? 백퍼 에러.... nullpointerException
-			Log.i("COME","HTTP_START:2/ this:"+this);
-		
-			Intent intent = new Intent(this, EmulatorService.class);		
-			Log.i("COME","HTTP_START:3");
-			bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
-			Log.i("COME","HTTP_START:4");*/
 		}
 		
 		public void run()
 		{
 			try
-			{	//그 포트의 인풋스트림을 받는다???
+			{	
 				InputStream is = mySocket.getInputStream();
 				if ( is == null) return;
 
@@ -795,16 +777,16 @@ class NanoHTTPD
 				Compare = e.substring( 0, sep ).trim();
 			}
 			Log.e("NanoHttpdError",""+Compare);
-			//bindtoService로 연결하기
-			
 ////여기서 추가 	
 		
 			if(Compare.equalsIgnoreCase("screen"))
-			{//바인드서비스도안되....powermanger호출도, context도 못잡겟
-				//notifyCommandReceived(Compare, p.getProperty(Compare));
+			{
+				//notifyCommandReceived(Compare, p.getProperty(Compare));				
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
 			}	
+			
+			// dot anything.
 		}	
 
 		/**
