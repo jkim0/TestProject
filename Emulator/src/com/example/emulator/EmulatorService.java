@@ -142,7 +142,16 @@ public class EmulatorService extends Service {
 	}
 	
 	public void screenOnOff(String value) throws RemoteException {
-		Log.e(TAG, "ScreenOnOff value = " + value);
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+	
+		if (value.equalsIgnoreCase("1")) {
+			//screen on
+			pm.userActivity(SystemClock.uptimeMillis(), false);			
+		} else if (value.equalsIgnoreCase("0")) {
+			//screen off
+			pm.goToSleep(2000);
+			pm.wakeUp(2000);
+		}
 	}
 
 	private void showNotification() {
