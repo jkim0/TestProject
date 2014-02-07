@@ -4,44 +4,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+   
     <TextView
+        android:id="@+id/spinner_tv1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Command:"
+        android:text="Choose one section"
     />
 
     <Spinner android:id="@+id/spinner1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"
-
-    />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
-        android:text="Number:"
-    />
-
+        android:drawSelectorOnTop="true" />
+    
     <Spinner android:id="@+id/spinner2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"
-    />
-    
-        <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
-        android:text="Character:"
-    />
+        android:drawSelectorOnTop="true" />
 
-    <Spinner android:id="@+id/spinner3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"
-    />
-    
-
+	<TextView
+	    android:id = "@+id/spinner_tv2"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    />
 </LinearLayout> 

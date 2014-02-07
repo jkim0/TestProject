@@ -234,7 +234,6 @@ class NanoHTTPD
 				cr.onCommandReceived(cmd, value);
 		}
 	}
-		
 	private EmulatorService mService = null;
 	
 	private HandlerThread mHandlerThread = null; //cuzof CTx
