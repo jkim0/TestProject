@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         Log.e(TAG, "############## path = " + path);
         File wwwroot = path.getAbsoluteFile();
         try {
-			new NanoHTTPD(8090, wwwroot);
+			new NanoHTTPD(8091, wwwroot);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -336,6 +336,7 @@ class NanoHTTPD
 				byte[] buf = new byte[bufsize];//byte 배열 생성
 				Log.e("bufsize=8192",""+buf);
 				int rlen = is.read(buf, 0, bufsize);
+				
 				//Reads up to byteCount bytes(8192) from this stream 
 				//and stores them in the byte array buffer(buf) starting at byteOffset(0). 
 				//Returns the number of bytes actually read 
@@ -353,7 +354,8 @@ class NanoHTTPD
 				//buf에 저장된 내용을 문자로 출력하기 위해 char 배열에 다시 저장
 				String buf_check = new String(check_buf);
 				//char 배열을 문자로 바꿈.
-				Log.e("buf_check",""+buf_check);
+				
+				//Log.e("buf_check",""+buf_check);
 				// click 전 buf내용
 				// GET / HTTP/1.1
 				// Host: localhost:8090
@@ -388,11 +390,9 @@ class NanoHTTPD
 				
 				// Create a BufferedReader for parsing the header.
 				ByteArrayInputStream hbis = new ByteArrayInputStream(buf, 0, rlen);
-				//A specialized InputStream for reading the contents of a byte array.
-				//Constructs a new ByteArrayInputStream on the byte array buf 
-				//with the initial position set to offset(0) 
-				//and the number of bytes available set to offset(0) + length(rlen).
-				// Create a new ByteArrayInputStream that will read bytes from the passed in byte array.
+				// this.mark = 0;
+				// this.buf = buf;
+				// this.count = buf.length;
 				// ByteArrayInputStream 의 buf가 buf를 참고 할 수 있게 한다.this.buf = buf;
 				// /libcore/luni/src/main/java/java/io/ByteArrayInputStream.java 참고!
 				
@@ -481,25 +481,25 @@ class NanoHTTPD
 				Log.e("chartoint_n","chartoint_n ="+chartoint_n);// 10
 				
 								
-				for(int i=0; i<=rlen; i++)
-					Log.e("check_buf","i= "+i+" check_buf= "+check_buf[i]); // buf안에 있는 내용을 문자로 출력
-				for(int i=0; i<=rlen; i++)
-					Log.e("check_buf","i= "+i+" check_buf= "+(int)check_buf[i]); //buf안에 있는 내용을 정수로 출력
+				//for(int i=0; i<=rlen; i++)
+					//Log.e("check_buf","i= "+i+" check_buf= "+check_buf[i]); // buf안에 있는 내용을 문자로 출력
+				//for(int i=0; i<=rlen; i++)
+					//Log.e("check_buf","i= "+i+" check_buf= "+(int)check_buf[i]); //buf안에 있는 내용을 정수로 출력
 				while (splitbyte < rlen)
 				{
-					Log.e("splibyte < rlen","splitbyte: "+splitbyte+", rlen: "+rlen);
+					//Log.e("splibyte < rlen","splitbyte: "+splitbyte+", rlen: "+rlen);
 					if (buf[splitbyte] == '\r' && buf[++splitbyte] == '\n' && buf[++splitbyte] == '\r' && buf[++splitbyte] == '\n') {
 						// buf에 '\r', '\n', '\r', '\n'이 연속적으로 있는 곳을 확인.
-						Log.e("splibyte_true_check",""+splitbyte); // 클릭전 435 , 클릭후 551
+						//Log.e("splibyte_true_check",""+splitbyte); // 클릭전 435 , 클릭후 551
 						sbfound = true;
 						break; //while문 빠져나온다.중요!!
 					}
 					splitbyte++;
 				}
-				Log.e("before_splitbyte","before_splitbyte="+splitbyte); // 435, 클릭후 551
+				//Log.e("before_splitbyte","before_splitbyte="+splitbyte); // 435, 클릭후 551
 				splitbyte++;
 				
-				Log.e("after_splitbyte","after_splitbyte="+splitbyte); // 436, 클릭후 552 
+				//Log.e("after_splitbyte","after_splitbyte="+splitbyte); // 436, 클릭후 552 
 
 				// Write the part of body already read to ByteArrayOutputStream f
 				ByteArrayOutputStream f = new ByteArrayOutputStream();
@@ -510,6 +510,7 @@ class NanoHTTPD
 					f.write(buf, splitbyte, rlen-splitbyte);
 					// buf splibyte부터 rlen-splitebyte만큼 내용을 f 객체의 buf에 저장!
 					// system.arraraycopy 이용
+					// write 할때 f의 cout를 증가시킨다.
 				}
 
 				// While Firefox sends on the first read all the data fitting
@@ -522,7 +523,7 @@ class NanoHTTPD
 					size -= rlen - splitbyte +1; // //size = size - rlen+splitbyte-1;
 					Log.e("size -= rlen - splitbyte +1",""+size);
 				}
-				else if (!sbfound || size == 0x7FFFFFFFFFFFFFFFl){ //클릭후 sbfoud= true, size는 8  조건을 만족하지 않는다. 
+				else if (!sbfound || size == 0x7FFFFFFFFFFFFFFFl){ //클릭후 sbfoud= true, size는 -1  조건을 만족하지 않는다. 
 					Log.e("!sbfound || size == 0x7FFFFFFFFFFFFFFFl",""+true); // true 출력
 					size = 0;
 				}
@@ -537,41 +538,26 @@ class NanoHTTPD
 				while ( rlen >= 0 && size > 0 ) // size가 0 이어서 while에 못들어감. , 클릭후 size가 -1  조건을 만족 못!
 				{
 					rlen = is.read(buf, 0, 512);
-					// This method read bytes from a stream and stores them into a caller supplied buffer. 
-					// It starts storing the data at ind함ex off into the buffer and attempts to read len bytes. 
-					// 512 byte로 읽은것과 8192byte로 읽는것이 나르게 나왔다.
 					Log.e("changed_rlen","changed_rlen="+rlen+" changed_size= "+size);
-					char[] change_check_buf = new char[rlen+1];
-					for(int i=0; i<=rlen; i++)
-						change_check_buf[i]=(char)buf[i];
-					String change_buf_check = new String(change_check_buf);
-					Log.e("change_bytecounte_512",""+change_buf_check); //screen=1�� 출력
 					size -= rlen;
 					Log.e("size -= rlen",""+size);
 					if (rlen > 0)
-						f.write(buf, 0, rlen);
-					//This method writes len bytes from the passed in array buf starting at index offset into the internal buffer. 
+						f.write(buf, 0, rlen);					
 				}
 
 				// Get the raw body as a byte []
 				byte [] fbuf = f.toByteArray(); 
-				//This method creates a newly allocated Byte array. 
-				//Its size would be the current size of the output stream and the contents of the buffer will be copied into it. 
-				//Returns the current contents of the output stream as a byte array.
-				Log.e("fbuf",""+f.toByteArray()); //[B@4174ce80
-				Log.e("fbuf",""+fbuf); // [B@417895f0
-				//두개의 주소가 다르다.
-				
-				Log.e("f_size",""+f.size()); 
-				// 0이 출력되었다. buf에 write 한것이 없으므로 count가 증가하지 않아 0을 리턴.
-				// 8이 출력 되었다.
+				//byte[] newArray = new byte[count];
+				//System.arraycopy(buf, 0, newArray, 0, count);
+				//return newArray;
+				//위 함수를 이용하여 f에서 newArray byte배열을 만든후 
+				//newArray를 가리키는 메모리값을 리턴한다.
 
 				// Create a BufferedReader for easily reading it as string.
-				
 				Log.e("fbuf_length",""+fbuf.length); // 클릭 후 8 출력
 				ByteArrayInputStream bin = new ByteArrayInputStream(fbuf);
-				//The ByteArrayInputStream class allows a buffer in the memory to be used as an InputStream. 
-				//The input source is a byte array.
+				// this.buf = buf;
+				// bin의 byte배열인 buf가 fbuf를 가리키는 인스턴스를 생성
 				BufferedReader in = new BufferedReader( new InputStreamReader(bin));
 				//The Java.io.BufferedReader class reads text from a character-input stream, 
 				//buffering characters so as to provide for the efficient reading of characters, arrays, and lines.
@@ -749,7 +735,6 @@ class NanoHTTPD
 						}
 						line = in.readLine();
 						Log.e("HTTP_header_next_line",""+line); 
-						//+++ LOG: entry corrupt or truncated 마지막에 이 메세지를 출력하고 while문 종료!
 					}
 				}
 				
