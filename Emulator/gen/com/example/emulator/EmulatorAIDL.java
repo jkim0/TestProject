@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/jyang4/Test-Git/TestProject/Emulator/src/com/example/emulator/EmulatorAIDL.aidl
+ * Original file: /home/jhs/WindRiver_Project.git/TestProject/Emulator/src/com/example/emulator/EmulatorAIDL.aidl
  */
 package com.example.emulator;
 public interface EmulatorAIDL extends android.os.IInterface
