@@ -263,11 +263,6 @@ class NanoHTTPD
 /////
 		mHandlerThread = new HandlerThread("PgsServiceHandler");
        mHandlerThread.start();
-        Log.d(TAG,"NanoHTTPD: mService = " + mService);
-        Log.d(TAG,"NanoHTTPD: myTcpPort = "+ myTcpPort);
-        Log.d(TAG,"NanoHTTPD: this = "+ this);
-        Log.d(TAG,"NanoHTTPD: this.myRootDir= wwwroot =" + wwwroot);
-        
        mHandler = new Handler(mHandlerThread.getLooper()) {
     	   @Override
     	   public void handleMessage(Message msg) {

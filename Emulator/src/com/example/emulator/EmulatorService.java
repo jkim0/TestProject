@@ -75,6 +75,7 @@ public class EmulatorService extends Service {
 		NanoHttpd();
 	}
 
+	/* copy from sdk card */
 	public static final String from = "sdcard/index.html";
 	public static final String to = "/data/data/com.example.emulator/";
 	public static final String copy_name = "index.html";
@@ -108,6 +109,7 @@ public class EmulatorService extends Service {
 	private void NanoHttpd() {
 		File wwwroot = doCopy();
 		try {
+			//for tossing itself to class. thats why we need mHttpd;
 			mHttpd = new NanoHTTPD(8091, wwwroot);
 		 //mHttpd = new NanoHTTPD(this, 8091, wwwroot);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
@@ -115,7 +117,7 @@ public class EmulatorService extends Service {
 			e.printStackTrace();
 		}
 	}
-	
+	//저기 클래스의 interface 를 받아와 (commandReceiver)
 	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
 		@Override
 		public void onCommandReceived(String cmd, String value) {
