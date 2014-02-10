@@ -63,9 +63,7 @@ public class EmulatorSpinner extends Activity {
 			 					         	  Toast.makeText(EmulatorSpinner.this, "Spinner1: unselected", Toast.LENGTH_SHORT).show();
 			 					       }
 			 					   });
-			 			
-			 				
-			 			
+			 					 			
 					}	 
 			
 			 		   }

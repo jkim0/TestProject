@@ -239,7 +239,6 @@ class NanoHTTPD
 	private HandlerThread mHandlerThread = null; //cuzof CTx
 	private Handler mHandler = null;				//
 	
-	
 	private final int NOTIFY_CMD_RECEIVED = 0;
 	private class CmdData {
 		public String mCmd;
