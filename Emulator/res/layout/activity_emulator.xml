@@ -40,6 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_start"
         android:layout_marginTop="19dp"
-        android:text="spinner" />
+        android:text="@string/spinner" />
 
 </RelativeLayout>

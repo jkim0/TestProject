@@ -8,5 +8,5 @@
     <string name="stop">stop</string>
     <string name="remote_service_started">remote_service_started</string>
     <string name="remote_service_label">remote_service_label</string>
-
+	<string name="spinner">spinner</string>
 </resources>
