@@ -9,7 +9,7 @@
         android:id="@+id/spinner_tv1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Choose one section"
+        android:text="@string/choose_one_section"
     />
 
     <Spinner android:id="@+id/spinner1"

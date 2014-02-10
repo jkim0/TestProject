@@ -9,4 +9,6 @@
     <string name="remote_service_started">remote_service_started</string>
     <string name="remote_service_label">remote_service_label</string>
 	<string name="spinner">spinner</string>
+	<string name="choose_one_section">Choose_one_section </string>
+	
 </resources>

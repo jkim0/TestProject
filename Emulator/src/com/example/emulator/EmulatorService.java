@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
@@ -75,8 +76,8 @@ public class EmulatorService extends Service {
 		NanoHttpd();
 	}
 
-	/* copy from sdk card */
-	public static final String from = "sdcard/index.html";
+	/* copy from raw card */
+	//public static final String from = "res/raw/index.html";
 	public static final String to = "/data/data/com.example.emulator/";
 	public static final String copy_name = "index.html";
 
@@ -89,7 +90,9 @@ public class EmulatorService extends Service {
 			// AssetManager assetManager = getResources().getAssets();
 			// InputStream is = assetManager.open(HTML_NAME,
 			// AssetManager.ACCESS_BUFFER);
-			InputStream is = new FileInputStream(from);
+			Resources res = getResources();
+			InputStream is = res.openRawResource(R.raw.index);
+	
 			long filesize = is.available();
 			byte[] tempdata = new byte[(int) filesize];
 			is.read(tempdata);
