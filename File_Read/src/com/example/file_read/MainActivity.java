@@ -2,7 +2,6 @@ package com.example.file_read;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,10 +20,9 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
-	FileInputStream fo;
-	byte buffer[];
-	int rlen;
-	int part=1;
+	byte buffer[];				//저장할 버퍼
+	int rlen;						//파일 읽어오는 것의 크기(글자 수)
+	int line_Cnt=1;					//Total line cnt
 	ByteArrayInputStream bin_s=null;
 	BufferedReader reader=null;
 	LinearLayout layout;
@@ -38,7 +36,6 @@ public class MainActivity extends Activity {
 		Toast.makeText(this, "OnCreate Call", Toast.LENGTH_SHORT).show();
 		
 		layout = (LinearLayout)findViewById(R.id.my_Layout);
-		
 		
 		try {
 			File_Read();
@@ -70,7 +67,7 @@ public class MainActivity extends Activity {
 	   {
 		   if(buffer[i]== 10)
 		   {
-			   part++;
+			   line_Cnt++;
 		   }
 		   //Log.i("buffer","buffer[i] = "+buffer[i]);
 	   }
@@ -78,7 +75,7 @@ public class MainActivity extends Activity {
 	   
 	   int cnt = 0;		//Check for current readed line cnt
 	   
-		while(cnt < part)
+		while(cnt < line_Cnt)
 		{
 			String str = reader.readLine();			//read one line
 			
@@ -97,7 +94,7 @@ public class MainActivity extends Activity {
 			
 		}
 		
-		Log.i("##########Check","part : "+cnt);
+		Log.i("##########Check","line : "+cnt);
 		
 		
 		/* assets 파일에 있는 .txt 파일 읽어오기
@@ -126,14 +123,14 @@ public class MainActivity extends Activity {
 		
 		Log.i("Parsing","Parsing STR : "+parsing);
 		
-		String str_part=null;
+		String str_partition=null;
 		
 		TextView view = new TextView(this);
 		
 		if(stoken1.hasMoreTokens())
 		{
-			str_part = stoken1.nextToken();
-			if(parsing != str_part)			//#이 있다는 것
+			str_partition = stoken1.nextToken();
+			if(parsing != str_partition)			//#이 있다는 것
 			{
 				//Log.i("Parsing","################");
 				
@@ -143,8 +140,8 @@ public class MainActivity extends Activity {
 			else
 			{
 				stoken1 = new StringTokenizer( parsing, "-" );
-				str_part = stoken1.nextToken();
-				if(parsing != str_part)			//-이 있다는 것
+				str_partition = stoken1.nextToken();
+				if(parsing != str_partition)			//-이 있다는 것
 				{
 					//Log.i("Parsing","--------------");
 					
@@ -160,16 +157,17 @@ public class MainActivity extends Activity {
 			}
 		}
 		
-		AddView(str_part,view);
-		
-		//char[] div = {'#','-','1','2','e'};
-		
-		//StringTokenizer st = new StringTokenizer( Input_data, div[0]);
-		
-		//int start , end;
-		
+		AddView(str_partition,view);
 		
 		/*
+		char[] div = {'#','-','1','2','e'};
+		
+		StringTokenizer st = new StringTokenizer( Input_data, div[0]);
+		
+		int start , end;
+		
+		
+		
 		for(int i=0;i<3;i++)
 		{
 			start=FindChar(div[i]);
@@ -201,15 +199,15 @@ public class MainActivity extends Activity {
 		return find;
 	}
 	*/
+	
 	public void AddView(String st, TextView view){
 		
 		if(view != null)
 		{
 			view.setText(st);
-			layout.addView(view);
+			layout.addView(view);			//addView - TextView 추가하기
 		}
 	}
-	
 	
 	
 	@Override
