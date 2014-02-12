@@ -481,7 +481,7 @@ class NanoHTTPD
 						Log.d("POST","pre.getProperty(uri)= "+pre.getProperty("uri"));
 						Log.d("POST","uri = "+uri);
 				//		uri = "/index3.html";
-
+						uri="/write.html";
 						Log.d("POST","pre.getProperty(uri)= "+pre.getProperty("uri"));
 						Log.d("POST","uri = "+uri);
 					}//end of MULTI_PART아닐 경우 
@@ -871,7 +871,7 @@ class NanoHTTPD
 						out.write( buff, 0, read );
 						pending -= read;
 						
-						Log.d("sendresponse2","string data.read= "+yjk);
+	//					Log.d("sendresponse2","string data.read= "+yjk);
 					}
 		
 					

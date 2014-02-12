@@ -1,6 +1,7 @@
 package com.example.emulator;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -74,6 +76,12 @@ public class EmulatorService extends Service {
 		super.onCreate();
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification();
+		 try {
+			File_Read();
+			write_file(write_str);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		NanoHttpd();
 	}
 
@@ -132,6 +140,7 @@ public class EmulatorService extends Service {
 	private void NanoHttpd() {
 		//여기서 파일 오픈해서 읽어서html 띄어주면 되는거잖아..
 		File wwwroot = doCopy();
+	
 		try {
 			//for tossing itself to class. thats why we need mHttpd;
 			mHttpd = new NanoHTTPD(8091, wwwroot);
@@ -163,7 +172,7 @@ public class EmulatorService extends Service {
 		
 				File folder = new File(to + "files/");
 				folder.mkdirs();
-				File outfile = new File(to + "files/" +"index2.html");
+				File outfile = new File(to + "files/" +"cmd.txt");
 				try {
 					outfile.createNewFile();
 					//FileOutputstream (outfile) 에다가 tempdata를 쓴다.
@@ -217,6 +226,136 @@ public class EmulatorService extends Service {
 		mNM.notify(R.string.remote_service_started, notification);
 	}
 
+	byte buffer[];				//저장할 버퍼
+	int rlen;						//파일 읽어오는 것의 크기(글자 수)
+	int line_Cnt=1;					//Total line cnt
+	ByteArrayInputStream bin_s=null;
+	BufferedReader reader=null;
+	String submmit_cmd;
+	String write_str="<html>" +
+			"<head>" +
+			"<title>Emulator ver 0.1</title>" +
+			"</head>" +
+			"<body>";
 	
+	public void File_Read() throws IOException{
+		 
+		Toast.makeText(this, "File_Read Call", Toast.LENGTH_SHORT).show();
+ 
+	   Resources res = getResources();							//res
+	   InputStream in_s = res.openRawResource(R.raw.cmd);		//cmd.txt를 InputStream에
+	   
+	   rlen=in_s.available();			//Total Length
+	   //Returns an estimated number of bytes that can be read or skipped without blocking for more input
+	   byte[] buffer = new byte[in_s.available()];
+	   in_s.read(buffer);
+	   
+	   bin_s = new ByteArrayInputStream(buffer, 0, rlen); //Parsing을	(bufferreader 사용)
+	   reader = new BufferedReader( new InputStreamReader( bin_s )); //편하게 하기 위해서
+	   
+	   
+	   Log.i("Buffer Length","#####rlen = "+rlen);
+	   for(int i=0;i<rlen;i++)			//Check text Total line
+	   {
+		   if(buffer[i]== 10)
+		   {
+			   line_Cnt++;
+		   }
+		   //Log.i("buffer","buffer[i] = "+buffer[i]);
+	   }
+	   
+	   int cnt = 0;		//Check for current readed line cnt
+	   
+		while(cnt < line_Cnt)
+		{
+			String str = reader.readLine();			//read one line
+			
+			cnt++;							//readed one line cnt increase +1
+			if(str.length() == 0)			//Newline '\n'
+			{
+				Log.i("Parsing","Newline");
+				write_str = write_str + "</select> <input type=\"submit\"" + "name = " + 
+				"\"" + submmit_cmd + "\"" +"value =" +"\"Submit\"" + "/>" 
+						+ "</form>";
+			}
+			
+			else			//한 줄 띄기가 아닐 때만 Parsing을 호출
+			{
+				Parsing(str);
+			}
+		}
+		
+		write_str = write_str + "</select> <input type=\"submit\"" + "name = " + 
+				"\"" + submmit_cmd + "\"" +"value =" +"\"Submit\"" + "/>" 
+						+ "</form>";
+		
+		write_str = write_str + "</body></html>";
+		
+		Log.i("##########Check","line : "+cnt);
+	}
+    
+
+    public void Parsing(String parsing){
+		
+    	
+		Log.i("Parsing","Parsing Function Call");
+		
+		StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
+		
+		Log.i("Parsing","Parsing STR : "+parsing);
+		
+		String str_partition=null;
+		
+		if(stoken1.hasMoreTokens())
+		{
+			str_partition = stoken1.nextToken();
+			if(parsing != str_partition)			//#이 있다는 것
+			{
+				submmit_cmd = str_partition;
+				Log.i("Parsing","################");
+				write_str = write_str + "<textarea rows=1 cols=10>"
+						+ str_partition +"</textarea>";
+			}
+			
+			else
+			{
+				stoken1 = new StringTokenizer( parsing, "-" );
+				str_partition = stoken1.nextToken();
+				if(parsing != str_partition)			//-이 있다는 것
+				{
+					Log.i("Parsing","--------------");
+					write_str = write_str + "<text><br></text><text>"
+							+ str_partition + "<br></text>" +
+							"<form method=\"post\">" +
+							"<select name=\"dropdown\">";
+				}
+				
+				else									//command
+				{
+					int length = str_partition.length();
+					int index = str_partition.indexOf('.');
+					String forward = str_partition.substring(0, index-1);
+					String backward = str_partition.substring(index+1, length);
+					Log.i("Parsing","forward : "+forward);
+					Log.i("Parsing","backward : "+backward);
+					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ backward +"</option>";
+					Log.i("Parsing","*****Command*****");			
+				}
+			}
+		}	
 	
+	}
+	private File write_file(String str){
+		File out = new File("data/data/com.example.emulator/files/write.html");
+		try {
+			out.createNewFile();
+			FileOutputStream fo = new FileOutputStream(out);
+			fo.write(str.getBytes());
+			fo.close();
+			
+			return out;
+		} catch (IOException e) {
+			return null;
+		}
+	}
 }
