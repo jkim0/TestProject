@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         Log.e(TAG, "############## path = " + path);
         File wwwroot = path.getAbsoluteFile();
         try {
-			new NanoHTTPD(8092, wwwroot);
+			new NanoHTTPD(8095, wwwroot);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1064,6 +1064,7 @@ class NanoHTTPD
 				{
 					int pending = data.available();	// This is to support partial sends, see serveFile()
 					Log.e("pending",""+pending);
+					//pending=900; 
 					// This method returns the number of bytes that can be read from this stream before a read can block. 
 					// 403 출력
 					byte[] buff = new byte[theBufferSize];  // theBufferSize = 16* 1024 
@@ -1075,13 +1076,16 @@ class NanoHTTPD
 						Log.e("check_pending", check_pending);
 						Log.e("sendResponse_read",""+read);
 						if (read <= 0)	break;
-						out.write( buff, 0, read );
 						String addbuf = "<text>hjeong! ver 0.1</br>" +
 								"<text>hjeong! ver 0.1</br>" +
 								"<text>hjeong! ver 0.1</br>" +
 								"<text>hjeong! ver 0.1</br>";
+						
 						byte[] buff2 = addbuf.getBytes();
 						out.write(buff2);
+						out.write( buff, 0, read );
+						
+						
 						pending -= read;
 					}
 				}
@@ -1255,7 +1259,7 @@ class NanoHTTPD
 					Log.e("new File( f, index.html ).exists()", ""+f);
 					// uri 가 / 인데  + /index.html 하면 //index.html  이 아닌가?
 					// /storage/sdacrd/index.html 출력
-					// uri가 index.html을 upload하고 싶은곳??
+					// f에  f .html 경로 저장
 				}
 				else if ( new File( f, "index.htm" ).exists()){
 					f = new File( homeDir, uri + "/index.htm" );
@@ -1363,7 +1367,10 @@ class NanoHTTPD
 				}
 				
 				// Calculate etag
-				String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
+				int flength=100;
+				flength+=f.length();
+				//String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()  ).hashCode());
+				String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + flength  ).hashCode());
 				
 				//etag test			
 				Log.e("etag",""+etag); //7ac7d491
@@ -1383,7 +1390,7 @@ class NanoHTTPD
 				Log.e("f.g,las,leng",""+(f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
 				// string을 hashcode로 변환해서 리턴한다. 2059916433
 				// hashcode를 왜 만들었을까?..
-			
+				
 				Log.e("string etag",""+Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode()));
 				//The java.lang.Integer.toHexString() method 
 				//returns a string representation of the integer argument as an unsigned integer in base 16
@@ -1414,7 +1421,9 @@ class NanoHTTPD
 				}
 
 				// Change return code and add Content-Range header when skipping is requested
-				long fileLen = f.length();
+				//long fileLen = f.length();
+				long fileLen = 100+f.length();
+				Log.e("fileLen",""+fileLen);
 				if (range != null && startFrom >= 0)
 				{
 					Log.e("range != null && startFrom >= 0",""+true); 
