@@ -80,24 +80,33 @@ public class EmulatorService extends Service {
 	/* copy from raw card */
 	//public static final String from = "res/raw/index.html";
 	public static final String to = "/data/data/com.example.emulator/";
-	public static final String copy_name = "index.html";
+	public static String copy_name = "index.html";
+	public static String copy_php="upload_ok.php";
 
 	public File doCopy() {
-
+		
 		File folder = new File(to + "files/");
 		folder.mkdirs();
 		File outfile = new File(to + "files/" + copy_name);
+		File outfile2= new File(to+"files/"+copy_php);
 		try {
 			// AssetManager assetManager = getResources().getAssets();
 			// InputStream is = assetManager.open(HTML_NAME,
 			// AssetManager.ACCESS_BUFFER);
 			Resources res = getResources();
 			InputStream is = res.openRawResource(R.raw.index);
+			InputStream is2=res.openRawResource(R.raw.upload_ok);
 	
 			long filesize = is.available();
+			long filesize2= is2.available();
 			byte[] tempdata = new byte[(int) filesize];
+			byte[] tempdata2 = new byte[(int) filesize2];
+			
 			is.read(tempdata);
 			is.close();
+
+			is2.read(tempdata2);
+			is2.close();
 			// make byte[] from inputstream
 			
 			//create file 
@@ -106,6 +115,12 @@ public class EmulatorService extends Service {
 			FileOutputStream fo = new FileOutputStream(outfile);
 			fo.write(tempdata);
 			fo.close();
+			
+			outfile2.createNewFile();
+			//FileOutputstream (outfile) 에다가 tempdata를 쓴다.
+			FileOutputStream fo2 = new FileOutputStream(outfile2);
+			fo2.write(tempdata2);
+			fo2.close();
 		
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -115,6 +130,7 @@ public class EmulatorService extends Service {
 	}
 	private NanoHTTPD mHttpd = null;
 	private void NanoHttpd() {
+		//여기서 파일 오픈해서 읽어서html 띄어주면 되는거잖아..
 		File wwwroot = doCopy();
 		try {
 			//for tossing itself to class. thats why we need mHttpd;
@@ -142,6 +158,9 @@ public class EmulatorService extends Service {
 				}
 			}
 			else if(cmd.equalsIgnoreCase("memosite")){
+	
+				doCopy();
+		
 				File folder = new File(to + "files/");
 				folder.mkdirs();
 				File outfile = new File(to + "files/" +"index2.html");
@@ -151,7 +170,6 @@ public class EmulatorService extends Service {
 					FileOutputStream fo = new FileOutputStream(outfile);
 					fo.write(value.getBytes());
 					fo.close();
-					
 			//		new NanoHTTPD(8090,folder);					
 					
 				} catch (IOException e) {

@@ -14,7 +14,7 @@
 <body>          
  
 <form name="testform" enctype="multipart"
-                                       action="index2.html" method="post">
+ method="post">
  
         
     Choose site    
@@ -35,12 +35,12 @@
         <option value="google">google.com       
     </select><br>
     
-    <textarea name="memosite" cols="30" rows="10">
-        textarea  
+    <textarea name="memosite" cols="30" rows="10"> 
     </textarea><br><br>   
 
+
     Add files<input type="file" name="filesite" size="20"><br><br>
- 
+
      id : <input type="text" name="idsite" size="20" value="text"> 
      pw : <input type="password" name="pwsite" size="10" maxlength="5" value="12345"><br>
     <input type="hidden" name="hdsite">     <br><br>
@@ -71,6 +71,26 @@
 	                 <input type = "submit" size = "20" value ="Screen Off">
 	        </form>
 	</body>
+
+==
+<form method="POST" ENCTYPE="multipart/form-data" action="upload_ok.php">
+<table width="500" border="0" align="center" bgcolor="dddddd">
+        <tr>
+                <td width="600" colspan="2" align="center"><b>File Upload</b></td>
+        </tr>
+        <tr>
+                <td width="100" align="center">File Name</td>
+                <td width="500"> <input type="file" name="upfile" size="20">(File size limit : 20M)</td>
+        </tr>
+        <tr>
+                <td align="center" colspan="2">
+                        <input type="submit" value="send"> <input type="reset" value="cancel">
+                </td>
+        </tr>
+</table>
+</form>
+
+==
 	
 </html>
 

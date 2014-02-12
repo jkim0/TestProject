@@ -81,6 +81,7 @@ class NanoHTTPD
 		{
 			String value = (String)e.nextElement();
 		///////
+			Log.d("ENUMERATION","e =" +e);
 			if(value.equalsIgnoreCase("memosite")){
 				
 				CmdData cd = new CmdData(value, parms.getProperty(value));
@@ -476,7 +477,13 @@ class NanoHTTPD
 						Log.i("POST","postLine:a4:"+postLine);
 						Log.i("POST","parms"+parms);
 						decodeParms( postLine, parms );
-					
+						Log.i("POST","parms= "+parms);
+						Log.d("POST","pre.getProperty(uri)= "+pre.getProperty("uri"));
+						Log.d("POST","uri = "+uri);
+				//		uri = "/index3.html";
+
+						Log.d("POST","pre.getProperty(uri)= "+pre.getProperty("uri"));
+						Log.d("POST","uri = "+uri);
 					}//end of MULTI_PART아닐 경우 
 				} //end of cast method==POST
 
@@ -488,7 +495,7 @@ class NanoHTTPD
 				if ( r == null )
 					sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: Serve() returned a null response." );
 				else
-		////////////////			
+		////////////////	
 					sendResponse( r.status, r.mimeType, r.header, r.data );
 
 				in.close();
@@ -709,7 +716,6 @@ class NanoHTTPD
 			return path;
 		}
 
-
 		/**
 		 * It returns the offset separating multipart file headers
 		 * from the file's data.
@@ -854,19 +860,20 @@ class NanoHTTPD
 				{
 					int pending = data.available();	// This is to support partial sends, see serveFile()
 					byte[] buff = new byte[theBufferSize];
-					String yjk=null;
+					
 					char yjk1;
 					int i=0;
 					while (pending>0)
 					{
 						int read = data.read( buff, 0, ( (pending>theBufferSize) ?  theBufferSize : pending ));
+						String yjk= new String(buff);
 						if (read <= 0)	break;
 						out.write( buff, 0, read );
 						pending -= read;
-						yjk1=(char)buff[i++];
-						yjk+= yjk1;
+						
+						Log.d("sendresponse2","string data.read= "+yjk);
 					}
-					Log.d("sendresponse2","string data.read= "+yjk);
+		
 					
 				}
 				out.flush();
@@ -941,6 +948,7 @@ class NanoHTTPD
 		Log.e("CHECK","homeDir:"+homeDir);
 		Log.e("CHECK","ADL:"+allowDirectoryListing);
 		
+		
 	//여기까진 들어온다
 		
 	//	파일이 디렉토리면 트루, 근데 fulse야 그렇다면 디렉토리 아니라는거지. 
@@ -961,17 +969,26 @@ class NanoHTTPD
 				res = new Response( HTTP_FORBIDDEN, MIME_PLAINTEXT,
 					"FORBIDDEN: Won't serve ../ for security reasons." );
 		}
-
+//여기에file f
 		File f = new File( homeDir, uri );
 		Log.d("8989","homeDir= "+homeDir);
 		Log.d("8989","uir="+uri+"+");
 		Log.d("8989","File f="+f);
 		Log.d("8989","exists="+f.exists());
 		Log.d("8989","len="+uri.length());
+		
 // 여기자꾸 /favicon.ico 때문에 에러메세지나온다ㅏ.......
-		if ( res == null && !f.exists())				
+		if ( res == null && !f.exists()){				
+			if(uri.equalsIgnoreCase("/favicon.ico")){
+				Log.d("8989","success");
+				uri=null;
+			}
+			else{
+				Log.d("8989","fail = "+uri);
 			res = new Response( HTTP_NOTFOUND, MIME_PLAINTEXT,
-				"Error 404, file not found." );
+				"Error 404, file not found." );}
+		Log.d("servefile","1_response");
+		}
 		// List the directory, if necessary
 		if ( res == null && f.isDirectory())
 		{
@@ -984,6 +1001,7 @@ class NanoHTTPD
 					"<html><body>Redirected: <a href=\"" + uri + "\">" +
 					uri + "</a></body></html>");
 				res.addHeader( "Location", uri );
+				Log.d("servefile","2_response");
 			}
 
 			if ( res == null )
@@ -1040,21 +1058,25 @@ class NanoHTTPD
 							msg += "<br/>";
 							if ( dir ) msg += "</b>";
 						}
-					}
+					} // 한마디로 makefile
 					msg += "</body></html>";
+					Log.d("servefile","3_response");
+					Log.d("servefile(1)","msg= " +msg);
 					res = new Response( HTTP_OK, MIME_HTML, msg );
 					Log.d("servefile(1)","msg= " +msg);
-				}
-				else
+				}//읽을수있는데, 없3다면 만들어
+				else//그것도아니면 금지 그 자체이겟
 				{
 					res = new Response( HTTP_FORBIDDEN, MIME_PLAINTEXT,
 						"FORBIDDEN: No directory listing." );
+					Log.d("servefile","4_response");
 				}
-			Log.d("servefile1)","res= "+res);
+				Log.d("servefile","5_response");
+				Log.d("servefile1)","res= "+res);
 	
 			}
 		}
-
+		//디렉토리까지 정리했고
 		try
 		{
 			if ( res == null )
@@ -1090,19 +1112,23 @@ class NanoHTTPD
 						catch ( NumberFormatException nfe ) {}
 					}
 				}
-
+				
 				// Change return code and add Content-Range header when skipping is requested
 				long fileLen = f.length();
+				Log.d("sevefile","fileLen= "+(int)fileLen);
+				Log.d("sercefile","f ="+f);
 				if (range != null && startFrom >= 0)
 				{
 					if ( startFrom >= fileLen)
 					{
+						Log.d("servefile","6_response");
 						res = new Response( HTTP_RANGE_NOT_SATISFIABLE, MIME_PLAINTEXT, "" );
 						res.addHeader( "Content-Range", "bytes 0-0/" + fileLen);
 						res.addHeader( "ETag", etag);
 					}
 					else
 					{
+						Log.d("servefile","7_response");
 						if ( endAt < 0 )
 							endAt = fileLen-1;
 						long newLen = endAt - startFrom + 1;
@@ -1113,19 +1139,31 @@ class NanoHTTPD
 							public int available() throws IOException { return (int)dataLen; }
 						};
 						fis.skip( startFrom );
-
-						res = new Response( HTTP_PARTIALCONTENT, mime, fis );
+						Log.d("servefile","8_response");
+//						FileOutputStream fo = new FileOutputStream(outfile);
+//						fo.write(value.getBytes());
+						FileInputStream fis2 = new FileInputStream(new File("data/data/com.example.emulator/index3.html"));
+						fis2.read();
+						
+						////		
+						res = new Response( HTTP_PARTIALCONTENT, mime, fis2 );
 						res.addHeader( "Content-Length", "" + dataLen);
 						res.addHeader( "Content-Range", "bytes " + startFrom + "-" + endAt + "/" + fileLen);
 						res.addHeader( "ETag", etag);
 					}
+					Log.d("servefile","9_response");
 				}
 				else
 				{
+					Log.d("servefile","10_response");
 					if (etag.equals(header.getProperty("if-none-match")))
 						res = new Response( HTTP_NOTMODIFIED, mime, "");
 					else
 					{
+						Log.d("servefile","11_response");
+						//여기서바꿔줘요....10,11 ㅠ0ㅠ
+						Log.d("servefile","f = "+f);
+					//	f = new File( homeDir, "index2.html" );		
 						res = new Response( HTTP_OK, mime, new FileInputStream( f ));
 						res.addHeader( "Content-Length", "" + fileLen);
 						res.addHeader( "ETag", etag);
@@ -1137,7 +1175,6 @@ class NanoHTTPD
 		{
 			res = new Response( HTTP_FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Reading file failed." );
 		}
-
 		res.addHeader( "Accept-Ranges", "bytes"); // Announce that the file server accepts partial content requestes
 		return res;
 	}
@@ -1148,7 +1185,6 @@ class NanoHTTPD
 	private static Hashtable theMimeTypes = new Hashtable();
 	static
 	{
-		
 		StringTokenizer st = new StringTokenizer(
 			"css		text/css "+
 			"htm		text/html "+
@@ -1193,7 +1229,6 @@ class NanoHTTPD
 		gmtFrmt = new java.text.SimpleDateFormat( "E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
 		gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
-
 	/**
 	 * The distribution licence
 	 */
