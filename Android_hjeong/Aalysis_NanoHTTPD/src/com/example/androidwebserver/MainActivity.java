@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         Log.e(TAG, "############## path = " + path);
         File wwwroot = path.getAbsoluteFile();
         try {
-			new NanoHTTPD(8091, wwwroot);
+			new NanoHTTPD(8092, wwwroot);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -304,6 +304,7 @@ class NanoHTTPD
 			// (Socket[address=/127.0.0.1,port=59040,localPort=8090])
 			mySocket = s;//mySocket에 소켓 저장.
 			Thread t = new Thread( this );
+			Log.e("new_thread",""+t);
 			Log.e("Before_setDaemon",""+t);
 			t.setDaemon( true );
 			t.start();
@@ -1070,12 +1071,29 @@ class NanoHTTPD
 					{
 						int read = data.read( buff, 0, ( (pending>theBufferSize) ?  theBufferSize : pending ));
 						// This method read bytes from a stream and stores them into a caller supplied buffer. 
+						String check_pending= new String(buff);
+						Log.e("check_pending", check_pending);
 						Log.e("sendResponse_read",""+read);
 						if (read <= 0)	break;
 						out.write( buff, 0, read );
+						String addbuf = "<text>hjeong! ver 0.1</br>" +
+								"<text>hjeong! ver 0.1</br>" +
+								"<text>hjeong! ver 0.1</br>" +
+								"<text>hjeong! ver 0.1</br>";
+						byte[] buff2 = addbuf.getBytes();
+						out.write(buff2);
 						pending -= read;
 					}
 				}
+				
+				InputStream is = mySocket.getInputStream();
+				int bufsize = 8192;
+				byte[] buf = new byte[bufsize];//byte 배열 생성
+				Log.e("bufsize=8192",""+buf);
+				is.read(buf, 0, bufsize);
+				Log.e("yyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyyy");
+				Log.e("Socket Content",""+out);
+				Log.e("Socket Content",""+new String(buf));
 				out.flush();
 				out.close();
 				if ( data != null )
@@ -1207,7 +1225,7 @@ class NanoHTTPD
 		if ( res == null && !f.exists()){ //f의 경로가 존재해서 조건 만족x
 			Log.e("new File",""+true);
 			res = new Response( HTTP_NOTFOUND, MIME_PLAINTEXT,
-				"Error 404, file not found." ); // method가 GET 일 때   호출
+				"Error 404, file not found." ); // browser를 refresh하고 nanohttpd server에 request할때 호출된다.
 		}
 
 		// List the directory, if necessary
