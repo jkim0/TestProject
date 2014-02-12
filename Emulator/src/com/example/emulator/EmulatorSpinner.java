@@ -28,6 +28,7 @@ public class EmulatorSpinner extends Activity {
 
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.activity_spinner);
+	    
 	    Spinner mSpinner1= (Spinner)findViewById(R.id.spinner1);
 	    ArrayAdapter<CharSequence> select = ArrayAdapter.createFromResource(this, R.array.select, android.R.layout.simple_dropdown_item_1line);
 	    Log.d(TAG,"spinner 1, this ="+this);

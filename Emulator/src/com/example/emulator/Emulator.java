@@ -70,6 +70,7 @@ public class Emulator extends Activity {
 				startActivity(i);	
 			}
 		});
+		
 	//unBindService
 		btn_stop.setOnClickListener(new View.OnClickListener() {
 			@Override

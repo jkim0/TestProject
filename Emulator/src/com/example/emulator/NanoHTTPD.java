@@ -60,6 +60,7 @@ class NanoHTTPD
 	 */
 	public Response serve( String uri, String method, Properties header, Properties parms, Properties files )
 	{
+		//여기서 갑자기 post 'index2.html' 생김 / uri 발생
 		myOut.println( method + " '" + uri + "' " );
 
 
@@ -75,13 +76,22 @@ class NanoHTTPD
 								header.getProperty( value ) + "'" );
 		}
 		e = parms.propertyNames();
+	///prm에서 여기서 value== memosite	
 		while ( e.hasMoreElements())
 		{
 			String value = (String)e.nextElement();
+		///////
+			if(value.equalsIgnoreCase("memosite")){
+				
+				CmdData cd = new CmdData(value, parms.getProperty(value));
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
+				
+			}
 			myOut.println( "  PRM: '" + value + "' = '" +
 								parms.getProperty( value ) + "'" );
 		}
 		e = files.propertyNames();
+	////uploaded/// value=	
 		while ( e.hasMoreElements())
 		{
 			String value = (String)e.nextElement();
@@ -115,7 +125,7 @@ class NanoHTTPD
 			this.status = status;
 			this.mimeType = mimeType;
 			this.data = data;
-
+			Log.i("RESPONSE","status= "+status+" mimeType= "+mimeType +" data= "+data);
 			Log.i("RESPONSE","response_1");
 		}
 		/**
@@ -135,6 +145,8 @@ class NanoHTTPD
 				uee.printStackTrace();
 			}
 
+			Log.i("RESPONSE","status="+status+"mimeType="+mimeType +"data="+data);
+			
 			Log.i("RESPONSE","response2");
 		}
 
@@ -143,6 +155,8 @@ class NanoHTTPD
 		 */
 		public void addHeader( String name, String value )
 		{
+
+			Log.i("RESPONSE","name= "+name+"value= "+value);
 			header.put( name, value );
 		}
 
@@ -270,6 +284,9 @@ class NanoHTTPD
     		   case NOTIFY_CMD_RECEIVED:
     			   CmdData cd = (CmdData)msg.obj;
     			   notifyCommandReceived(cd.mCmd, cd.mValue);
+    		  // case MAKING_HTML:
+    			//   CmdData cd2=(CmdData)msg.obj;
+    			   
     		   }
     	   }
        };
@@ -797,8 +814,14 @@ class NanoHTTPD
 		 */
 		private void sendResponse( String status, String mime, Properties header, InputStream data )
 		{
+			//data : file경로가 들어있어!!
 			try
 			{
+				Log.d("sendresponse","status = "+status);
+				Log.d("sendresponse","mime = "+mime);
+				Log.d("sendresponse","header = "+header);
+				Log.d("sendresponse","InputStream = "+data);
+			
 				if ( status == null )
 					throw new Error( "sendResponse(): Status can't be null." );
 
@@ -820,6 +843,7 @@ class NanoHTTPD
 						String key = (String)e.nextElement();
 						String value = header.getProperty( key );
 						pw.print( key + ": " + value + "\r\n");
+						Log.d("sendresponse","while) key = "+key+" (value= "+value);
 					}
 				}
 
@@ -830,13 +854,20 @@ class NanoHTTPD
 				{
 					int pending = data.available();	// This is to support partial sends, see serveFile()
 					byte[] buff = new byte[theBufferSize];
+					String yjk=null;
+					char yjk1;
+					int i=0;
 					while (pending>0)
 					{
 						int read = data.read( buff, 0, ( (pending>theBufferSize) ?  theBufferSize : pending ));
 						if (read <= 0)	break;
 						out.write( buff, 0, read );
 						pending -= read;
+						yjk1=(char)buff[i++];
+						yjk+= yjk1;
 					}
+					Log.d("sendresponse2","string data.read= "+yjk);
+					
 				}
 				out.flush();
 				out.close();
@@ -849,7 +880,6 @@ class NanoHTTPD
 				try { mySocket.close(); } catch( Throwable t ) {}
 			}
 		}
-
 		private Socket mySocket;
 	}
 
@@ -899,13 +929,19 @@ class NanoHTTPD
 	public Response serveFile( String uri, Properties header, File homeDir,
 							   boolean allowDirectoryListing )
 	{
+		Log.d("SERVEFILE","uri="+uri);
+		
+		Log.d("SERVEFILE","header="+header);
+		
+		Log.d("servcefile","homeDir="+homeDir);
+		
 		Response res = null;
 		Log.e("CHECK","uri:"+uri);
 		Log.e("CHECK","header:"+header);
 		Log.e("CHECK","homeDir:"+homeDir);
 		Log.e("CHECK","ADL:"+allowDirectoryListing);
 		
-	
+	//여기까진 들어온다
 		
 	//	파일이 디렉토리면 트루, 근데 fulse야 그렇다면 디렉토리 아니라는거지. 
 		// Make sure we won't die of an exception later
@@ -927,10 +963,15 @@ class NanoHTTPD
 		}
 
 		File f = new File( homeDir, uri );
-		if ( res == null && !f.exists())
+		Log.d("8989","homeDir= "+homeDir);
+		Log.d("8989","uir="+uri+"+");
+		Log.d("8989","File f="+f);
+		Log.d("8989","exists="+f.exists());
+		Log.d("8989","len="+uri.length());
+// 여기자꾸 /favicon.ico 때문에 에러메세지나온다ㅏ.......
+		if ( res == null && !f.exists())				
 			res = new Response( HTTP_NOTFOUND, MIME_PLAINTEXT,
 				"Error 404, file not found." );
-
 		// List the directory, if necessary
 		if ( res == null && f.isDirectory())
 		{
@@ -947,6 +988,7 @@ class NanoHTTPD
 
 			if ( res == null )
 			{
+			
 				// First try index.html and index.htm
 				if ( new File( f, "index.html" ).exists())
 					f = new File( homeDir, uri + "/index.html" );
@@ -1001,12 +1043,15 @@ class NanoHTTPD
 					}
 					msg += "</body></html>";
 					res = new Response( HTTP_OK, MIME_HTML, msg );
+					Log.d("servefile(1)","msg= " +msg);
 				}
 				else
 				{
 					res = new Response( HTTP_FORBIDDEN, MIME_PLAINTEXT,
 						"FORBIDDEN: No directory listing." );
 				}
+			Log.d("servefile1)","res= "+res);
+	
 			}
 		}
 
@@ -1027,7 +1072,7 @@ class NanoHTTPD
 
 				// Support (simple) skipping:
 				long startFrom = 0;
-				long endAt = -1;
+				long endAt = -1 ;
 				String range = header.getProperty( "range" );
 				if ( range != null )
 				{

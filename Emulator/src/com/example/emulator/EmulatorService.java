@@ -1,6 +1,7 @@
 package com.example.emulator;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -97,11 +98,15 @@ public class EmulatorService extends Service {
 			byte[] tempdata = new byte[(int) filesize];
 			is.read(tempdata);
 			is.close();
+			// make byte[] from inputstream
+			
+			//create file 
 			outfile.createNewFile();
+			//FileOutputstream (outfile) 에다가 tempdata를 쓴다.
 			FileOutputStream fo = new FileOutputStream(outfile);
 			fo.write(tempdata);
 			fo.close();
-
+		
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -135,7 +140,26 @@ public class EmulatorService extends Service {
 					pm.goToSleep(2000);
 					pm.wakeUp(2000);
 				}
-			}	
+			}
+			else if(cmd.equalsIgnoreCase("memosite")){
+				File folder = new File(to + "files/");
+				folder.mkdirs();
+				File outfile = new File(to + "files/" +"index2.html");
+				try {
+					outfile.createNewFile();
+					//FileOutputstream (outfile) 에다가 tempdata를 쓴다.
+					FileOutputStream fo = new FileOutputStream(outfile);
+					fo.write(value.getBytes());
+					fo.close();
+					
+			//		new NanoHTTPD(8090,folder);					
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+
+			}
 		}
 	};
 
