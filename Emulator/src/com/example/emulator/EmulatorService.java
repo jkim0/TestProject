@@ -606,8 +606,8 @@ public class EmulatorService extends Service {
 			if(str.length() == 0)			//Newline '\n'
 			{
 				Log.i("Parsing","Newline");
-				write_str = write_str + "</select> <input type=\"submit\"" + "name = " + 
-				"\"" + submmit_cmd + "\"" +"value =" +"\"Submit\"" + "/>" 
+				write_str = write_str + "</select> <input type=\"submit\"" + 
+				"\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 			}
 			
@@ -617,8 +617,8 @@ public class EmulatorService extends Service {
 			}
 		}
 		
-		write_str = write_str + "</select> <input type=\"submit\"" + "name = " + 
-				"\"" + submmit_cmd + "\"" +"value =" +"\"Submit\"" + "/>" 
+		write_str = write_str + "</select> <input type=\"submit\"" + 
+				"\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 		
 		write_str = write_str + "</body></html>";
@@ -658,8 +658,9 @@ public class EmulatorService extends Service {
 					Log.i("Parsing","--------------");
 					write_str = write_str + "<text><br></text><text>"
 							+ str_partition + "<br></text>" +
+									"<text><br></text>" +
 							"<form method=\"post\">" +
-							"<select name=\"dropdown\">";
+							"<select name=\"" + submmit_cmd + "\">";
 				}
 				
 				else									//command
@@ -670,7 +671,8 @@ public class EmulatorService extends Service {
 					String backward = str_partition.substring(index+1, length);
 					Log.i("Parsing","forward : "+forward);
 					Log.i("Parsing","backward : "+backward);
-					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ backward +"</option>";
+					write_str = write_str + "<option value=\"" + forward + "\"" + "selected>"+ 
+					backward +"</option>";
 					Log.i("Parsing","*****Command*****");			
 				}
 			}
