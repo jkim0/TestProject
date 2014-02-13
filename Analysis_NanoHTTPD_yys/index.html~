@@ -1,0 +1,28 @@
+<html>
+
+<head>
+<title>File Upload</title>
+</head>
+
+<body>
+
+<form method="POST" ENCTYPE="multipart/form-data">
+<table width="500" border="0" align="center" bgcolor="dddddd">
+        <tr>
+                <td width="600" colspan="2" align="center"><b>File Upload</b></td>
+        </tr>
+        <tr>
+                <td width="100" align="center">File Name</td>
+                <td width="500"> <input type="file"size="20">(File size limit : 20M)</td>
+        </tr>
+        <tr>
+                <td align="center" colspan="2">
+                        <input type="submit" value="send"> <input type="reset" value="cancel">
+                </td>
+        </tr>
+</table>
+</form>
+
+</body>
+
+</html>

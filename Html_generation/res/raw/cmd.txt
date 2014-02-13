@@ -1,0 +1,15 @@
+#Screen
+-value
+1.on
+2.off
+
+#Key_Event
+-key_code
+1.10
+2.20
+3.30
+
+#Power
+-value
+1.on
+2.off

@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         Log.e(TAG, "############## path = " + path);
         File wwwroot = path.getAbsoluteFile();
         try {
-			new NanoHTTPD(8095, wwwroot);
+			new NanoHTTPD(8090, wwwroot);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,8 +54,6 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
-
-   
 }
 
 class NanoHTTPD
@@ -175,9 +173,9 @@ class NanoHTTPD
 			while ( addHeader.hasMoreElements())
 			{
 				String check_addvalue = (String)addHeader.nextElement();
-				Log.e("headers_value",""+check_addvalue);
 				
-				Log.e( "addHeader",""+header.getProperty( check_addvalue ));
+				
+				
 			}
 			// ETag -> 7ac7d491, Accept-Ranges -> bytes
 		}
@@ -413,19 +411,12 @@ class NanoHTTPD
 				Properties header = new Properties();		
 				Properties files = new Properties();
 				
-				Log.e("before_decodeHeader_hin",""+hin);
-				Log.e("before_decodeHeader_pre",""+pre);
-				Log.e("before_decodeHeader_parms",""+parms);
-				Log.e("before_decodeHeader_header",""+header);
+				//
 				
 				// Decode the header into parms and header java properties
 				decodeHeader(hin, pre, parms, header);
 			
-				Log.e("after_decodeHeader_hin",""+hin);
-				Log.e("after_decodeHeader_pre",""+pre); // {uri=/, method=GET} , 클릭 후 {uri=/, method=POST
-				Log.e("after_decodeHeader_parms",""+parms); //  {} , 클릭 후 {}
-				Log.e("after_decodeHeader_header",""+header);
-				
+								
 				//----------클릭 전------------------------------------------------------------------ 
 				//{cache-control=no-cache, connection=keep-alive, accept-language=en-US, 
 				// host=localhost:8090, accept=text/html,application/xhtml+xml,
@@ -478,8 +469,8 @@ class NanoHTTPD
 				int chartoint_r = char_r;
 				int chartoint_n = char_n;
 				
-				Log.e("chartoint_r","chartoint_r ="+chartoint_r); // 13
-				Log.e("chartoint_n","chartoint_n ="+chartoint_n);// 10
+				
+				
 				
 								
 				//for(int i=0; i<=rlen; i++)
@@ -528,20 +519,16 @@ class NanoHTTPD
 					Log.e("!sbfound || size == 0x7FFFFFFFFFFFFFFFl",""+true); // true 출력
 					size = 0;
 				}
-				
-				Log.e("check_size",""+ size); // 0 출력, 클릭 후 -1 출력
-				
-				Log.e("olde_rlen",""+rlen); // 436 , 클릭 후 533
-
+							
 				// Now read all the body and write it to f
 				buf = new byte[512];
-				Log.e("bufsize=512",""+buf);
+				//Log.e("bufsize=512",""+buf);
 				while ( rlen >= 0 && size > 0 ) // size가 0 이어서 while에 못들어감. , 클릭후 size가 -1  조건을 만족 못!
 				{
 					rlen = is.read(buf, 0, 512);
-					Log.e("changed_rlen","changed_rlen="+rlen+" changed_size= "+size);
+					//Log.e("changed_rlen","changed_rlen="+rlen+" changed_size= "+size);
 					size -= rlen;
-					Log.e("size -= rlen",""+size);
+					//Log.e("size -= rlen",""+size);
 					if (rlen > 0)
 						f.write(buf, 0, rlen);					
 				}
@@ -555,7 +542,7 @@ class NanoHTTPD
 				//newArray를 가리키는 메모리값을 리턴한다.
 
 				// Create a BufferedReader for easily reading it as string.
-				Log.e("fbuf_length",""+fbuf.length); // 클릭 후 8 출력
+				//Log.e("fbuf_length",""+fbuf.length); // 클릭 후 8 출력
 				ByteArrayInputStream bin = new ByteArrayInputStream(fbuf);
 				// this.buf = buf;
 				// bin의 byte배열인 buf가 fbuf를 가리키는 인스턴스를 생성
@@ -568,20 +555,21 @@ class NanoHTTPD
 				// in data section, too, read it:
 				if ( method.equalsIgnoreCase( "POST" )) //click하기전 method에 POST key 가 없다! 클릭후 POST가 있다.
 				{
-					Log.e("POST","IN_POT");
+					Log.e("POST","IF_IN_POST");
 					String contentType = "";
 					String contentTypeHeader = header.getProperty("content-type");
-					Log.e("contentTypeHeader",""+contentTypeHeader);
+					//Log.e("contentTypeHeader",""+contentTypeHeader);
 					StringTokenizer st = new StringTokenizer( contentTypeHeader , "; " );
+					Log.i("File Check","CibtebtTyoeHeader : "+contentTypeHeader);
 					if ( st.hasMoreTokens()) {
-						Log.e(";_true",""+true);
+						//Log.e(";_true",""+true);
 						contentType = st.nextToken();
-						Log.e(";_true",""+contentType);
+						//Log.e("",""+contentType);
 					}
 
 					if (contentType.equalsIgnoreCase("multipart/form-data"))
 					{
-						Log.e("true_contentType.equalsIgnoreCase(multipart/form-data)",""+true);
+						Log.i("File Check","#####multipart/form-data#####");
 						// Handle multipart/form-data
 						if ( !st.hasMoreTokens())
 							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary missing. Usage: GET /example/file.html" );
@@ -591,7 +579,9 @@ class NanoHTTPD
 							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary syntax error. Usage: GET /example/file.html" );
 						st.nextToken();
 						String boundary = st.nextToken();
-
+						Log.i("File Check","boundary_EXP : "+boundaryExp);
+						Log.i("File Check","boundary : "+boundary);
+						
 						decodeMultipartData(boundary, fbuf, in, parms, files);
 					}
 					else
@@ -712,34 +702,29 @@ class NanoHTTPD
 					while ( line != null && line.trim().length() > 0 ) //line이 null이고 line에 연속되는 문자가 없으면 while문 중단.
 					{
 						int p = line.indexOf( ':' ); // line 안에 : 특정 문자(:)가 시작되는 인덱스를 리턴한다.!
-						Log.e("HTTP_header_line.indexof( : )",""+p);
-						Log.e("line_in_while","in_while");
+						
 						if ( p >= 0 ){
 							//key
-							Log.e("line.substring(0,p)",line.substring(0,p));
+							
 							//line.substring 문자열의 시작위치(0)에서 끝위치(p)까지의 문자를 뽑아내게 된다. 
 							//단 끝위치는 포함이 안된다
-							Log.e("line.substring(0,p).trim()",""+line.substring(0,p).trim());// 처음과 끝의 공백 제거
-							Log.e("line.substring(0,p).trim().toLowerCase()",
-									""+line.substring(0,p).trim().toLowerCase());//모두 소문자로 변경
+							
 							
 							//value
-							Log.e("line.substring(p+1)",line.substring(p+1));//line 에서 p+1 부터 끝의 문자를 생성해서 반환.
-							Log.e("line.substring(p+1).trim()",line.substring(p+1).trim());//처음과 끝의 공백 제거
-							
+													
 							//put(key,value)
 							header.put( line.substring(0,p).trim().toLowerCase(), line.substring(p+1).trim());
 							// The put(K key, V value) method is used 
 							// to map the specified key to the specified value in this hashtable.
 							//.getProperty(key) 를 하면 value 값을 return 한다.
-							Log.e("Http_header_header.put",""+header);
+							
 						}
 						line = in.readLine();
-						Log.e("HTTP_header_next_line",""+line); 
+						 
 					}
 				}
 				
-				Log.e("finish_put_header",""+header);
+				
 				//{cache-control=no-cache, connection=keep-alive, accept-language=en-US, 
 				// host=localhost:8090, accept=text/html,application/xhtml+xml,
 				// application/xml;q=0.9,*/*;q=0.8, user-agent=Mozilla/5.0 
@@ -758,9 +743,9 @@ class NanoHTTPD
 				//  accept-encoding=gzip,deflate, referer=http://localhost:8090/, 
 				//  accept-charset=utf-8, iso-8859-1, utf-16, *;q=0.7}  
 				
-				Log.e("before_pre.put(uri, uri)",""+pre);	// {method=GET} , 클릭 후 {method=POST}
+				
 				pre.put("uri", uri);
-				Log.e("after_pre.put(uri, uri)",""+pre); // {uri=/, method=GET}, 클릭 후 {uri=/, method=POST}
+				
 				//HTTPSession으로 돌아간다!
 			}
 			catch ( IOException ioe )
@@ -939,12 +924,12 @@ class NanoHTTPD
 		{
 			try
 			{
-				Log.e("decodePercent_str->uri",""+str); 
+				 
 				// / 출력
 				// 클릭 후 decodeparms-> decodePercent( e.substring( 0, sep ))  screen 출력
 				// 클릭 후 decodeparms-> e.substring( sep+1 ))  1 출력
 				StringBuffer sb = new StringBuffer();
-				Log.e("decodePercent_str.length",""+str.length()); 
+				 
 				// 1 출력
 				// 클릭 후 decodePercent( e.substring( 0, sep )) , 6출력
 				// 클릭 후 decodeparms-> e.substring( sep+1 )) , 1 출력
@@ -970,7 +955,7 @@ class NanoHTTPD
 							break;
 					}
 				}
-				Log.e("sb.toString",""+sb.toString());
+				
 				// / 출력
 				// 클릭 후 decodePercent( e.substring( 0, sep )) 호출 screen 출력
 				// 클릭 후 decodeparms-> e.substring( sep+1 )) 1 출력
@@ -997,20 +982,15 @@ class NanoHTTPD
 				return;
 
 			StringTokenizer st = new StringTokenizer( parms, "&" );
-			Log.e("decodeParms_st",""+st);
+			
 			while ( st.hasMoreTokens())
 			{
 				String e = st.nextToken();
 				int sep = e.indexOf( '=' );
-				Log.e("e",""+e);//screen=1
-				Log.e("sep",""+sep); //6
-				Log.e("sep_key",""+e.substring( 0, sep ));//screen
-				Log.e("sep_value",""+e.substring( sep+1 ));//1
-				
+								
 				if ( sep >= 0 )
 					p.put( decodePercent( e.substring( 0, sep )).trim(),
-						   decodePercent( e.substring( sep+1 )));
-				Log.e("after_p",""+p);
+						   decodePercent( e.substring( sep+1 )));	
 			}
 		}
 
@@ -1076,13 +1056,14 @@ class NanoHTTPD
 						Log.e("check_pending", check_pending);
 						Log.e("sendResponse_read",""+read);
 						if (read <= 0)	break;
+						/*
 						String addbuf = "<text>hjeong! ver 0.1</br>" +
 								"<text>hjeong! ver 0.1</br>" +
 								"<text>hjeong! ver 0.1</br>" +
 								"<text>hjeong! ver 0.1</br>";
-						
-						byte[] buff2 = addbuf.getBytes();
-						out.write(buff2);
+						*/
+						//byte[] buff2 = addbuf.getBytes();
+						//out.write(buff2);
 						out.write( buff, 0, read );
 						
 						
@@ -1093,10 +1074,10 @@ class NanoHTTPD
 				InputStream is = mySocket.getInputStream();
 				int bufsize = 8192;
 				byte[] buf = new byte[bufsize];//byte 배열 생성
-				Log.e("bufsize=8192",""+buf);
+				
 				is.read(buf, 0, bufsize);
 				Log.e("yyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyyy");
-				Log.e("Socket Content",""+out);
+				
 				Log.e("Socket Content",""+new String(buf));
 				out.flush();
 				out.close();
@@ -1367,10 +1348,10 @@ class NanoHTTPD
 				}
 				
 				// Calculate etag
-				int flength=100;
-				flength+=f.length();
-				//String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()  ).hashCode());
-				String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + flength  ).hashCode());
+				//Int flength=100;
+				//flength+=f.length();
+				String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()  ).hashCode());
+				//String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + flength  ).hashCode());
 				
 				//etag test			
 				Log.e("etag",""+etag); //7ac7d491
@@ -1421,8 +1402,8 @@ class NanoHTTPD
 				}
 
 				// Change return code and add Content-Range header when skipping is requested
-				//long fileLen = f.length();
-				long fileLen = 100+f.length();
+				long fileLen = f.length();
+				//long fileLen = 100+f.length();
 				Log.e("fileLen",""+fileLen);
 				if (range != null && startFrom >= 0)
 				{
@@ -1455,14 +1436,14 @@ class NanoHTTPD
 				else
 				{
 					if (etag.equals(header.getProperty("if-none-match"))){
-						Log.e("etag.equals",""+true);
+						//Log.e("etag.equals",""+true);
 						res = new Response( HTTP_NOTMODIFIED, mime, "");
 					}
 					else
 					{ 
 						// res -> Response type
-						Log.e("etag.equals",""+false);
-						Log.e("string_mime",""+mime);
+						//Log.e("etag.equals",""+false);
+						//Log.e("string_mime",""+mime);
 						res = new Response( HTTP_OK, mime, new FileInputStream( f ));
 						// status -> HTTP_OK, mimeType->text/html, data -> f
 						res.addHeader( "Content-Length", "" + fileLen);
