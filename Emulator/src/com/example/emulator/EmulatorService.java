@@ -522,7 +522,7 @@ public class EmulatorService extends Service {
 			{
 				Log.i("Parsing","Newline");
 				write_str = write_str + "</select> <input type=\"submit\"" + 
-				"\"" +"value =" +"\"send\"" + "/>" 
+				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 			}
 			
@@ -533,7 +533,7 @@ public class EmulatorService extends Service {
 		}
 		
 		write_str = write_str + "</select> <input type=\"submit\"" + 
-				"\"" +"value =" +"\"send\"" + "/>" 
+				 "value =" +"\"send\"" + "/>" 
 						+ "</form>";
 		
 		write_str = write_str + "</body></html>";

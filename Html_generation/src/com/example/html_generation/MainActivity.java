@@ -83,8 +83,7 @@ public class MainActivity extends Activity {
 			if(str.length() == 0)			//Newline '\n'
 			{
 				Log.i("Parsing","Newline");
-				write_str = write_str + "</select> <input type=\"submit\"" + 
-				"\"" +"value =" +"\"send\"" + "/>" 
+				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 			}
 			
@@ -95,7 +94,7 @@ public class MainActivity extends Activity {
 		}
 		
 		write_str = write_str + "</select> <input type=\"submit\"" + 
-				"\"" +"value =" +"\"send\"" + "/>" 
+				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 		
 		write_str = write_str + "</body></html>";
@@ -148,7 +147,7 @@ public void Parsing(String parsing){
 					String backward = str_partition.substring(index+1, length);
 					Log.i("Parsing","forward : "+forward);
 					Log.i("Parsing","backward : "+backward);
-					write_str = write_str + "<option value=\"" + forward + "\"" + "selected>"+ 
+					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ 
 					backward +"</option>";
 					Log.i("Parsing","*****Command*****");			
 				}
