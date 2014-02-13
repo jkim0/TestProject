@@ -13,6 +13,8 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -23,12 +25,14 @@ public class MainActivity extends Activity {
 	ByteArrayInputStream bin_s=null;
 	BufferedReader reader=null;
 	String submmit_cmd;
+	String status="";
 	String write_str="<html>" +
 			"<head>" +
 			"<title>Emulator ver 0.1</title>" +
 			"</head>" +
 			"<body>";
 	
+	Button button1;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,9 +46,23 @@ public class MainActivity extends Activity {
 			e1.printStackTrace();
 		}
         
+        button1 = (Button)findViewById(R.id.Button1);
+        
+        
         Log.i("Parsing_Result.html",""+write_str);
         		
         doCopy();
+        
+        button1.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				write_str = write_str.replace("Keyboard : ","Keyboard : KeyCode_1");
+				
+				Log.i("Changed write_str","write_str : "+write_str);
+			}
+		});
     }
     
     public void File_Read() throws IOException{
@@ -84,7 +102,8 @@ public class MainActivity extends Activity {
 			{
 				Log.i("Parsing","Newline");
 				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
-						+ "</form>";
+						+ "</form>" +
+						"<text><br><br></text>";
 			}
 			
 			else			//한 줄 띄기가 아닐 때만 Parsing을 호출
@@ -97,13 +116,21 @@ public class MainActivity extends Activity {
 				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 		
-		write_str = write_str + "</body></html>";
+		Add_status();
+		
+		//write_str = write_str + "</body></html>";
 		
 		Log.i("##########Check","line : "+cnt);
 	}
     
-
-public void Parsing(String parsing){
+    public void Add_status(){
+    	
+    	write_str = write_str + status; 
+    	
+    	write_str = write_str + "</body></html>";
+    }
+    
+    public void Parsing(String parsing){
 		
     	
 		Log.i("Parsing","Parsing Function Call");
@@ -122,7 +149,8 @@ public void Parsing(String parsing){
 				submmit_cmd = str_partition;
 				Log.i("Parsing","################");
 				write_str = write_str + "<textarea rows=1 cols=10>"
-						+ str_partition +"</textarea>";
+						+ str_partition + "</textarea>";
+				status = status + "<text><br>" + str_partition + " : ";
 			}
 			
 			else
@@ -134,7 +162,6 @@ public void Parsing(String parsing){
 					Log.i("Parsing","--------------");
 					write_str = write_str + "<text><br></text><text>"
 							+ str_partition + "<br></text>" +
-									"<text><br></text>" +
 							"<form method=\"post\">" +
 							"<select name=\"" + submmit_cmd + "\">";
 				}
@@ -149,7 +176,12 @@ public void Parsing(String parsing){
 					Log.i("Parsing","backward : "+backward);
 					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ 
 					backward +"</option>";
-					Log.i("Parsing","*****Command*****");			
+					Log.i("Parsing","*****Command*****");
+					
+					if(backward.equalsIgnoreCase("off"))
+					{
+						status = status + "off" + "</text>";	
+					}
 				}
 			}
 		}	
