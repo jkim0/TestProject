@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
 	   
 	   int cnt = 0;		//Check for current readed line cnt
 	   
-		while(cnt < line_Cnt)
+	   while(cnt < line_Cnt)
 		{
 			String str = reader.readLine();			//read one line
 			
@@ -83,8 +83,8 @@ public class MainActivity extends Activity {
 			if(str.length() == 0)			//Newline '\n'
 			{
 				Log.i("Parsing","Newline");
-				write_str = write_str + "</select> <input type=\"submit\"" + "name = " + 
-				"\"" + submmit_cmd + "\"" +"value =" +"\"Submit\"" + "/>" 
+				write_str = write_str + "</select> <input type=\"submit\"" + 
+				"\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 			}
 			
@@ -94,8 +94,8 @@ public class MainActivity extends Activity {
 			}
 		}
 		
-		write_str = write_str + "</select> <input type=\"submit\"" + "name = " + 
-				"\"" + submmit_cmd + "\"" +"value =" +"\"Submit\"" + "/>" 
+		write_str = write_str + "</select> <input type=\"submit\"" + 
+				"\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 		
 		write_str = write_str + "</body></html>";
@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
 	}
     
 
-    public void Parsing(String parsing){
+public void Parsing(String parsing){
 		
     	
 		Log.i("Parsing","Parsing Function Call");
@@ -135,8 +135,9 @@ public class MainActivity extends Activity {
 					Log.i("Parsing","--------------");
 					write_str = write_str + "<text><br></text><text>"
 							+ str_partition + "<br></text>" +
+									"<text><br></text>" +
 							"<form method=\"post\">" +
-							"<select name=\"dropdown\">";
+							"<select name=\"" + submmit_cmd + "\">";
 				}
 				
 				else									//command
@@ -147,11 +148,13 @@ public class MainActivity extends Activity {
 					String backward = str_partition.substring(index+1, length);
 					Log.i("Parsing","forward : "+forward);
 					Log.i("Parsing","backward : "+backward);
-					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ backward +"</option>";
+					write_str = write_str + "<option value=\"" + forward + "\"" + "selected>"+ 
+					backward +"</option>";
 					Log.i("Parsing","*****Command*****");			
 				}
 			}
 		}	
+	
 	}
    
    public static final String to = "/data/data/com.example.html_generation/";

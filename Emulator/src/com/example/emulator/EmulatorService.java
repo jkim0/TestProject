@@ -586,7 +586,7 @@ public class EmulatorService extends Service {
 					String backward = str_partition.substring(index+1, length);
 					Log.i("Parsing","forward : "+forward);
 					Log.i("Parsing","backward : "+backward);
-					write_str = write_str + "<option value=\"" + forward + "\"" + "selected>"+ 
+					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ 
 					backward +"</option>";
 					Log.i("Parsing","*****Command*****");			
 				}
