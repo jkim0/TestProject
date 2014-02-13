@@ -953,6 +953,7 @@ class NanoHTTPD
 		
 	//	파일이 디렉토리면 트루, 근데 fulse야 그렇다면 디렉토리 아니라는거지. 
 		// Make sure we won't die of an exception later
+		
 		if ( !homeDir.isDirectory())
 			res = new Response( HTTP_INTERNALERROR, MIME_PLAINTEXT,
 				"INTERNAL ERRROR: serveFile(): given homeDir is not a directory." );

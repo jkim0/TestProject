@@ -1,11 +1,9 @@
 # Command
-- verticla
-1.pink
-2.yellow
+- funtion
+1.one
+2.two
 
-
-# keyboard
-- horizontal
-1.first
-2.second
-3.third
+# screen
+- function
+1.on
+2.off
