@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         Log.e(TAG, "############## path = " + path);
         File wwwroot = path.getAbsoluteFile();
         try {
-			new NanoHTTPD(8090, wwwroot);
+			new NanoHTTPD(8094, wwwroot);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1384,6 +1384,7 @@ class NanoHTTPD
 				long endAt = -1;
 				String range = header.getProperty( "range" ); // range가 무엇인가?
 				Log.e("range",""+range); // null
+				/*
 				if ( range != null )
 				{
 					if ( range.startsWith( "bytes=" ))
@@ -1399,12 +1400,13 @@ class NanoHTTPD
 						}
 						catch ( NumberFormatException nfe ) {}
 					}
-				}
+				}*/
 
 				// Change return code and add Content-Range header when skipping is requested
 				long fileLen = f.length();
 				//long fileLen = 100+f.length();
 				Log.e("fileLen",""+fileLen);
+				
 				if (range != null && startFrom >= 0)
 				{
 					Log.e("range != null && startFrom >= 0",""+true); 
@@ -1412,7 +1414,7 @@ class NanoHTTPD
 					{
 						res = new Response( HTTP_RANGE_NOT_SATISFIABLE, MIME_PLAINTEXT, "" );
 						res.addHeader( "Content-Range", "bytes 0-0/" + fileLen);
-						res.addHeader( "ETag", etag);
+						//res.addHeader( "ETag", etag);
 					}
 					else
 					{
@@ -1430,14 +1432,16 @@ class NanoHTTPD
 						res = new Response( HTTP_PARTIALCONTENT, mime, fis );
 						res.addHeader( "Content-Length", "" + dataLen);
 						res.addHeader( "Content-Range", "bytes " + startFrom + "-" + endAt + "/" + fileLen);
-						res.addHeader( "ETag", etag);
+						//res.addHeader( "ETag", etag);
 					}
 				}
+				
+				
 				else
 				{
 					if (etag.equals(header.getProperty("if-none-match"))){
 						//Log.e("etag.equals",""+true);
-						res = new Response( HTTP_NOTMODIFIED, mime, "");
+						//res = new Response( HTTP_NOTMODIFIED, mime, "");
 					}
 					else
 					{ 
@@ -1447,17 +1451,15 @@ class NanoHTTPD
 						res = new Response( HTTP_OK, mime, new FileInputStream( f ));
 						// status -> HTTP_OK, mimeType->text/html, data -> f
 						res.addHeader( "Content-Length", "" + fileLen);
-						res.addHeader( "ETag", etag);
+						//res.addHeader( "ETag", etag);
 					}
-				}
+				}			
 			}
 		}
 		catch( IOException ioe )
 		{
 			res = new Response( HTTP_FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Reading file failed." );
 		}
-		
-		
 
 		res.addHeader( "Accept-Ranges", "bytes"); // Announce that the file server accepts partial content requestes
 		Log.e("return_res","return_res");
