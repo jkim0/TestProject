@@ -80,7 +80,7 @@ class NanoHTTPD
 		while ( e.hasMoreElements())
 		{
 			String value = (String)e.nextElement();
-		///////
+/////////memosite분기위치에요여기가....
 			Log.d("ENUMERATION","e =" +e);
 			if(value.equalsIgnoreCase("memosite")){
 				
@@ -794,8 +794,7 @@ class NanoHTTPD
 			}
 			Log.e("NanoHttpdError",""+Compare);
 ////여기서 추가 	
-		
-			if(Compare.equalsIgnoreCase("screen"))
+			if(Compare.equalsIgnoreCase("screen")||Compare.equalsIgnoreCase("keyboard"))
 			{
 				//notifyCommandReceived(Compare, p.getProperty(Compare));				
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));

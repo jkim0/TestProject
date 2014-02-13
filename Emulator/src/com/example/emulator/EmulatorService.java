@@ -154,10 +154,10 @@ public class EmulatorService extends Service {
 			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
 			if (cmd.equalsIgnoreCase("screen")) {
 				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-				if (value.equalsIgnoreCase("1")) {
+				if (value.equalsIgnoreCase("on")) {
 					//screen on
 					pm.userActivity(SystemClock.uptimeMillis(), false);			
-				} else if (value.equalsIgnoreCase("0")) {
+				} else if (value.equalsIgnoreCase("off")) {
 					//screen off
 					pm.goToSleep(2000);
 					pm.wakeUp(2000);
@@ -184,14 +184,14 @@ public class EmulatorService extends Service {
 			}
 			else if(cmd.equalsIgnoreCase("keyboard")){
 				String find = new String();
-				find=(String) theKeyBoard.get(value);
+		//		find=(String) theKeyBoard.get(value);
 				Log.d("KEYBOADR","cmd= "+ cmd +"(value = "+value);
 				Log.d("KEYBOADR","find (keynumber) ::: "+ find);
 				
 				
 			}
 			else if(cmd.equalsIgnoreCase("wifi")){
-				wifiManager();	
+			//	wifiManager();	
 			}
 			else if(cmd.equalsIgnoreCase("broadcast")){
 				
@@ -207,6 +207,7 @@ public class EmulatorService extends Service {
 
 		
 	};
+	/*
 	private void wifiManager(){
 	 	
 
@@ -359,7 +360,7 @@ public class EmulatorService extends Service {
 
 		 
 
-		*/
+		*/ /*
 
 		public static WifiConfiguration ConnectWEP( String ssid ) {
 
@@ -405,7 +406,7 @@ public class EmulatorService extends Service {
 
 		 
 
-		*/
+		*//*
 
 		public static WifiConfiguration ConnectWPA( String ssid ) {
 
@@ -448,7 +449,7 @@ public class EmulatorService extends Service {
 		* 원하는 네트워크 아이디에 AP 에 연결
 
 		*/
-
+/*
 		public static void connect(WifiConfiguration wfc, WifiManager wifi, String ssid){
 
 		boolean isId = false;
@@ -510,7 +511,7 @@ public class EmulatorService extends Service {
 		}
 
 
-	}
+	}*/
 
 	@Override
 	public void onDestroy() {
