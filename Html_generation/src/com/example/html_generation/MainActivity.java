@@ -170,6 +170,10 @@ public class MainActivity extends Activity {
 				{
 					int length = str_partition.length();
 					int index = str_partition.indexOf('.');
+					int space_index=str_partition.indexOf(' ');
+						
+					Log.i("Space Index","space_indext = "+space_index);
+					
 					String forward = str_partition.substring(0, index-1);
 					String backward = str_partition.substring(index+1, length);
 					Log.i("Parsing","forward : "+forward);
