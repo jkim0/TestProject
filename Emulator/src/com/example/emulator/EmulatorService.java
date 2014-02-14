@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -478,12 +477,13 @@ public class EmulatorService extends Service {
 	int line_Cnt=1;					//Total line cnt
 	ByteArrayInputStream bin_s=null;
 	BufferedReader reader=null;
-	String submmit_cmd;
+	String submit_cmd;
 	String write_str="<html>" +
 			"<head>" +
 			"<title>Emulator ver 0.1</title>" +
 			"</head>" +
 			"<body>";
+	String status;
 	
 	public void File_Read() throws IOException{
 		 
@@ -513,7 +513,7 @@ public class EmulatorService extends Service {
 	   
 	   int cnt = 0;		//Check for current readed line cnt
 	   
-		while(cnt < line_Cnt)
+	   while(cnt < line_Cnt)
 		{
 			String str = reader.readLine();			//read one line
 			
@@ -521,9 +521,9 @@ public class EmulatorService extends Service {
 			if(str.length() == 0)			//Newline '\n'
 			{
 				Log.i("Parsing","Newline");
-				write_str = write_str + "</select> <input type=\"submit\"" + 
-				"value =" +"\"send\"" + "/>" 
-						+ "</form>";
+				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
+						+ "</form>" +
+						"<text><br><br></text>";
 			}
 			
 			else			//한 줄 띄기가 아닐 때만 Parsing을 호출
@@ -533,67 +533,100 @@ public class EmulatorService extends Service {
 		}
 		
 		write_str = write_str + "</select> <input type=\"submit\"" + 
-				 "value =" +"\"send\"" + "/>" 
+				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 		
-		write_str = write_str + "</body></html>";
+		Add_status();
+		
+		//write_str = write_str + "</body></html>";
 		
 		Log.i("##########Check","line : "+cnt);
 	}
     
 
-    public void Parsing(String parsing){
-		
-    	
-		Log.i("Parsing","Parsing Function Call");
-		
-		StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
-		
-		Log.i("Parsing","Parsing STR : "+parsing);
-		
-		String str_partition=null;
-		
-		if(stoken1.hasMoreTokens())
-		{
-			str_partition = stoken1.nextToken();
-			if(parsing != str_partition)			//#이 있다는 것
-			{
-				submmit_cmd = str_partition;
-				Log.i("Parsing","################");
-				write_str = write_str + "<textarea rows=1 cols=10>"
-						+ str_partition +"</textarea>";
-			}
+	 public void Add_status(){
+	    	
+	    	write_str = write_str + status; 
+	    	
+	    	write_str = write_str + "</body></html>";
+	    }
+	    
+	    public void Parsing(String parsing){
+					
+			StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
 			
-			else
+			String str_partition=null;
+			
+			if(stoken1.hasMoreTokens())
 			{
-				stoken1 = new StringTokenizer( parsing, "-" );
 				str_partition = stoken1.nextToken();
-				if(parsing != str_partition)			//-이 있다는 것
+				if(parsing != str_partition)			//#이 있다는 것
 				{
-					Log.i("Parsing","--------------");
-					write_str = write_str + "<text><br></text><text>"
-							+ str_partition + "<br></text>" +
-									"<text><br></text>" +
-							"<form method=\"post\">" +
-							"<select name=\"" + submmit_cmd + "\">";
+					int space_index=str_partition.indexOf(' ');
+					if(space_index != -1)
+					{
+						str_partition = str_partition.trim();
+					}
+					
+					submit_cmd = str_partition;
+					Log.i("Parsing","################");
+					write_str = write_str + "<textarea rows=1 cols=10>"
+							+ str_partition + "</textarea>";
+					status = status + "<text><br>" + str_partition + " : ";
+					
+					Log.i("######","String:"+str_partition);
 				}
 				
-				else									//command
+				else
 				{
-					int length = str_partition.length();
-					int index = str_partition.indexOf('.');
-					String forward = str_partition.substring(0, index-1);
-					String backward = str_partition.substring(index+1, length);
-					Log.i("Parsing","forward : "+forward);
-					Log.i("Parsing","backward : "+backward);
-					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ 
-					backward +"</option>";
-					Log.i("Parsing","*****Command*****");			
+					stoken1 = new StringTokenizer( parsing, "-" );
+					str_partition = stoken1.nextToken();
+					if(parsing != str_partition)			//-이 있다는 것
+					{
+						int space_index=str_partition.indexOf(' ');
+						if(space_index != -1)
+						{
+							str_partition = str_partition.trim();
+						}
+						
+						
+						Log.i("-------","String:"+str_partition);
+						
+						write_str = write_str + "<text><br></text><text>"
+								+ str_partition + "<br></text>" +
+								"<form method=\"post\">" +
+								"<select name=\"" + submit_cmd + "\">";
+					}
+					
+					else									//command
+					{
+						int length = str_partition.length();
+						int index = str_partition.indexOf('.');
+						int space_index=str_partition.indexOf(' ');
+					
+						
+						String Cmd = str_partition.substring(index+1, length);
+						
+						if(space_index != -1)
+						{
+							Cmd = Cmd.trim();
+						}
+						
+						Log.i("****Command*****","String:"+Cmd);
+											
+						write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
+								Cmd +"</option>";
+						
+						
+						if(Cmd.equalsIgnoreCase("off"))
+						{
+							status = status + "off" + "</text>";	
+						}
+					}
 				}
-			}
-		}	
-	
-	}
+			}	
+			
+		}
 
     
 

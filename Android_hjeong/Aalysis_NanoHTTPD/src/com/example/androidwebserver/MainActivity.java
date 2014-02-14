@@ -577,41 +577,25 @@ class NanoHTTPD
 						contentType = st.nextToken();
 						Log.e(";_true",""+contentType);
 					}
-
-					if (contentType.equalsIgnoreCase("multipart/form-data"))
+								
+				
+					// Handle application/x-www-form-urlencoded
+					String postLine = "";
+					char pbuf[] = new char[512];
+					int read = in.read(pbuf);
+					Log.e("read",""+read); // 8 출력.
+					while ( read >= 0 && !postLine.endsWith("\r\n") )  
 					{
-						Log.e("true_contentType.equalsIgnoreCase(multipart/form-data)",""+true);
-						// Handle multipart/form-data
-						if ( !st.hasMoreTokens())
-							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary missing. Usage: GET /example/file.html" );
-						String boundaryExp = st.nextToken();
-						st = new StringTokenizer( boundaryExp , "=" );
-						if (st.countTokens() != 2)
-							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary syntax error. Usage: GET /example/file.html" );
-						st.nextToken();
-						String boundary = st.nextToken();
-
-						decodeMultipartData(boundary, fbuf, in, parms, files);
+						// .endsWith This method tests if this string ends with the specified suffix.
+						postLine += String.valueOf(pbuf, 0, read);
+						Log.e("postLine",""+postLine); // screen=1 출력
+						read = in.read(pbuf);
+						Log.e("while_read",""+read); // -1 출력
 					}
-					else
-					{
-						// Handle application/x-www-form-urlencoded
-						String postLine = "";
-						char pbuf[] = new char[512];
-						int read = in.read(pbuf);
-						Log.e("read",""+read); // 8 출력.
-						while ( read >= 0 && !postLine.endsWith("\r\n") )  
-						{
-							// .endsWith This method tests if this string ends with the specified suffix.
-							postLine += String.valueOf(pbuf, 0, read);
-							Log.e("postLine",""+postLine); // screen=1 출력
-							read = in.read(pbuf);
-							Log.e("while_read",""+read); // -1 출력
-						}
-						postLine = postLine.trim();
-						Log.e("after_postLine",""+postLine);
-						decodeParms( postLine, parms );
-					}
+					postLine = postLine.trim();
+					Log.e("after_postLine",""+postLine);
+					decodeParms( postLine, parms );
+				
 				}
 				//click하기전 method에 PUT 없음.!
 				if ( method.equalsIgnoreCase( "PUT" )){
