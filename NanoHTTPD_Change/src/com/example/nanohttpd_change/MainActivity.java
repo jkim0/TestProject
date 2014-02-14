@@ -1124,7 +1124,7 @@ class NanoHTTPD {
 
 			// Change return code and add Content-Range header when skipping
 			// is requested
-			String context = "<title>Emulator ver 0.1</title>";
+			String context = "<html><head><title>Emulator ver 0.1</title></head><body><textarea rows=1 cols=10>Screen</textarea><text><br></text><text>value<br></text><form method=\"post\"><select name=\"Screen\"><option value=\"on\"selected>on</option><option value=\"off\"selected>off</option></select> <input type=\"submit\"value =\"send\"/></form><text><br><br></text><textarea rows=1 cols=10>Key_Event</textarea><text><br></text><text>key_code<br></text><form method=\"post\"><select name=\"Key_Event\"><option value=\"10\"selected>10</option><option value=\"20\"selected>20</option><option value=\"30\"selected>30</option></select> <input type=\"submit\"value =\"send\"/></form><text><br><br></text><textarea rows=1 cols=10>Power</textarea><text><br></text><text>value<br></text><form method=\"post\"><select name=\"Power\"><option value=\"on\"selected>on</option><option value=\"off\"selected>off</option></select> <input type=\"submit\"value =\"send\"/></form><text><br>Screen : off</text><text><br>Key_Event : <text><br>Power : off</text></body></html>";
 			InputStream is = new ByteArrayInputStream(context.getBytes());
 			long fileLen = context.length();
 			
