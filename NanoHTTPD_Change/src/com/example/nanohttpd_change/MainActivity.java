@@ -31,8 +31,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-
-		Log.e(TAG, "############## strat = " + "nanohttpd");
+		Log.e(TAG, "############## strat = " + "nanohttpd22");
 
 		try {
 			new NanoHTTPD(8095);
@@ -79,8 +78,7 @@ class NanoHTTPD {
 			String value = (String) e.nextElement();
 			Log.e("headers_value", "" + value);
 
-			myOut.println("  HDR: '" + value + "' = '"
-					+ header.getProperty(value) + "'");
+			myOut.println("  HDR: '" + value + "' = '"+ header.getProperty(value) + "'");
 		}// header key, value확인! 안드로이드 애플리케이션 프로젝트는 콘솔창에
 			// println 출력 안됨.! adb logcat으로 확인 할 수 있다. HDR->header
 		e = parms.propertyNames();
@@ -297,6 +295,8 @@ class NanoHTTPD {
 				// or -1 if the end of the stream has been reached.
 				// This method read bytes from a stream and stores them into a
 				// caller supplied buffer.
+				String buf_check = new String(buf);
+				Log.e("buf_check", ""+buf);
 
 				if (rlen <= 0)
 					return;
