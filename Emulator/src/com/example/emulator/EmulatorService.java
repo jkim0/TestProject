@@ -104,15 +104,12 @@ public class EmulatorService extends Service {
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			super.handleMessage(msg);
-
-			Log.d("EXAMPLE", "2// msg ="+msg);
 			switch(msg.what){
 			case STATUS_CHANGE:
-				Log.d("EXAMPLE","3");
+
 				notify mtf= (notify)msg.obj;
-				Log.d("EXAMPLE","4");
+
 				//Log.d("EXAMPLE","mClass = "+mClass);
-				
 				 NanoHTTPD.getStatus(mtf.sCmd, mtf.sValue);
 //				sendToClass stc = null;
 //				 stc.getStatus(mtf.sCmd, mtf.sValue);
@@ -245,10 +242,8 @@ public class EmulatorService extends Service {
 				//아..왜 파이널로해야되????으앙!	
 			}
 			else if(cmd.equalsIgnoreCase("wifi")){
-				Log.d("EXAMPLE", "cmd = "+cmd + "value="+value);
 				notify nt = new notify(cmd, value);
-				Log.d("EXAMPLE", "1="+nt.sCmd+"2="+nt.sValue);
-          	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+          	//  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 				
 				
 				

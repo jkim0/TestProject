@@ -66,6 +66,7 @@ class NanoHTTPD {
 	 *            Header entries, percent decoded
 	 * @return HTTP response, see class Response for details
 	 */
+	//servefile을 호출한
 	public Response serve(String uri, String method, Properties header,Properties parms) {
 		// 여기서 갑자기 post 'index2.html' 생김 / uri 발생
 		myOut.println(method + " '" + uri + "' ");
@@ -114,7 +115,7 @@ class NanoHTTPD {
 			Log.i("RESPONSE", "response_0");
 		}
 
-		/**
+		/**다
 		 * Basic constructor.
 		 */
 		public Response(String status, String mimeType, InputStream data) {
@@ -140,7 +141,6 @@ class NanoHTTPD {
 
 			Log.i("RESPONSE", "status=" + status + "mimeType=" + mimeType
 					+ "data=" + data);
-
 			Log.i("RESPONSE", "response2");
 		}
 
@@ -187,7 +187,7 @@ class NanoHTTPD {
 			HTTP_INTERNALERROR = "500 Internal Server Error",
 			HTTP_NOTIMPLEMENTED = "501 Not Implemented";
 
-	/**
+	/** 내가 어떤형식의 파이릉ㄹ 보내겠다. 
 	 * Common mime types for dynamic content
 	 */
 	public static final String MIME_PLAINTEXT = "text/plain",
@@ -779,17 +779,19 @@ class NanoHTTPD {
 		return res;
 	}
 	
+	
+	
 
 	public static void getStatus(String cmd, String value){
 		Log.d("EXAMPLE","cmd = "+cmd + "value = "+value);
-	///여기서 스트링만들고..
+///여기서 스트링만들고..
 	}
 	
 	
 	
 	
 
-	/**
+	/**(서버) <> 브라우저 
 	 * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
 	 */
 	private static Hashtable theMimeTypes = new Hashtable();
