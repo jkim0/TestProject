@@ -43,6 +43,7 @@ import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
 
 class NanoHTTPD {
+	private String mhtml=null;
 	private final String TAG = "NanoHTTPD";
 
 	// ==================================================
@@ -254,11 +255,12 @@ class NanoHTTPD {
 		}
 	}
 
-	public NanoHTTPD(int port) throws IOException {
-		this(null, port);
+	public NanoHTTPD(int port,String html) throws IOException {
+		this(null, port, html);
 	}
 
-	public NanoHTTPD(EmulatorService service, int port) throws IOException {
+	public NanoHTTPD(EmulatorService service, int port, String html) throws IOException {
+		mhtml = html;
 		mService = service;
 		myTcpPort = port;
 		mHandlerThread = new HandlerThread("PgsServiceHandler");
@@ -768,9 +770,9 @@ class NanoHTTPD {
 			if (mime == null)
 				mime = MIME_DEFAULT_BINARY;
 
-			String context = "<html><head><title>Emulator ver 0.1</title></head><body><textarea rows=1 cols=10>Screen</textarea><text><br></text><text>value<br></text><form method=\"post\"><select name=\"Screen\"><option value=\"on\"selected>on</option><option value=\"off\"selected>off</option></select> <input type=\"submit\"value =\"send\"/></form><text><br><br></text><textarea rows=1 cols=10>Key_Event</textarea><text><br></text><text>key_code<br></text><form method=\"post\"><select name=\"Key_Event\"><option value=\"10\"selected>10</option><option value=\"20\"selected>20</option><option value=\"30\"selected>30</option></select> <input type=\"submit\"value =\"send\"/></form><text><br><br></text><textarea rows=1 cols=10>Power</textarea><text><br></text><text>value<br></text><form method=\"post\"><select name=\"Power\"><option value=\"on\"selected>on</option><option value=\"off\"selected>off</option></select> <input type=\"submit\"value =\"send\"/></form><text><br>Screen : off</text><text><br>Key_Event : <text><br>Power : off</text></body></html>";
-			InputStream is = new ByteArrayInputStream(context.getBytes());
-			long fileLen = context.length();
+			
+			InputStream is = new ByteArrayInputStream(mhtml.getBytes());
+			long fileLen = mhtml.length();
 			res = new Response(HTTP_OK, mime,is);
 			res.addHeader("Content-Length", "" + fileLen);
 		}
@@ -779,11 +781,10 @@ class NanoHTTPD {
 		return res;
 	}
 	
-	
-	
-
 	public static void getStatus(String cmd, String value){
 		Log.d("EXAMPLE","cmd = "+cmd + "value = "+value);
+		
+		
 ///여기서 스트링만들고..
 	}
 	

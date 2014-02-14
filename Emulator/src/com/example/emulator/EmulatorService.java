@@ -106,8 +106,7 @@ public class EmulatorService extends Service {
 			}
 		}
 	};
-	
-	
+		
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -127,10 +126,10 @@ public class EmulatorService extends Service {
 	private void NanoHttpd() {
 		//여기서 파일 오픈해서 읽어서html 띄어주면 되는거잖아..
 		try {
-			//File_Read();
+			File_Read();
 			//File wwwroot = write_file(write_str);
 			//Log.d("wwwroot","wwwroot="+wwwroot);
-			mHttpd = new NanoHTTPD(8091);
+			mHttpd = new NanoHTTPD(8091,write_str);
 		 //mHttpd = new NanoHTTPD(this, 8091, wwwroot);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 		} catch (IOException e) {
@@ -258,6 +257,7 @@ public class EmulatorService extends Service {
 	private void check_status(){
 		
 	}
+	
 	private void keyEvent(String key_value){
 				
 		final int input = Integer.parseInt(key_value);
@@ -271,7 +271,6 @@ public class EmulatorService extends Service {
 	
 
 	}
-	
 	
 	
 	/*
