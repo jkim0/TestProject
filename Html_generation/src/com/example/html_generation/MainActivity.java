@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
 	int line_Cnt=1;					//Total line cnt
 	ByteArrayInputStream bin_s=null;
 	BufferedReader reader=null;
-	String submmit_cmd;
+	String submit_cmd;
 	String status="";
 	String write_str="<html>" +
 			"<head>" +
@@ -131,13 +131,8 @@ public class MainActivity extends Activity {
     }
     
     public void Parsing(String parsing){
-		
-    	
-		Log.i("Parsing","Parsing Function Call");
-		
+				
 		StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
-		
-		Log.i("Parsing","Parsing STR : "+parsing);
 		
 		String str_partition=null;
 		
@@ -146,11 +141,19 @@ public class MainActivity extends Activity {
 			str_partition = stoken1.nextToken();
 			if(parsing != str_partition)			//#이 있다는 것
 			{
-				submmit_cmd = str_partition;
+				int space_index=str_partition.indexOf(' ');
+				if(space_index != -1)
+				{
+					str_partition = str_partition.trim();
+				}
+				
+				submit_cmd = str_partition;
 				Log.i("Parsing","################");
 				write_str = write_str + "<textarea rows=1 cols=10>"
 						+ str_partition + "</textarea>";
 				status = status + "<text><br>" + str_partition + " : ";
+				
+				Log.i("######","String:"+str_partition);
 			}
 			
 			else
@@ -159,11 +162,19 @@ public class MainActivity extends Activity {
 				str_partition = stoken1.nextToken();
 				if(parsing != str_partition)			//-이 있다는 것
 				{
-					Log.i("Parsing","--------------");
+					int space_index=str_partition.indexOf(' ');
+					if(space_index != -1)
+					{
+						str_partition = str_partition.trim();
+					}
+					
+					
+					Log.i("-------","String:"+str_partition);
+					
 					write_str = write_str + "<text><br></text><text>"
 							+ str_partition + "<br></text>" +
 							"<form method=\"post\">" +
-							"<select name=\"" + submmit_cmd + "\">";
+							"<select name=\"" + submit_cmd + "\">";
 				}
 				
 				else									//command
@@ -171,27 +182,31 @@ public class MainActivity extends Activity {
 					int length = str_partition.length();
 					int index = str_partition.indexOf('.');
 					int space_index=str_partition.indexOf(' ');
-						
-					Log.i("Space Index","space_indext = "+space_index);
+				
 					
-					String forward = str_partition.substring(0, index-1);
-					String backward = str_partition.substring(index+1, length);
-					Log.i("Parsing","forward : "+forward);
-					Log.i("Parsing","backward : "+backward);
-					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ 
-					backward +"</option>";
-					Log.i("Parsing","*****Command*****");
+					String Cmd = str_partition.substring(index+1, length);
 					
-					if(backward.equalsIgnoreCase("off"))
+					if(space_index != -1)
+					{
+						Cmd = Cmd.trim();
+					}
+					
+					Log.i("****Command*****","String:"+Cmd);
+										
+					write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
+							Cmd +"</option>";
+					
+					
+					if(Cmd.equalsIgnoreCase("off"))
 					{
 						status = status + "off" + "</text>";	
 					}
 				}
 			}
 		}	
-	
+		
 	}
-   
+    
    public static final String to = "/data/data/com.example.html_generation/";
 	public static final String copy_name = "index.html";
 
