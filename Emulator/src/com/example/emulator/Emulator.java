@@ -11,7 +11,9 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.annotation.TargetApi;
@@ -57,8 +59,7 @@ public class Emulator extends Activity {
 //	private Button btn_wifi, btn_bluetooth, btn_broadcast;
 	private EmulatorAIDL mService = null;	
 	
-	private Switch Mode_wifi;
-	
+	private Switch Mode_wifi,Mode_blueTooth;
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		@Override
@@ -71,6 +72,7 @@ public class Emulator extends Activity {
 			mService=EmulatorAIDL.Stub.asInterface(arg1);
 		}
 	};
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +153,13 @@ public class Emulator extends Activity {
 				        }			
 				}
 			
+		});
+		Mode_blueTooth= (Switch) findViewById(R.id.bluetooth_switch);
+		Mode_blueTooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				
+			}
 		});
 //
 //		public void toggle_wifi(boolean status){

@@ -88,7 +88,10 @@ public class EmulatorService extends Service {
 		public void closefile() throws RemoteException {
 		}
 	};
-	private NanoHTTPD mClass;
+//	public interface sendToClass{
+//		public String getStatus(String cmd, String value);
+//	}
+	
 	public class notify{
 		public String sCmd;
 		public String sValue;
@@ -104,10 +107,21 @@ public class EmulatorService extends Service {
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			super.handleMessage(msg);
+
+			Log.d("EXAMPLE", "2// msg ="+msg);
 			switch(msg.what){
 			case STATUS_CHANGE:
+				Log.d("EXAMPLE","3");
 				notify mtf= (notify)msg.obj;
-				mClass.printStatus(mtf.sCmd, mtf.sValue);
+				Log.d("EXAMPLE","4");
+				//Log.d("EXAMPLE","mClass = "+mClass);
+				
+				 NanoHTTPD.getStatus(mtf.sCmd, mtf.sValue);
+//				sendToClass stc = null;
+//				 stc.getStatus(mtf.sCmd, mtf.sValue);
+//			//	NanoHTTPD.printStatus(mtf.sCmd, mtf.sValue);
+				
+				Log.d("EXAMPLE","5");
 			}
 		}
 	};
@@ -189,10 +203,11 @@ public class EmulatorService extends Service {
 		}
 	}
 	
-	private WifiManager mWifiManager;
+//	private WifiManager mWifiManager;
 	
 	//저기 클래스의 interface 를 받아와 (commandReceiver)
 	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
+		
 		@Override
 		public void onCommandReceived(String cmd, String value) {
 			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
@@ -233,6 +248,13 @@ public class EmulatorService extends Service {
 				//아..왜 파이널로해야되????으앙!	
 			}
 			else if(cmd.equalsIgnoreCase("wifi")){
+				Log.d("EXAMPLE", "cmd = "+cmd + "value="+value);
+				notify nt = new notify(cmd, value);
+				Log.d("EXAMPLE", "1="+nt.sCmd+"2="+nt.sValue);
+          	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+				
+				
+				
 				boolean status = true;
 				if(value.equalsIgnoreCase("on")){
 					status=true;
@@ -250,8 +272,8 @@ public class EmulatorService extends Service {
 				            boolean keep=true;
 				            while(keep){
 				            	if(mWifiInfo.isConnected()==true){
-				            	  notify nt = new notify(cmd, value);
-				            	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+				            	  notify nt1 = new notify(cmd, value);
+				            	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt1));
 				            		break;
 				            	}
 				            }
@@ -269,8 +291,8 @@ public class EmulatorService extends Service {
 				             	boolean keep = true;
 				             while(keep){
 					            	if(mWifiInfo.isConnected()==false){
-					            		 notify nt = new notify(cmd, value);
-						            	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+					            		 notify nt2 = new notify(cmd, value);
+						            	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt2));
 						            	  break;
 					            	}
 					            }

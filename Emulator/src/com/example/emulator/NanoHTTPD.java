@@ -277,6 +277,8 @@ class NanoHTTPD
 		myTcpPort = port;
 		this.myRootDir = wwwroot;
 /////
+	
+///		
 		mHandlerThread = new HandlerThread("PgsServiceHandler");
        mHandlerThread.start();
        mHandler = new Handler(mHandlerThread.getLooper()) {
@@ -1189,11 +1191,14 @@ class NanoHTTPD
 		return res;
 	}
 	
-	public String printStatus(String cmd, String value){
-		
-		String tmp=null;
-		return tmp;
+
+	public static void getStatus(String cmd, String value){
+		Log.d("EXAMPLE","cmd = "+cmd + "value = "+value);
+	///여기서 스트링만들고..
 	}
+	
+	
+	
 	
 
 	/**
