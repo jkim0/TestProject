@@ -42,11 +42,12 @@ public class MainActivity extends Activity {
         Log.e(TAG, "############## path = " + path);
         File wwwroot = path.getAbsoluteFile();
         try {
-			new NanoHTTPD(8093, wwwroot);
+			NanoHTTPD nano = new NanoHTTPD(8093, wwwroot);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}       
+        
     }
 
     @Override
@@ -54,8 +55,6 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
-
-   
 }
 
 class NanoHTTPD
@@ -1442,8 +1441,6 @@ class NanoHTTPD
 			res = new Response( HTTP_FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Reading file failed." );
 		}
 		
-		
-
 		res.addHeader( "Accept-Ranges", "bytes"); // Announce that the file server accepts partial content requestes
 		Log.e("return_res","return_res");
 		return res;

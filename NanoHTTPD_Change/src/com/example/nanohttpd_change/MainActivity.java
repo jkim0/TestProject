@@ -96,15 +96,7 @@ class NanoHTTPD {
 			myOut.println("  PRM: '" + value + "' = '"
 					+ parms.getProperty(value) + "'");
 		}// parms의 key, value확인 PRM->parms , PRM:'screen' = '1'
-		e = files.propertyNames();
-		while (e.hasMoreElements()) {
-
-			String value = (String) e.nextElement();
-			Log.e("files_value", "" + value);
-			myOut.println("  UPLOADED: '" + value + "' = '"
-					+ files.getProperty(value) + "'");
-		}// files의 key, value 확인. UPLOADED -> files , 업로드한 파일이 없으므로 출력되지 않는다.
-
+		
 		Log.e("myRootDir", "" + myRootDir);// /storage/sdcard 출력
 		Log.e("serve_uri", "" + uri); // method가 POST 일때 / ,
 		
@@ -609,7 +601,8 @@ class NanoHTTPD {
 				// click하기전 method에 PUT 없음.!
 
 				// Ok, now do the serve()
-				Response r = serve(uri, method, header, parms, files);
+				//Response r = serve(uri, method, header, parms, files);
+				Response r = serve(uri, method, header, parms, null);
 				if (r == null)
 					sendError(HTTP_INTERNALERROR,
 							"SERVER INTERNAL ERROR: Serve() returned a null response.");
@@ -984,7 +977,8 @@ class NanoHTTPD {
 										: pending));
 						// This method read bytes from a stream and stores them
 						// into a caller supplied buffer.
-						Log.e("sendResponse_read", "" + read);
+						Log.e("sendResponse_read", "" + buff);
+						
 						if (read <= 0)
 							break;
 						out.write(buff, 0, read);
@@ -1112,37 +1106,34 @@ class NanoHTTPD {
 			}
 		}
 
-		try {
-			if (res == null) {
-				// Get MIME type from file name extension, if possible
-				
-				String mime = null;
-				mime = (String) theMimeTypes.get("html");
-				
+		if (res == null) {
+			// Get MIME type from file name extension, if possible
 			
-				if (mime == null) {
-					mime = MIME_DEFAULT_BINARY;
-					Log.e("mime == null", "" + mime);
-				}
-
-				// Calculate etag
-				long startFrom = 0;
-				long endAt = -1;
-
-				// Change return code and add Content-Range header when skipping
-				// is requested
-				long fileLen = f.length();
-				res = new Response(HTTP_OK, mime, new FileInputStream(f));
-				res.addHeader("Content-Length", "" + fileLen);
+			String mime = null;
+			mime = (String) theMimeTypes.get("html");
+			
+		
+			if (mime == null) {
+				mime = MIME_DEFAULT_BINARY;
+				Log.e("mime == null", "" + mime);
 			}
-		} catch (IOException ioe) {
-			res = new Response(HTTP_FORBIDDEN, MIME_PLAINTEXT,
-					"FORBIDDEN: Reading file failed.");
+
+			// Calculate etag
+			long startFrom = 0;
+			long endAt = -1;
+
+			// Change return code and add Content-Range header when skipping
+			// is requested
+			String context = "<title>Emulator ver 0.1</title>";
+			InputStream is = new ByteArrayInputStream(context.getBytes());
+			long fileLen = context.length();
+			
+			res = new Response(HTTP_OK, mime, is);
+			res.addHeader("Content-Length", "" + fileLen);
 		}
 
 		res.addHeader("Accept-Ranges", "bytes"); // Announce that the file
-													// server accepts partial
-													// content requestes
+													// server accepts partial												// content requestes
 		Log.e("return_res", "return_res");
 		return res;
 	}
