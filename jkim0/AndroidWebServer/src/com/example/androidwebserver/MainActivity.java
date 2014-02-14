@@ -56,10 +56,6 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    
-    
-    
-    
 }
 
 
@@ -263,12 +259,12 @@ class NanoHTTPD
 	{
 		public HTTPSession( Socket s )
 		{
+			
 			mySocket = s;
 			Thread t = new Thread( this );
 			t.setDaemon( true );
 			t.start();
 		}
-
 		public void run()
 		{
 			try
@@ -283,7 +279,6 @@ class NanoHTTPD
 				byte[] buf = new byte[bufsize];
 				int rlen = is.read(buf, 0, bufsize);
 				if (rlen <= 0) return;
-
 				// Create a BufferedReader for parsing the header.
 				ByteArrayInputStream hbis = new ByteArrayInputStream(buf, 0, rlen);
 				BufferedReader hin = new BufferedReader( new InputStreamReader( hbis ));
