@@ -315,7 +315,7 @@ class NanoHTTPD {
 	 * session, i.e. parses the HTTP request and returns the response.
 	 */
 	public class HTTPSession implements Runnable {
-		private EmulatorAIDL mService = null;
+		
 
 		public HTTPSession(Socket s) {
 			mySocket = s;

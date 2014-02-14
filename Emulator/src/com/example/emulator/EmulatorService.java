@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Binder;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -52,39 +53,25 @@ public class EmulatorService extends Service {
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
 	public static final int STATUS_CHANGE = 5;
-	final RemoteCallbackList<EmulatorAIDLCallback> mCallbacks = new RemoteCallbackList<EmulatorAIDLCallback>();
+	
 	NotificationManager mNM;
+	
+	private final IBinder mbinder = new LocalBinder();
+	
+	public class LocalBinder extends Binder{
+		EmulatorService getService(){
+			
+			return EmulatorService.this;
+		}
+	}
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
-		return mBinder;
+		return mbinder;
 	}
 
-	private final EmulatorAIDL.Stub mBinder = new EmulatorAIDL.Stub() {
-		@Override
-		public void unregisterCallback(EmulatorAIDLCallback cb)
-				throws RemoteException {
-			// TODO Auto-generated method stub
-			if (cb != null)
-				mCallbacks.unregister(cb);
-		}
 
-		@Override
-		public void registerCallback(EmulatorAIDLCallback cb)
-				throws RemoteException {
-			if (cb != null)
-				mCallbacks.register(cb);
-		}
-
-		@Override
-		public void openfile() throws RemoteException {
-		}
-
-		@Override
-		public void closefile() throws RemoteException {
-		}
-	};
 //	public interface sendToClass{
 //		public String getStatus(String cmd, String value);
 //	}
@@ -572,7 +559,7 @@ public class EmulatorService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		mNM.cancel(R.string.remote_service_started);
-		mCallbacks.kill();
+		
 	}
 	
 	public void screenOnOff(String value) throws RemoteException {

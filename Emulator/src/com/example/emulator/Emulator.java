@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.example.emulator.EmulatorService.LocalBinder;
+
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -57,7 +59,7 @@ public class Emulator extends Activity {
 	private Intent forSpinner;
 	private Button btn_start,btn_stop;
 //	private Button btn_wifi, btn_bluetooth, btn_broadcast;
-	private EmulatorAIDL mService = null;	
+	EmulatorService mService = null;
 	
 	private Switch Mode_wifi,Mode_blueTooth;
 	
@@ -65,11 +67,13 @@ public class Emulator extends Activity {
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
 			Toast.makeText(Emulator.this, "onserviceDisConnected" ,Toast.LENGTH_SHORT).show();
+			
 		}
 		@Override
-		public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+		public void onServiceConnected(ComponentName arg0, IBinder service) {
 			Toast.makeText(Emulator.this, "onserviceConnected" ,Toast.LENGTH_SHORT).show();
-			mService=EmulatorAIDL.Stub.asInterface(arg1);
+			LocalBinder binder = (LocalBinder) service;
+			mService = binder.getService();
 		}
 	};
 
