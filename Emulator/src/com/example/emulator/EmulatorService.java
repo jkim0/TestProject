@@ -15,6 +15,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import com.example.emulator.NanoHTTPD.CmdData;
+
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.Notification;
@@ -34,7 +37,9 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.Parcel;
 import android.os.PowerManager;
 import android.os.RemoteCallbackList;
@@ -47,12 +52,12 @@ import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class EmulatorService extends Service {
-
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
+	public static final int STATUS_CHANGE = 5;
 	final RemoteCallbackList<EmulatorAIDLCallback> mCallbacks = new RemoteCallbackList<EmulatorAIDLCallback>();
 	NotificationManager mNM;
-
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -83,9 +88,29 @@ public class EmulatorService extends Service {
 		public void closefile() throws RemoteException {
 		}
 	};
-
-	
-
+	private NanoHTTPD mClass;
+	public class notify{
+		public String sCmd;
+		public String sValue;
+		
+		public notify(String arg1, String arg2){
+			sCmd = arg1;
+			sValue = arg2;
+		}
+	}
+//notify the change of BlueTooth or Wifi	
+	private Handler mHandler= new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+			switch(msg.what){
+			case STATUS_CHANGE:
+				notify mtf= (notify)msg.obj;
+				mClass.printStatus(mtf.sCmd, mtf.sValue);
+			}
+		}
+	};
 	
 	
 	@Override
@@ -219,17 +244,36 @@ public class EmulatorService extends Service {
 				WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 				ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-				
+				//connect
 				        if (status == true && !wifiManager.isWifiEnabled()) {
-				            wifiManager.setWifiEnabled(true);				 
+				            wifiManager.setWifiEnabled(true);		
+				            boolean keep=true;
+				            while(keep){
+				            	if(mWifiInfo.isConnected()==true){
+				            	  notify nt = new notify(cmd, value);
+				            	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+				            		break;
+				            	}
+				            }
 				            Toast.makeText(getApplicationContext(), "wifiInfo =" + mWifiInfo, Toast.LENGTH_LONG).show();
 				             Log.d("WIFI_on","available = "+mWifiInfo.isAvailable());
 				             Log.d("WIFI_on","available = "+mWifiInfo.isConnected());
+				             
+				             
+				   // disconnect          
 				        } else if (status == false && wifiManager.isWifiEnabled()) {
 				            wifiManager.setWifiEnabled(false);
 				            Toast.makeText(getApplicationContext(), "wifiInfo = "+ mWifiInfo, Toast.LENGTH_LONG).show();
 				            Log.d("WIFI_off","available = "+mWifiInfo.isAvailable());
-				             Log.d("WIFI_off","available = "+mWifiInfo.isConnected());       
+				             Log.d("WIFI_off","available = "+mWifiInfo.isConnected()); 
+				             	boolean keep = true;
+				             while(keep){
+					            	if(mWifiInfo.isConnected()==false){
+					            		 notify nt = new notify(cmd, value);
+						            	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+						            	  break;
+					            	}
+					            }
 				        }			
 				
 				
@@ -258,7 +302,9 @@ public class EmulatorService extends Service {
 		}
 
 	};
-	
+	private void check_status(){
+		
+	}
 	private void keyEvent(String key_value){
 				
 		final int input = Integer.parseInt(key_value);

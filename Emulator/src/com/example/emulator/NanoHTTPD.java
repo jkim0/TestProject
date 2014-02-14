@@ -249,13 +249,14 @@ class NanoHTTPD
 				cr.onCommandReceived(cmd, value);
 		}
 	}
+	
 	private EmulatorService mService = null;
 	
 	private HandlerThread mHandlerThread = null; //cuzof CTx
 	private Handler mHandler = null;				//
 	
 	private final int NOTIFY_CMD_RECEIVED = 0;
-	private class CmdData {
+	public class CmdData {
 		public String mCmd;
 		public String mValue;
 		
@@ -1187,6 +1188,13 @@ class NanoHTTPD
 		res.addHeader( "Accept-Ranges", "bytes"); // Announce that the file server accepts partial content requestes
 		return res;
 	}
+	
+	public String printStatus(String cmd, String value){
+		
+		String tmp=null;
+		return tmp;
+	}
+	
 
 	/**
 	 * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
