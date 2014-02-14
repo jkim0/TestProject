@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,7 +12,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -22,10 +19,8 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 
 public class MainActivity extends Activity {
@@ -36,17 +31,16 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		File path = Environment.getExternalStorageDirectory();
-		Log.e(TAG, "############## path = " + path);
-		File wwwroot = path.getAbsoluteFile();
+
+		Log.e(TAG, "############## strat = " + "nanohttpd");
+
 		try {
-			new NanoHTTPD(8094, wwwroot);
+			new NanoHTTPD(8095);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
 }
 
 class NanoHTTPD {
@@ -73,7 +67,7 @@ class NanoHTTPD {
 	 * @return HTTP response, see class Response for details
 	 */
 	public Response serve(String uri, String method, Properties header,
-			Properties parms, Properties files) {
+			Properties parms) {
 		Log.e("Respose_serve", "_serve_start");
 		myOut.println(method + " '" + uri + "' ");
 		// adp locgcat으로 출력 내용을 볼수 있다.
@@ -100,7 +94,7 @@ class NanoHTTPD {
 		Log.e("myRootDir", "" + myRootDir);// /storage/sdcard 출력
 		Log.e("serve_uri", "" + uri); // method가 POST 일때 / ,
 		
-		return serveFile(uri, header, myRootDir, true);
+		return serveFile(uri, header, true);
 	}
 
 	/**
@@ -207,11 +201,9 @@ class NanoHTTPD {
 	 * <p>
 	 * Throws an IOException if the socket is already in use
 	 */
-	public NanoHTTPD(int port, File wwwroot) throws IOException {
+	public NanoHTTPD(int port) throws IOException {
 
-		Log.e("NanoHTTPD", "" + wwwroot);
 		myTcpPort = port;
-		this.myRootDir = wwwroot;// file 에 wwwroot(/mnt/sdcard) 경로를 대입
 		myServerSocket = new ServerSocket(myTcpPort); // port번호가 8090인 socket
 														// 인스턴스 생성
 		myThread = new Thread(new Runnable() {
@@ -266,11 +258,9 @@ class NanoHTTPD {
 			// (Socket[address=/127.0.0.1,port=59040,localPort=8090])
 			mySocket = s;// mySocket에 소켓 저장.
 			Thread t = new Thread(this);
-			Log.e("Before_setDaemon", "" + t);
+
 			t.setDaemon(true);
 			t.start();
-			Log.e("start_thread", "call_start");
-			// NanoHTTPD 의 while(true) 문으로 다시가서
 			// new HTTPSession( myServerSocket.accept()); 호출
 			// 바로 run()으로 시작 된다.
 		}
@@ -307,61 +297,14 @@ class NanoHTTPD {
 				// or -1 if the end of the stream has been reached.
 				// This method read bytes from a stream and stores them into a
 				// caller supplied buffer.
-				// 0 ~ 8192까지 읽는 것인가?
 
 				if (rlen <= 0)
 					return;
 				char[] check_buf = new char[rlen + 1];
 				Log.e("HTTPSession_run_rlen", "" + rlen);
-				// 436 접속할때 마다 숫자가 다르게 나왔다. ,
-				// click 후 552 ,
-				for (int i = 0; i <= rlen; i++)
-					check_buf[i] = (char) buf[i];
-				// buf에 저장된 내용을 문자로 출력하기 위해 char 배열에 다시 저장
-				String buf_check = new String(check_buf);
-				// char 배열을 문자로 바꿈.
-
-				// Log.e("buf_check",""+buf_check);
-				// click 전 buf내용
-				// GET / HTTP/1.1
-				// Host: localhost:8090
-				// Connection: keep-alive
-				// Accept:
-				// text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-				// User-Agent: Mozilla/5.0 (Linux; U; Android 4.0.2; en-us; sdk
-				// Build/ICS_MR0) AppleWebKit/534.30 (KHTML, like Gecko)
-				// Version/4.0 Mobile Safari/534.30
-				// Accept-Encoding: gzip,deflate
-				// Accept-Language: en-US
-				// Accept-Charset: utf-8, iso-8859-1, utf-16, *;q=0.7
-				//
-				// ��
-				// click 전 buf 내용 end
-
-				// click 후 buf 내용
-				// POST / HTTP/1.1
-				// Host: localhost:8090
-				// Connection: keep-alive
-				// Referer: http://localhost:8090/ 추가
-				// Content-Length: 8 추가
-				// Cache-Control: max-age=0 추가
-				// Origin: http://localhost:8090 추가
-				// Content-Type: application/x-www-form-urlencoded 추가
-				// Accept:
-				// text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-				// User-Agent: Mozilla/5.0 (Linux; U; Android 4.0.2; en-us; sdk
-				// Build/ICS_MR0) AppleWebKit/534.30 (KHTML, like Gecko)
-				// Version/4.0 Mobile Safari/534.30
-				// Accept-Encoding: gzip,deflate
-				// Accept-Language: en-US
-				// Accept-Charset: utf-8, iso-8859-1, utf-16, *;q=0.7
-				//
-				// screen=1��
-				// click 후 buf 내용 end
 
 				// Create a BufferedReader for parsing the header.
-				ByteArrayInputStream hbis = new ByteArrayInputStream(buf, 0,
-						rlen);
+				ByteArrayInputStream hbis = new ByteArrayInputStream(buf, 0,rlen);
 				// this.mark = 0;
 				// this.buf = buf;
 				// this.count = buf.length;
@@ -372,16 +315,7 @@ class NanoHTTPD {
 				Log.e("ByteArrayInputStream hbis_buf.length", "" + buf.length); // 8192
 
 				Log.e("ByteArrayInputSream_hbis", "" + hbis);
-				BufferedReader hin = new BufferedReader(new InputStreamReader(
-						hbis));
-				// Constructs a new BufferedReader, providing in with a buffer
-				// of 8192 characters.
-				// The Java.io.BufferedReader class reads text from a
-				// character-input stream,
-				// buffering characters so as to provide for the efficient
-				// reading of characters, arrays,
-				// and lines.Following are the important points about
-				// BufferedReader:
+				BufferedReader hin = new BufferedReader(new InputStreamReader(hbis));
 				// InputStreamReader는 Charset을 이용하여 8bit(byte)로된 InputStream 내용을
 				// Char(16bits)로 변환
 				// BufferedReader는 char배열은 만든다.! buf = new char[size]; size는
@@ -397,48 +331,16 @@ class NanoHTTPD {
 				Log.e("before_decodeHeader_parms", "" + parms);
 				Log.e("before_decodeHeader_header", "" + header);
 
-				// Decode the header into parms and header java properties
+				// Decode the header into pre and header java properties
 				decodeHeader(hin, pre, parms, header);
 
 				Log.e("after_decodeHeader_hin", "" + hin);
-				Log.e("after_decodeHeader_pre", "" + pre); // {uri=/,
-															// method=GET} , 클릭
-															// 후 {uri=/,
-															// method=POST
-				Log.e("after_decodeHeader_parms", "" + parms); // {} , 클릭 후 {}
+				Log.e("after_decodeHeader_pre", "" + pre); 
+				Log.e("after_decodeHeader_parms", "" + parms); 
 				Log.e("after_decodeHeader_header", "" + header);
 
-				// ----------클릭
-				// 전------------------------------------------------------------------
-				// {cache-control=no-cache, connection=keep-alive,
-				// accept-language=en-US,
-				// host=localhost:8090, accept=text/html,application/xhtml+xml,
-				// application/xml;q=0.9,*/*;q=0.8, user-agent=Mozilla/5.0
-				// (Linux; U; Android 4.0.2; en-us; sdk Build/ICS_MR0)
-				// AppleWebKit/534.30 (KHTML, like Gecko)
-				// Version/4.0 Mobile Safari/534.30,
-				// accept-encoding=gzip,deflate,
-				// accept-charset=utf-8, iso-8859-1, utf-16, *;q=0.7,
-				// pragma=no-cache}
-
-				// --------클릭 후
-				// ---------------------------------------------------------------
-				// {content-type=application/x-www-form-urlencoded,
-				// cache-control=max-age=0,
-				// connection=keep-alive, accept-language=en-US,
-				// host=localhost:8090,
-				// accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,
-				// content-length=8, origin=http://localhost:8090,
-				// user-agent=Mozilla/5.0 (Linux; U; Android 4.0.2; en-us; sdk
-				// Build/ICS_MR0)
-				// AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile
-				// Safari/534.30,
-				// accept-encoding=gzip,deflate, referer=http://localhost:8090/,
-				// accept-charset=utf-8, iso-8859-1, utf-16, *;q=0.7}
-
 				String method = pre.getProperty("method");
-				Log.e("method_pre.getProperty", "" + method); // GET 출력 , 클릭 후
-																// POST 출력
+				Log.e("method_pre.getProperty", "" + method); // GET 출력 , 클릭 후 POST 출력
 				String uri = pre.getProperty("uri");
 				Log.e("uri_pre.getProperty", "" + uri); // / 출력
 				long size = 0x7FFFFFFFFFFFFFFFl;
@@ -463,15 +365,6 @@ class NanoHTTPD {
 				// lines.
 				int splitbyte = 0;
 				boolean sbfound = false;
-
-				char char_r = (char) '\r';
-				char char_n = (char) '\n';
-				int chartoint_r = char_r;
-				int chartoint_n = char_n;
-
-				Log.e("chartoint_r", "chartoint_r =" + chartoint_r); // 13
-				Log.e("chartoint_n", "chartoint_n =" + chartoint_n);// 10
-
 
 				while (splitbyte < rlen) {
 					// Log.e("splibyte < rlen","splitbyte: "+splitbyte+", rlen: "+rlen);
@@ -509,28 +402,15 @@ class NanoHTTPD {
 					size -= rlen - splitbyte + 1; // //size = size -
 													// rlen+splitbyte-1;
 					Log.e("size -= rlen - splitbyte +1", "" + size);
-				} else if (!sbfound || size == 0x7FFFFFFFFFFFFFFFl) { // 클릭후
-																		// sbfoud=
-																		// true,
-																		// size는
-																		// -1
-																		// 조건을
-																		// 만족하지
-																		// 않는다.
-					Log.e("!sbfound || size == 0x7FFFFFFFFFFFFFFFl", "" + true); // true
-																					// 출력
+				} else if (!sbfound || size == 0x7FFFFFFFFFFFFFFFl) { 
 					size = 0;
 				}
-
-				Log.e("check_size", "" + size); // 0 출력, 클릭 후 -1 출력
-
-				Log.e("olde_rlen", "" + rlen); // 436 , 클릭 후 533
 
 				// Now read all the body and write it to f
 				buf = new byte[512];
 				Log.e("bufsize=512", "" + buf);
 				while (rlen >= 0 && size > 0) // size가 0 이어서 while에 못들어감. , 클릭후
-												// size가 -1 조건을 만족 못!
+												// size가 -1 조건을 만족 못함!
 				{
 					rlen = is.read(buf, 0, 512);
 					Log.e("changed_rlen", "changed_rlen=" + rlen
@@ -554,12 +434,7 @@ class NanoHTTPD {
 				ByteArrayInputStream bin = new ByteArrayInputStream(fbuf);
 				// this.buf = buf;
 				// bin의 byte배열인 buf가 fbuf를 가리키는 인스턴스를 생성
-				BufferedReader in = new BufferedReader(new InputStreamReader(
-						bin));
-				// The Java.io.BufferedReader class reads text from a
-				// character-input stream,
-				// buffering characters so as to provide for the efficient
-				// reading of characters, arrays, and lines.
+				BufferedReader in = new BufferedReader(new InputStreamReader(bin));
 
 				// If the method is POST, there may be parameters
 				// in data section, too, read it:
@@ -602,7 +477,7 @@ class NanoHTTPD {
 
 				// Ok, now do the serve()
 				//Response r = serve(uri, method, header, parms, files);
-				Response r = serve(uri, method, header, parms, null);
+				Response r = serve(uri, method, header, parms);
 				if (r == null)
 					sendError(HTTP_INTERNALERROR,
 							"SERVER INTERNAL ERROR: Serve() returned a null response.");
@@ -691,14 +566,7 @@ class NanoHTTPD {
 					Log.e("line.trim()", "" + line.trim());
 					// line.trim() line의 처음과 끝의 공백을 제거한다. Host: localhost:8090
 					// 출력
-					while (line != null && line.trim().length() > 0) // line이
-																		// null이고
-																		// line에
-																		// 연속되는
-																		// 문자가
-																		// 없으면
-																		// while문
-																		// 중단.
+					while (line != null && line.trim().length() > 0) 
 					{
 						int p = line.indexOf(':'); // line 안에 : 특정 문자(:)가 시작되는
 													// 인덱스를 리턴한다.!
@@ -746,36 +614,8 @@ class NanoHTTPD {
 						Log.e("HTTP_header_next_line", "" + line);
 					}
 				}
-
-				Log.e("finish_put_header", "" + header);
-				// {cache-control=no-cache, connection=keep-alive,
-				// accept-language=en-US,
-				// host=localhost:8090, accept=text/html,application/xhtml+xml,
-				// application/xml;q=0.9,*/*;q=0.8, user-agent=Mozilla/5.0
-				// (Linux; U; Android 4.0.2; en-us; sdk Build/ICS_MR0)
-				// AppleWebKit/534.30 (KHTML, like Gecko)
-				// Version/4.0 Mobile Safari/534.30,
-				// accept-encoding=gzip,deflate,
-				// accept-charset=utf-8, iso-8859-1, utf-16, *;q=0.7,
-				// pragma=no-cache}
-				// hashtable은 랜덤으로 저장된다!
-
-				// ----------screen on click 후 내용
-				// {content-type=application/x-www-form-urlencoded,
-				// cache-control=max-age=0,
-				// connection=keep-alive, accept-language=en-US,
-				// host=localhost:8090,
-				// accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,
-				// content-length=8, origin=http://localhost:8090,
-				// user-agent=Mozilla/5.0 (Linux; U; Android 4.0.2; en-us; sdk
-				// Build/ICS_MR0)
-				// AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile
-				// Safari/534.30,
-				// accept-encoding=gzip,deflate, referer=http://localhost:8090/,
-				// accept-charset=utf-8, iso-8859-1, utf-16, *;q=0.7}
-
 				Log.e("before_pre.put(uri, uri)", "" + pre); // {method=GET} ,
-																// 클릭 후
+															// 클릭 후
 																// {method=POST}
 				pre.put("uri", uri);
 				Log.e("after_pre.put(uri, uri)", "" + pre); // {uri=/,
@@ -804,39 +644,13 @@ class NanoHTTPD {
 		 * Retrieves the content of a sent file and saves it to a temporary
 		 * file. The full path to the saved file is returned.
 		 **/
-		private String saveTmpFile(byte[] b, int offset, int len) {
-			Log.e("saveTmpFile", "start");
 
-			String path = "";
-			if (len > 0) {
-				String tmpdir = System.getProperty("java.io.tmpdir");
-				try {
-					File temp = File.createTempFile("NanoHTTPD", "", new File(
-							tmpdir));
-					OutputStream fstream = new FileOutputStream(temp);
-					fstream.write(b, offset, len);
-					fstream.close();
-					path = temp.getAbsolutePath();
-				} catch (Exception e) { // Catch exception if any
-					myErr.println("Error: " + e.getMessage());
-				}
-			}
-			return path;
-		}
 
 		/**
 		 * It returns the offset separating multipart file headers from the
 		 * file's data.
 		 **/
-		private int stripMultipartHeaders(byte[] b, int offset) {
-			int i = 0;
-			for (i = offset; i < b.length; i++) {
-				if (b[i] == '\r' && b[++i] == '\n' && b[++i] == '\r'
-						&& b[++i] == '\n')
-					break;
-			}
-			return i + 1;
-		}
+	
 
 		/**
 		 * Decodes the percent encoding scheme. <br/>
@@ -1006,24 +820,7 @@ class NanoHTTPD {
 	 * URL-encodes everything between "/"-characters. Encodes spaces as '%20'
 	 * instead of '+'.
 	 */
-	private String encodeUri(String uri) {
-		String newUri = "";
-		StringTokenizer st = new StringTokenizer(uri, "/ ", true);
-		while (st.hasMoreTokens()) {
-			String tok = st.nextToken();
-			if (tok.equals("/"))
-				newUri += "/";
-			else if (tok.equals(" "))
-				newUri += "%20";
-			else {
-				newUri += URLEncoder.encode(tok);
-				// For Java 1.4 you'll want to use this instead:
-				// try { newUri += URLEncoder.encode( tok, "UTF-8" ); } catch (
-				// java.io.UnsupportedEncodingException uee ) {}
-			}
-		}
-		return newUri;
-	}
+	
 
 	private int myTcpPort;
 	private final ServerSocket myServerSocket;
@@ -1038,89 +835,20 @@ class NanoHTTPD {
 	 * Serves file from homeDir and its' subdirectories (only). Uses only URI,
 	 * ignores all headers and HTTP parameters.
 	 */
-	public Response serveFile(String uri, Properties header, File homeDir,
-			boolean allowDirectoryListing) {
+	public Response serveFile(String uri, Properties header,boolean allowDirectoryListing) {
 		Log.e("serveFile", "start_serveFile");
 		Response res = null;
-		Log.e("homeDir", "" + homeDir); // homeDir -> myRootDir
-		// 여기어 index.html file을 저장했었다.
-		// Make sure we won't die of an exception later
-		if (res == null) {
-			// Remove URL arguments
 
-			Log.e("File.separatorChar", "" + File.separatorChar); // / 출력
-			// File.separatorChar
-			// separatorChar = System.getProperty("file.separator",
-			// "/").charAt(0);
-			// / 만 출력하는것 같다.
-			// System.getProperty("file.separator", "/") -> Character that
-			// separates components of a file path.
-			// This is "/" on UNIX and "\" on Windows.
-			// 실행되는 정보를 얻을 수 있다.
-			Log.e("system_get_property",
-					"" + System.getProperty("file.separator")); // / 출력!
-
-			uri = uri.trim().replace(File.separatorChar, '/');
-			// Replaces every instance of a character in this String with a new
-			// character( '/' ).
-			// uri에 File.separatorChar 경로가 있으면 '/'로 바꾼다!
-			// 파일 upload를 하면 uri가 / 가 변경 되는것 같다. uri는 GET, /(uri 내용) , HTTP/1.1
-			// File.separatorChar는 / 만 출력하는데 왜 replace를 이용해서 '/' 로 다시 바꾸는지 잘
-			// 모르겠다.
-			Log.e("uri_file.separatorChar", "" + uri); // / 출력
-
-			// Prohibit getting out of current directory/*
-		}
-
-		File f = new File(homeDir, uri);
-		// homeDir 경로와 uri의 이름으로 path를 설정. home경로 뒤에 uri가 붙여짐
-		/* 여기부분은 나중에 수정해야 되기 때문에 삭제 금지!!!!
-		if (res == null && !f.exists()) { // f의 경로가 존재해서 조건 만족x
-			Log.e("new File", "" + true);
-			res = new Response(HTTP_NOTFOUND, MIME_PLAINTEXT,
-					"Error 404, file not found."); // method가 GET 일 때 호출
-		}*/
-
-		// List the directory, if necessary
-		if (res == null && f.isDirectory()) {
-			Log.e("directory_res", "" + true); // method 가 put일 때 true.
-
-			// Browsers get confused without '/' after the
-			// directory, send a redirect.
-
-			if (res == null) {
-				Log.e("res==null", "" + true);
-				// First try index.html and index.htm
-				if (new File(f, "index.html").exists()) {
-					f = new File(homeDir, uri + "/index.html");
-					Log.e("new File( f, index.html ).exists()", "" + f);
-					// uri 가 / 인데 + /index.html 하면 //index.html 이 아닌가?
-					// /storage/sdacrd/index.html 출력
-					// uri가 index.html을 upload하고 싶은곳??
-				} 
-				// No index file, list the directory if it is readable
-				 else {
-					res = new Response(HTTP_FORBIDDEN, MIME_PLAINTEXT,
-							"FORBIDDEN: No directory listing.");
-				}
-			}
-		}
 
 		if (res == null) {
-			// Get MIME type from file name extension, if possible
-			
+			// Get MIME type from file name extension, if possible			
 			String mime = null;
 			mime = (String) theMimeTypes.get("html");
-			
-		
+					
 			if (mime == null) {
 				mime = MIME_DEFAULT_BINARY;
 				Log.e("mime == null", "" + mime);
 			}
-
-			// Calculate etag
-			long startFrom = 0;
-			long endAt = -1;
 
 			// Change return code and add Content-Range header when skipping
 			// is requested
@@ -1131,7 +859,6 @@ class NanoHTTPD {
 			res = new Response(HTTP_OK, mime, is);
 			res.addHeader("Content-Length", "" + fileLen);
 		}
-
 		res.addHeader("Accept-Ranges", "bytes"); // Announce that the file
 													// server accepts partial												// content requestes
 		Log.e("return_res", "return_res");
