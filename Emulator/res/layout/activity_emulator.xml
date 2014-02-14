@@ -51,9 +51,23 @@
           android:layout_marginTop="128dp"
           android:background="@android:color/background_dark"
           android:checked="false"
-          android:text="Wi-Fi Settings"
+          android:text="@string/wifi_text"
           android:textColor="@android:color/white"
-          android:textOff="OFF"
-          android:textOn="ON" />
+          android:textOff="@string/off"
+          android:textOn="@string/on" />
+
+      <Switch
+          android:id="@+id/bluetooth_switch"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:layout_below="@+id/wifi_switch"
+          android:layout_marginTop="14dp"
+          android:background="@android:color/background_dark"
+          android:checked="false"
+          android:text="@string/bluetooth_text"
+          android:textColor="@android:color/white"
+          android:textOff="@string/off"
+          android:textOn="@string/on" />
 
 </RelativeLayout>
