@@ -15,9 +15,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
-import com.example.emulator.NanoHTTPD.CmdData;
-
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.Notification;
@@ -192,10 +189,10 @@ public class EmulatorService extends Service {
 	private void NanoHttpd() {
 		//여기서 파일 오픈해서 읽어서html 띄어주면 되는거잖아..
 		try {
-			File_Read();
-			File wwwroot = write_file(write_str);
-			Log.d("wwwroot","wwwroot="+wwwroot);
-			mHttpd = new NanoHTTPD(8091,wwwroot);
+			//File_Read();
+			//File wwwroot = write_file(write_str);
+			//Log.d("wwwroot","wwwroot="+wwwroot);
+			mHttpd = new NanoHTTPD(8091);
 		 //mHttpd = new NanoHTTPD(this, 8091, wwwroot);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 		} catch (IOException e) {
