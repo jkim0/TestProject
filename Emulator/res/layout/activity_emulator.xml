@@ -34,12 +34,31 @@
         android:text="@string/start" />
 
     <Button
-        android:id="@+id/btn_spinner"
+        android:id="@+id/btn_wifi"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_start"
         android:layout_marginTop="19dp"
-        android:text="@string/spinner" />
+        android:text="@string/wifi" />
+
+    <Button
+        android:id="@+id/btn_bluetooth"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_start"
+        android:layout_marginTop="19dp"
+        android:text="@string/bluetooth" />
+    
+      <Button
+        android:id="@+id/btn_broadcast"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_start"
+        android:layout_marginTop="19dp"
+        android:text="@string/broadcast" />
+    
 
 </RelativeLayout>

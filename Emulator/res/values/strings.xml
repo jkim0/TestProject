@@ -10,5 +10,8 @@
     <string name="remote_service_label">remote_service_label</string>
 	<string name="spinner">spinner</string>
 	<string name="choose_one_section">Choose_one_section </string>
+	<string name="wifi">wifi</string>
+	<string name="bluetooth">bluetooth</string>
+	<string name="broadcast">broadcast</string>
 	
 </resources>

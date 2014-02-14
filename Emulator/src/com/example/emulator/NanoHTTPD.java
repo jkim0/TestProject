@@ -481,7 +481,7 @@ class NanoHTTPD
 						Log.d("POST","pre.getProperty(uri)= "+pre.getProperty("uri"));
 						Log.d("POST","uri = "+uri);
 				//		uri = "/index3.html";
-						uri="/write.html";
+						
 						Log.d("POST","pre.getProperty(uri)= "+pre.getProperty("uri"));
 						Log.d("POST","uri = "+uri);
 					}//end of MULTI_PART아닐 경우 
@@ -796,10 +796,19 @@ class NanoHTTPD
 ////여기서 추가 	
 			if(Compare.equalsIgnoreCase("screen")||Compare.equalsIgnoreCase("keyboard"))
 			{
+				Log.d("screnn/na","value=" +p.getProperty(Compare));
 				//notifyCommandReceived(Compare, p.getProperty(Compare));				
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
 			}	
+			else if(Compare.equalsIgnoreCase("keyboard")){
+				CmdData cd = new CmdData(Compare,p.getProperty(Compare));
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
+			}
+			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
+				CmdData cd = new CmdData(Compare,null);
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
+			}
 			
 			// dot anything.
 		}	
@@ -1212,7 +1221,9 @@ class NanoHTTPD
 			"class		application/octet-stream " );
 		while ( st.hasMoreTokens())
 			theMimeTypes.put( st.nextToken(), st.nextToken());
+
 	}
+	
 
 	private static int theBufferSize = 16 * 1024;
 
