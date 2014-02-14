@@ -163,9 +163,6 @@ public class EmulatorService extends Service {
 			e.printStackTrace();
 		}
 	}
-	
-	private WifiManager mWifiManager;
-	
 	//저기 클래스의 interface 를 받아와 (commandReceiver)
 	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
 		@Override
@@ -208,42 +205,7 @@ public class EmulatorService extends Service {
 				//아..왜 파이널로해야되????으앙!	
 			}
 			else if(cmd.equalsIgnoreCase("wifi")){
-				boolean status = true;
-				if(value.equalsIgnoreCase("on")){
-					status=true;
-				}
-				else{
-					status= false;
-				}
-				
-				WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-				ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-				NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-				
-				        if (status == true && !wifiManager.isWifiEnabled()) {
-				            wifiManager.setWifiEnabled(true);				 
-				            Toast.makeText(getApplicationContext(), "wifiInfo =" + mWifiInfo, Toast.LENGTH_LONG).show();
-				             Log.d("WIFI_on","available = "+mWifiInfo.isAvailable());
-				             Log.d("WIFI_on","available = "+mWifiInfo.isConnected());
-				        } else if (status == false && wifiManager.isWifiEnabled()) {
-				            wifiManager.setWifiEnabled(false);
-				            Toast.makeText(getApplicationContext(), "wifiInfo = "+ mWifiInfo, Toast.LENGTH_LONG).show();
-				            Log.d("WIFI_off","available = "+mWifiInfo.isAvailable());
-				             Log.d("WIFI_off","available = "+mWifiInfo.isConnected());       
-				        }			
-				
-				
-				//	wifiManager();	
-				/*
-				boolean status = true;
-				
-				  WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-			        if (status == true && !wifiManager.isWifiEnabled()) {
-			            wifiManager.setWifiEnabled(true);
-			        } else if (status == false && wifiManager.isWifiEnabled()) {
-			            wifiManager.setWifiEnabled(false);
-			        }
-*/				
+			//	wifiManager();	
 			}
 			else if(cmd.equalsIgnoreCase("broadcast")){
 				
@@ -272,9 +234,6 @@ public class EmulatorService extends Service {
 	
 
 	}
-	
-	
-	
 	/*
 	private ConnectivityManager mConnMnger;
 	private NetworkInfo wifiInfo;
@@ -593,11 +552,12 @@ public class EmulatorService extends Service {
 			cnt++;							//readed one line cnt increase +1
 			if(str.length() == 0)			//Newline '\n'
 			{
+						+ "</form>";
 				Log.i("Parsing","Newline");
 				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>" +
 						"<text><br><br></text>";
-
+>>>>>>> 4a2103f2407441ff3f132d077c56bfad907f419e
 			}
 			
 			else			//한 줄 띄기가 아닐 때만 Parsing을 호출
@@ -618,7 +578,29 @@ public class EmulatorService extends Service {
 	}
     
 
-
+<<<<<<< HEAD
+    public void Parsing(String parsing){
+		
+    	
+//		Log.i("Parsing","Parsing Function Call");
+		
+		StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
+		
+//		Log.i("Parsing","Parsing STR : "+parsing);
+		
+		String str_partition=null;
+		
+		if(stoken1.hasMoreTokens())
+		{
+			str_partition = stoken1.nextToken();
+			if(parsing != str_partition)			//#이 있다는 것
+			{
+				submmit_cmd = str_partition;
+	//			Log.i("Parsing","################");
+				write_str = write_str + "<textarea rows=1 cols=10>"
+						+ str_partition +"</textarea>";
+			}
+=======
 	 public void Add_status(){
 	    	
 	    	write_str = write_str + status; 
@@ -631,14 +613,21 @@ public class EmulatorService extends Service {
 			StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
 			
 			String str_partition=null;
-
+>>>>>>> 4a2103f2407441ff3f132d077c56bfad907f419e
 			
 			if(stoken1.hasMoreTokens())
 			{
 				str_partition = stoken1.nextToken();
 				if(parsing != str_partition)			//#이 있다는 것
 				{
-
+<<<<<<< HEAD
+		//			Log.i("Parsing","--------------");
+					write_str = write_str + "<text><br></text><text>"
+							+ str_partition + "<br></text>" +
+									"<text><br></text>" +
+							"<form method=\"post\">" +
+							"<select name=\"" + submmit_cmd + "\">";
+=======
 					int space_index=str_partition.indexOf(' ');
 					if(space_index != -1)
 					{
@@ -652,12 +641,27 @@ public class EmulatorService extends Service {
 					status = status + "<text><br>" + str_partition + " : ";
 					
 					Log.i("######","String:"+str_partition);
-
+>>>>>>> 4a2103f2407441ff3f132d077c56bfad907f419e
 				}
 				
 				else
 				{
-
+<<<<<<< HEAD
+					int length = str_partition.length();
+					int index = str_partition.indexOf('.'); 
+					int index_space=str_partition.indexOf(' '); ///스페이스까지...아....해쉬테이블...미스매치남
+					if(index_space>1 && index_space<=length){
+						length= index_space;
+					}
+		
+					String forward = str_partition.substring(0, index-1);
+					String backward = str_partition.substring(index+1, length);
+				//	Log.i("Parsing","forward : "+forward);
+				//	Log.i("Parsing","backward : "+backward);
+					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ 
+					backward +"</option>";
+				//	Log.i("Parsing","*****Command*****");			
+=======
 					stoken1 = new StringTokenizer( parsing, "-" );
 					str_partition = stoken1.nextToken();
 					if(parsing != str_partition)			//-이 있다는 것
@@ -702,7 +706,7 @@ public class EmulatorService extends Service {
 							status = status + "off" + "</text>";	
 						}
 					}
-
+>>>>>>> 4a2103f2407441ff3f132d077c56bfad907f419e
 				}
 			}	
 			

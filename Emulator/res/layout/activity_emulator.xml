@@ -42,23 +42,18 @@
         android:layout_marginTop="19dp"
         android:text="@string/wifi" />
 
-    <Button
-        android:id="@+id/btn_bluetooth"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_start"
-        android:layout_marginTop="19dp"
-        android:text="@string/bluetooth" />
-    
-      <Button
-        android:id="@+id/btn_broadcast"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_start"
-        android:layout_marginTop="19dp"
-        android:text="@string/broadcast" />
-    
+      <Switch
+          android:id="@+id/wifi_switch"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:layout_below="@+id/btn_wifi"
+          android:layout_marginTop="128dp"
+          android:background="@android:color/background_dark"
+          android:checked="false"
+          android:text="Wi-Fi Settings"
+          android:textColor="@android:color/white"
+          android:textOff="OFF"
+          android:textOn="ON" />
 
 </RelativeLayout>

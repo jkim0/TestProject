@@ -806,7 +806,7 @@ class NanoHTTPD
 				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
 			}
 			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
-				CmdData cd = new CmdData(Compare,null);
+				CmdData cd = new CmdData(Compare,p.getProperty(Compare));
 				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
 			}
 			

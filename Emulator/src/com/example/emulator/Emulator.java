@@ -29,8 +29,10 @@ import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 public class Emulator extends Activity {
@@ -52,8 +54,11 @@ public class Emulator extends Activity {
 	private IntentFilter screenFilter;
 	private Intent forSpinner;
 	private Button btn_start,btn_stop;
-	private Button btn_wifi, btn_bluetooth, btn_broadcast;
+//	private Button btn_wifi, btn_bluetooth, btn_broadcast;
 	private EmulatorAIDL mService = null;	
+	
+	private Switch Mode_wifi;
+	
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		@Override
@@ -75,8 +80,8 @@ public class Emulator extends Activity {
 		//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
-		btn_wifi=(Button) findViewById(R.id.btn_wifi);
-		btn_bluetooth=(Button) findViewById(R.id.btn_bluetooth);
+//		btn_wifi=(Button) findViewById(R.id.btn_wifi);
+//		btn_bluetooth=(Button) findViewById(R.id.btn_bluetooth);
 		
 //BindService	
 		btn_start.setOnClickListener(new View.OnClickListener() {
@@ -100,31 +105,65 @@ public class Emulator extends Activity {
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
-	
-		btn_wifi.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-		//	wifiManager();
-			}
-		});		
-
-		btn_bluetooth.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-			
+//	
+//		btn_wifi.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//					
+//				 
+//			}
+//		});		
+//
+//		btn_bluetooth.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//			
+//		
+//			}
+//		});		
+//
+//		btn_broadcast.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {	
+//			}
+//		});		
 		
-			}
-		});		
-
-		btn_broadcast.setOnClickListener(new View.OnClickListener() {
+		Mode_wifi= (Switch) findViewById(R.id.wifi_switch);
+		Mode_wifi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
-			public void onClick(View v) {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				boolean status= isChecked;
+				WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+				ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+				NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
+
+				        if (status == true && !wifiManager.isWifiEnabled()) {
+				            wifiManager.setWifiEnabled(true);				 
+				            Toast.makeText(getApplicationContext(), "wifiInfo =" + mWifiInfo, Toast.LENGTH_LONG).show();
+				             Log.d("WIFI_on","available = "+mWifiInfo.isAvailable());
+				             Log.d("WIFI_on","available = "+mWifiInfo.isConnected());
+				        } else if (status == false && wifiManager.isWifiEnabled()) {
+				            wifiManager.setWifiEnabled(false);
+				            Toast.makeText(getApplicationContext(), "wifiInfo = "+ mWifiInfo, Toast.LENGTH_LONG).show();
+				            Log.d("WIFI_off","available = "+mWifiInfo.isAvailable());
+				             Log.d("WIFI_off","available = "+mWifiInfo.isConnected()); 
+				        
+				        }			
+				}
 			
-	
-			}
-		});		
+		});
+//
+//		public void toggle_wifi(boolean status){
+//			 WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+//		        if (status == true && !wifiManager.isWifiEnabled()) {
+//		            wifiManager.setWifiEnabled(true);
+//		        } else if (status == false && wifiManager.isWifiEnabled()) {
+//		            wifiManager.setWifiEnabled(false);
+//		        }			
+//		}
 		
 	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
