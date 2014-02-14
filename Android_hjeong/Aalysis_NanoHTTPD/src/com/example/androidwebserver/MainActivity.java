@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         Log.e(TAG, "############## path = " + path);
         File wwwroot = path.getAbsoluteFile();
         try {
-			new NanoHTTPD(8095, wwwroot);
+			new NanoHTTPD(8093, wwwroot);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -304,7 +304,6 @@ class NanoHTTPD
 			// (Socket[address=/127.0.0.1,port=59040,localPort=8090])
 			mySocket = s;//mySocket에 소켓 저장.
 			Thread t = new Thread( this );
-			Log.e("new_thread",""+t);
 			Log.e("Before_setDaemon",""+t);
 			t.setDaemon( true );
 			t.start();
@@ -578,41 +577,25 @@ class NanoHTTPD
 						contentType = st.nextToken();
 						Log.e(";_true",""+contentType);
 					}
-
-					if (contentType.equalsIgnoreCase("multipart/form-data"))
+								
+				
+					// Handle application/x-www-form-urlencoded
+					String postLine = "";
+					char pbuf[] = new char[512];
+					int read = in.read(pbuf);
+					Log.e("read",""+read); // 8 출력.
+					while ( read >= 0 && !postLine.endsWith("\r\n") )  
 					{
-						Log.e("true_contentType.equalsIgnoreCase(multipart/form-data)",""+true);
-						// Handle multipart/form-data
-						if ( !st.hasMoreTokens())
-							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary missing. Usage: GET /example/file.html" );
-						String boundaryExp = st.nextToken();
-						st = new StringTokenizer( boundaryExp , "=" );
-						if (st.countTokens() != 2)
-							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary syntax error. Usage: GET /example/file.html" );
-						st.nextToken();
-						String boundary = st.nextToken();
-
-						decodeMultipartData(boundary, fbuf, in, parms, files);
+						// .endsWith This method tests if this string ends with the specified suffix.
+						postLine += String.valueOf(pbuf, 0, read);
+						Log.e("postLine",""+postLine); // screen=1 출력
+						read = in.read(pbuf);
+						Log.e("while_read",""+read); // -1 출력
 					}
-					else
-					{
-						// Handle application/x-www-form-urlencoded
-						String postLine = "";
-						char pbuf[] = new char[512];
-						int read = in.read(pbuf);
-						Log.e("read",""+read); // 8 출력.
-						while ( read >= 0 && !postLine.endsWith("\r\n") )  
-						{
-							// .endsWith This method tests if this string ends with the specified suffix.
-							postLine += String.valueOf(pbuf, 0, read);
-							Log.e("postLine",""+postLine); // screen=1 출력
-							read = in.read(pbuf);
-							Log.e("while_read",""+read); // -1 출력
-						}
-						postLine = postLine.trim();
-						Log.e("after_postLine",""+postLine);
-						decodeParms( postLine, parms );
-					}
+					postLine = postLine.trim();
+					Log.e("after_postLine",""+postLine);
+					decodeParms( postLine, parms );
+				
 				}
 				//click하기전 method에 PUT 없음.!
 				if ( method.equalsIgnoreCase( "PUT" )){
@@ -1064,7 +1047,6 @@ class NanoHTTPD
 				{
 					int pending = data.available();	// This is to support partial sends, see serveFile()
 					Log.e("pending",""+pending);
-					//pending=900; 
 					// This method returns the number of bytes that can be read from this stream before a read can block. 
 					// 403 출력
 					byte[] buff = new byte[theBufferSize];  // theBufferSize = 16* 1024 
@@ -1072,32 +1054,12 @@ class NanoHTTPD
 					{
 						int read = data.read( buff, 0, ( (pending>theBufferSize) ?  theBufferSize : pending ));
 						// This method read bytes from a stream and stores them into a caller supplied buffer. 
-						String check_pending= new String(buff);
-						Log.e("check_pending", check_pending);
 						Log.e("sendResponse_read",""+read);
 						if (read <= 0)	break;
-						String addbuf = "<text>hjeong! ver 0.1</br>" +
-								"<text>hjeong! ver 0.1</br>" +
-								"<text>hjeong! ver 0.1</br>" +
-								"<text>hjeong! ver 0.1</br>";
-						
-						byte[] buff2 = addbuf.getBytes();
-						out.write(buff2);
 						out.write( buff, 0, read );
-						
-						
 						pending -= read;
 					}
 				}
-				
-				InputStream is = mySocket.getInputStream();
-				int bufsize = 8192;
-				byte[] buf = new byte[bufsize];//byte 배열 생성
-				Log.e("bufsize=8192",""+buf);
-				is.read(buf, 0, bufsize);
-				Log.e("yyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyyy");
-				Log.e("Socket Content",""+out);
-				Log.e("Socket Content",""+new String(buf));
 				out.flush();
 				out.close();
 				if ( data != null )
@@ -1106,7 +1068,9 @@ class NanoHTTPD
 			catch( IOException ioe )
 			{
 				// Couldn't write? No can do.
-				try { mySocket.close(); } catch( Throwable t ) {}
+				try {
+					Log.e("socketclose", ""+true);
+					mySocket.close(); } catch( Throwable t ) {}
 			}
 		}
 
@@ -1229,7 +1193,7 @@ class NanoHTTPD
 		if ( res == null && !f.exists()){ //f의 경로가 존재해서 조건 만족x
 			Log.e("new File",""+true);
 			res = new Response( HTTP_NOTFOUND, MIME_PLAINTEXT,
-				"Error 404, file not found." ); // browser를 refresh하고 nanohttpd server에 request할때 호출된다.
+				"Error 404, file not found." ); // method가 GET 일 때   호출
 		}
 
 		// List the directory, if necessary
@@ -1259,7 +1223,7 @@ class NanoHTTPD
 					Log.e("new File( f, index.html ).exists()", ""+f);
 					// uri 가 / 인데  + /index.html 하면 //index.html  이 아닌가?
 					// /storage/sdacrd/index.html 출력
-					// f에  f .html 경로 저장
+					// uri가 index.html을 upload하고 싶은곳??
 				}
 				else if ( new File( f, "index.htm" ).exists()){
 					f = new File( homeDir, uri + "/index.htm" );
@@ -1367,31 +1331,28 @@ class NanoHTTPD
 				}
 				
 				// Calculate etag
-				int flength=100;
-				flength+=f.length();
-				//String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()  ).hashCode());
-				String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + flength  ).hashCode());
+				//String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
 				
 				//etag test			
-				Log.e("etag",""+etag); //7ac7d491
-				Log.e("f.getAbsolutePath()",""+f.getAbsolutePath());
+				//Log.e("etag",""+etag); //7ac7d491
+				//Log.e("f.getAbsolutePath()",""+f.getAbsolutePath());
 				// /storage/sdcard/index.html 파일 경로 출력
 				
-				Log.e("f.lastModified()",""+f.lastModified());
+				//Log.e("f.lastModified()",""+f.lastModified());
 				// 파일경로의 파일이 마지막으로 수정된 시간을 리턴한다. 
 				// 1391388496000 출력
 				
 				long millisec=f.lastModified();
 				Date dt = new Date(millisec);
-				Log.e("f_Date",""+dt); // Sun Feb 02 19:48:16 EST 2014
+				//Log.e("f_Date",""+dt); // Sun Feb 02 19:48:16 EST 2014
 				
-				Log.e("f.length()",""+f.length()); 
+				//Log.e("f.length()",""+f.length()); 
 				// f경로의 파일의 길이를 리턴한다. 파일의 저장된 내용의 길이를 리턴 ex) ABCD 이면 4 리턴
-				Log.e("f.g,las,leng",""+(f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
+				//Log.e("f.g,las,leng",""+(f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
 				// string을 hashcode로 변환해서 리턴한다. 2059916433
 				// hashcode를 왜 만들었을까?..
-				
-				Log.e("string etag",""+Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode()));
+			
+				//Log.e("string etag",""+Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode()));
 				//The java.lang.Integer.toHexString() method 
 				//returns a string representation of the integer argument as an unsigned integer in base 16
 				// 7ac7d491 출력
@@ -1403,6 +1364,7 @@ class NanoHTTPD
 				long endAt = -1;
 				String range = header.getProperty( "range" ); // range가 무엇인가?
 				Log.e("range",""+range); // null
+				/*
 				if ( range != null )
 				{
 					if ( range.startsWith( "bytes=" ))
@@ -1418,12 +1380,11 @@ class NanoHTTPD
 						}
 						catch ( NumberFormatException nfe ) {}
 					}
-				}
+				}*/
 
 				// Change return code and add Content-Range header when skipping is requested
-				//long fileLen = f.length();
-				long fileLen = 100+f.length();
-				Log.e("fileLen",""+fileLen);
+				long fileLen = f.length();
+				/*
 				if (range != null && startFrom >= 0)
 				{
 					Log.e("range != null && startFrom >= 0",""+true); 
@@ -1452,6 +1413,8 @@ class NanoHTTPD
 						res.addHeader( "ETag", etag);
 					}
 				}
+				*/
+				/*
 				else
 				{
 					if (etag.equals(header.getProperty("if-none-match"))){
@@ -1469,6 +1432,9 @@ class NanoHTTPD
 						res.addHeader( "ETag", etag);
 					}
 				}
+				*/
+				res = new Response( HTTP_OK, mime, new FileInputStream( f ));
+				res.addHeader( "Content-Length", "" + fileLen);
 			}
 		}
 		catch( IOException ioe )

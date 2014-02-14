@@ -15,7 +15,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.Notification;
@@ -510,12 +509,13 @@ public class EmulatorService extends Service {
 	int line_Cnt=1;					//Total line cnt
 	ByteArrayInputStream bin_s=null;
 	BufferedReader reader=null;
-	String submmit_cmd;
+	String submit_cmd;
 	String write_str="<html>" +
 			"<head>" +
 			"<title>Emulator ver 0.1</title>" +
 			"</head>" +
 			"<body>";
+	String status;
 	
 	public void File_Read() throws IOException{
 		 
@@ -545,17 +545,24 @@ public class EmulatorService extends Service {
 	   
 	   int cnt = 0;		//Check for current readed line cnt
 	   
-		while(cnt < line_Cnt)
+	   while(cnt < line_Cnt)
 		{
 			String str = reader.readLine();			//read one line
 			
 			cnt++;							//readed one line cnt increase +1
 			if(str.length() == 0)			//Newline '\n'
 			{
+<<<<<<< HEAD
 		//		Log.i("Parsing","Newline");
 				write_str = write_str + "</select> <input type=\"submit\"" + 
 				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
+=======
+				Log.i("Parsing","Newline");
+				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
+						+ "</form>" +
+						"<text><br><br></text>";
+>>>>>>> 4a2103f2407441ff3f132d077c56bfad907f419e
 			}
 			
 			else			//한 줄 띄기가 아닐 때만 Parsing을 호출
@@ -565,15 +572,18 @@ public class EmulatorService extends Service {
 		}
 		
 		write_str = write_str + "</select> <input type=\"submit\"" + 
-				 "value =" +"\"send\"" + "/>" 
+				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
 		
-		write_str = write_str + "</body></html>";
+		Add_status();
+		
+		//write_str = write_str + "</body></html>";
 		
 		Log.i("##########Check","line : "+cnt);
 	}
     
 
+<<<<<<< HEAD
     public void Parsing(String parsing){
 		
     	
@@ -595,23 +605,53 @@ public class EmulatorService extends Service {
 				write_str = write_str + "<textarea rows=1 cols=10>"
 						+ str_partition +"</textarea>";
 			}
+=======
+	 public void Add_status(){
+	    	
+	    	write_str = write_str + status; 
+	    	
+	    	write_str = write_str + "</body></html>";
+	    }
+	    
+	    public void Parsing(String parsing){
+					
+			StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
 			
-			else
+			String str_partition=null;
+>>>>>>> 4a2103f2407441ff3f132d077c56bfad907f419e
+			
+			if(stoken1.hasMoreTokens())
 			{
-				stoken1 = new StringTokenizer( parsing, "-" );
 				str_partition = stoken1.nextToken();
-				if(parsing != str_partition)			//-이 있다는 것
+				if(parsing != str_partition)			//#이 있다는 것
 				{
+<<<<<<< HEAD
 		//			Log.i("Parsing","--------------");
 					write_str = write_str + "<text><br></text><text>"
 							+ str_partition + "<br></text>" +
 									"<text><br></text>" +
 							"<form method=\"post\">" +
 							"<select name=\"" + submmit_cmd + "\">";
+=======
+					int space_index=str_partition.indexOf(' ');
+					if(space_index != -1)
+					{
+						str_partition = str_partition.trim();
+					}
+					
+					submit_cmd = str_partition;
+					Log.i("Parsing","################");
+					write_str = write_str + "<textarea rows=1 cols=10>"
+							+ str_partition + "</textarea>";
+					status = status + "<text><br>" + str_partition + " : ";
+					
+					Log.i("######","String:"+str_partition);
+>>>>>>> 4a2103f2407441ff3f132d077c56bfad907f419e
 				}
 				
-				else									//command
+				else
 				{
+<<<<<<< HEAD
 					int length = str_partition.length();
 					int index = str_partition.indexOf('.'); 
 					int index_space=str_partition.indexOf(' '); ///스페이스까지...아....해쉬테이블...미스매치남
@@ -626,11 +666,56 @@ public class EmulatorService extends Service {
 					write_str = write_str + "<option value=\"" + backward + "\"" + "selected>"+ 
 					backward +"</option>";
 				//	Log.i("Parsing","*****Command*****");			
+=======
+					stoken1 = new StringTokenizer( parsing, "-" );
+					str_partition = stoken1.nextToken();
+					if(parsing != str_partition)			//-이 있다는 것
+					{
+						int space_index=str_partition.indexOf(' ');
+						if(space_index != -1)
+						{
+							str_partition = str_partition.trim();
+						}
+						
+						
+						Log.i("-------","String:"+str_partition);
+						
+						write_str = write_str + "<text><br></text><text>"
+								+ str_partition + "<br></text>" +
+								"<form method=\"post\">" +
+								"<select name=\"" + submit_cmd + "\">";
+					}
+					
+					else									//command
+					{
+						int length = str_partition.length();
+						int index = str_partition.indexOf('.');
+						int space_index=str_partition.indexOf(' ');
+					
+						
+						String Cmd = str_partition.substring(index+1, length);
+						
+						if(space_index != -1)
+						{
+							Cmd = Cmd.trim();
+						}
+						
+						Log.i("****Command*****","String:"+Cmd);
+											
+						write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
+								Cmd +"</option>";
+						
+						
+						if(Cmd.equalsIgnoreCase("off"))
+						{
+							status = status + "off" + "</text>";	
+						}
+					}
+>>>>>>> 4a2103f2407441ff3f132d077c56bfad907f419e
 				}
-			}
-		}	
-	
-	}
+			}	
+			
+		}
 
     
 
