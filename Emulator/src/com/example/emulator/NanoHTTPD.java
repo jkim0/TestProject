@@ -1,5 +1,4 @@
 package com.example.emulator;
-//ss/////////////////////sdlkfjsldkfjskldjfslkdjfslkdjflskjdfkl
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,6 +34,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.os.TransactionTooLargeException;
 import android.util.Log;
 import android.widget.Toast;
@@ -780,13 +780,37 @@ class NanoHTTPD {
 	}
 	
 	
-	
+private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
 
-	public static void getStatus(String cmd, String value){
-		Log.d("EXAMPLE","cmd = "+cmd + "value = "+value);
-///여기서 스트링만들고..
+	@Override
+	public String getStatus(String cmd, String value){
+		Log.d("INTERFACE","check to here  ");
+		return value;
+		
 	}
-	
+};
+//		@Override
+//		public void onCommandReceived(String cmd, String value) {
+//			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
+//			if (cmd.equalsIgnoreCase("screen")) {
+//				Log.d("screen","value= "+value);
+//				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+//				if (value.equalsIgnoreCase("on")) {
+//					//screen on
+//					pm.userActivity(SystemClock.uptimeMillis(), false);			
+//				} else if (value.equalsIgnoreCase("off")) {
+//					//screen off
+//					pm.goToSleep(2000);
+//					pm.wakeUp(2000);
+//				}
+//			}
+//			else if(cmd.equ
+
+//	public static void getStatus(String cmd, String value){
+//		Log.d("EXAMPLE","cmd = "+cmd + "value = "+value);
+/////여기서 스트링만들고..
+//	}
+//	
 	
 	
 	

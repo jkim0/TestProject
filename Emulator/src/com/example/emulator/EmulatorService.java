@@ -15,6 +15,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import com.example.emulator.NanoHTTPD.CommandReceiver;
+
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.Notification;
@@ -85,9 +88,27 @@ public class EmulatorService extends Service {
 		public void closefile() throws RemoteException {
 		}
 	};
-//	public interface sendToClass{
-//		public String getStatus(String cmd, String value);
-//	}
+	public interface sendToClass{
+		public String getStatus(String cmd, String value);
+	}
+	
+	private ArrayList<sendToClass> ClassList = new ArrayList<sendToClass>();
+
+	public void registertoList(sendToClass send) {
+		if (!ClassList.contains(send))
+			ClassList.add(send);
+	}
+
+	public void unregisterfromList(sendToClass send) {
+		if (ClassList.contains(send))
+			ClassList.remove(send);
+	}
+
+	
+
+	
+	
+	
 	
 	public class notify{
 		public String sCmd;
@@ -98,6 +119,8 @@ public class EmulatorService extends Service {
 			sValue = arg2;
 		}
 	}
+	
+	
 //notify the change of BlueTooth or Wifi	
 	private Handler mHandler= new Handler(){
 		@Override
@@ -108,18 +131,20 @@ public class EmulatorService extends Service {
 			case STATUS_CHANGE:
 
 				notify mtf= (notify)msg.obj;
-
-				//Log.d("EXAMPLE","mClass = "+mClass);
-				 NanoHTTPD.getStatus(mtf.sCmd, mtf.sValue);
+				for (int i = 0; i < ClassList.size(); i++) {
+					sendToClass tp = ClassList.get(i);
+					if (tp != null)
+					tp.getStatus(mtf.sCmd, mtf.sValue);					
+				}
+				
+				
 //				sendToClass stc = null;
 //				 stc.getStatus(mtf.sCmd, mtf.sValue);
 //			//	NanoHTTPD.printStatus(mtf.sCmd, mtf.sValue);
-				
 				Log.d("EXAMPLE","5");
 			}
 		}
 	};
-	
 	
 	@Override
 	public void onCreate() {
@@ -244,9 +269,7 @@ public class EmulatorService extends Service {
 			else if(cmd.equalsIgnoreCase("wifi")){
 				notify nt = new notify(cmd, value);
           	//  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
-				
-				
-				
+								
 				boolean status = true;
 				if(value.equalsIgnoreCase("on")){
 					status=true;

@@ -9,10 +9,11 @@ package com.example.emulator;
 
 public final class R {
     public static final class array {
-        public static final int character=0x7f050003;
-        public static final int command=0x7f050001;
-        public static final int number=0x7f050002;
-        public static final int select=0x7f050000;
+        public static final int bluetooth=0x7f050000;
+        public static final int character=0x7f050004;
+        public static final int command=0x7f050002;
+        public static final int number=0x7f050003;
+        public static final int select=0x7f050001;
     }
     public static final class attr {
     }

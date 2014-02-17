@@ -19,6 +19,8 @@ import android.os.RemoteException;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -46,9 +48,7 @@ public class Emulator extends Activity {
 //	
 //	public String[] from= new String[]{"bssid","ssid","capablities","frequency","level"};
 //	public int[] to1 = new int[]{R.id.bssid, R.id.ssid, R.id.capabilities, R.id.frequency, R.id.level};
-//    
-//	
-//	
+
 	
 	public final static int SCREEN_ON=1;
 	public final static int SCREEN_OFF=2;
@@ -59,6 +59,26 @@ public class Emulator extends Activity {
 //	private Button btn_wifi, btn_bluetooth, btn_broadcast;
 	private EmulatorAIDL mService = null;	
 	
+//List for Device Info
+	private class DeviceInfo{
+		String name;
+		String address;
+		private DeviceInfo(String _name, String _addr){
+
+			this.name = _name;
+			this.address = _addr;
+		}
+		private String getName(){
+			return name;
+		}
+		private String getAddress(){
+			return address;
+		}
+	}
+	
+	
+	private BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+	private ArrayList<DeviceInfo> mBTList,mWifiList = null;
 	private Switch Mode_wifi,Mode_blueTooth;
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
@@ -72,20 +92,57 @@ public class Emulator extends Activity {
 			mService=EmulatorAIDL.Stub.asInterface(arg1);
 		}
 	};
+	
 
+	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if(BluetoothDevice.ACTION_FOUND.equalsIgnoreCase(action)){
+				BluetoothDevice device =intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				if(device.getBondState() !=BluetoothDevice.BOND_BONDED){
+				DeviceInfo di = new DeviceInfo("device.getName()","device.getAddress()");
+				mBTList.add(di);
+				}
+			}
+			else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equalsIgnoreCase(action)){
+				setProgressBarIndeterminateVisibility(false);
+				if( mBTList.size()==0){
+					// 검색되는 장치가 하나도없습니다.
+					Log.e("BlueTooth","There is no any device able to connected");
+//					String noDevices = getText(R.string.none_found).toString();
+//					mNewDevicesArrayAdapter.add(noDevices);
+				}
+			}
+		}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_emulator);
-
 		//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
 //		btn_wifi=(Button) findViewById(R.id.btn_wifi);
 //		btn_bluetooth=(Button) findViewById(R.id.btn_bluetooth);
+		mBTList = new ArrayList<DeviceInfo>();
+		mWifiList = new ArrayList<DeviceInfo>();
 		
-//BindService	
+	    //이걸 button click Listener에 달면 에러가 납니다. why??????
+	//찾기 ㅎ시작한다
+		mBtAdapter.startDiscovery();
+
+	//Register for broadcast when a device is discovered	
+		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		this.registerReceiver(mReceiver, filter);
+	
+		//register for broadcast when discovery has finished
+		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+		this.registerReceiver(mReceiver, filter);
+		
+		//BindService		
 		btn_start.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {		
@@ -111,16 +168,14 @@ public class Emulator extends Activity {
 //		btn_wifi.setOnClickListener(new View.OnClickListener() {
 //			@Override
 //			public void onClick(View v) {
-//					
-//				 
+//			 
 //			}
 //		});		
 //
 //		btn_bluetooth.setOnClickListener(new View.OnClickListener() {
 //			@Override
 //			public void onClick(View v) {
-//			
-//		
+//	
 //			}
 //		});		
 //
@@ -154,11 +209,36 @@ public class Emulator extends Activity {
 				}
 			
 		});
+	
 		Mode_blueTooth= (Switch) findViewById(R.id.bluetooth_switch);
 		Mode_blueTooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				// 연결을 클릭한다면
 				
+				if(isChecked==true){
+					mBtAdapter.cancelDiscovery();
+					//이제 호출 그만하고, 연결할꺼야
+					//getremotedevice 
+					Log.d("BT","howmany bluetooth connections?= "+ mBTList.size());
+					//연결?
+					String addr=null;
+					
+					for(int i=0; i< mBTList.size();i++){	
+					 addr= mBTList.get(i).getAddress();
+					}
+					BluetoothDevice device = mBtAdapter.getRemoteDevice(addr);
+					Boolean check=true;
+					while(check){
+						if (mBtAdapter.isEnabled()){
+							Toast.makeText(Emulator.this,"BLUETOOTH is connected " , Toast.LENGTH_LONG).show();
+							break;
+						}
+					}
+				}
+				else{
+					
+				}
 			}
 		});
 //

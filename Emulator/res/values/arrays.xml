@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    
+    
+    <string-array name="bluetooth">
+        <item> </item>
+    </string-array>
       <string-array name="select">
 		<item > </item>
          <item>Command_KEY</item>
