@@ -67,13 +67,11 @@ public class EmulatorService extends Service {
 			return EmulatorService.this;
 		}
 	}
-
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
 		return mbinder;
 	}
-
 	
 	public interface sendToClass{
 		public String getStatus(String cmd, String value);
@@ -131,7 +129,7 @@ public class EmulatorService extends Service {
 						
 //				sendToClass stc = null;
 //				 stc.getStatus(mtf.sCmd, mtf.sValue);
-//			//	NanoHTTPD.printStatus(mtf.sCmd, mtf.sValue);
+//			//	NanoHTTPD.printStatus(mtf.fsCmd, mtf.sValue);
 				Log.d("EXAMPLE","5");
 			}
 		}
@@ -151,7 +149,6 @@ public class EmulatorService extends Service {
 	
 
 
-
 	private NanoHTTPD mHttpd = null;
 	private void NanoHttpd() {
 		//여기서 파일 오픈해서 읽어서html 띄어주면 되는거잖아..
@@ -159,8 +156,9 @@ public class EmulatorService extends Service {
 			  File_Read();
 			//File wwwroot = write_file(write_str);
 			//Log.d("wwwroot","wwwroot="+wwwroot);
-			mHttpd = new NanoHTTPD(8091,write_str);
-		 //mHttpd = new NanoHTTPD(this, 8091, wwwroot);
+			mHttpd = new NanoHTTPD(this, 8091,write_str);
+//			fromService=this;
+
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 		} catch (IOException e) {
 			e.printStackTrace();

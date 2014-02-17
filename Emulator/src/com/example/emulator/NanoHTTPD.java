@@ -29,6 +29,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -45,6 +46,7 @@ import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
 
 class NanoHTTPD {
+	NanoHTTPD me;
 	private String mhtml=null;
 	private final String TAG = "NanoHTTPD";
 
@@ -247,8 +249,10 @@ class NanoHTTPD {
 	 * <p>
 	 * Throws an IOException if the socket is already in use
 	 */
+	private sendToClass mClass=null;
 
 	public interface CommandReceiver {
+
 		public void onCommandReceived(String cmd, String value);
 	}
 	private ArrayList<CommandReceiver> mCommandReceivers = new ArrayList<CommandReceiver>();
@@ -264,17 +268,17 @@ class NanoHTTPD {
 	}
 
 	private void notifyCommandReceived(String cmd, String value) {
-		if (mService != null) {
-			if (cmd.equalsIgnoreCase("screen")) {
-				try {
-					mService.screenOnOff(value);
-				} catch (RemoteException ex) {
-					Log.e(TAG, "exception occured when request screen on/off.",
-							ex);
-				}
-				return;
-			}
-		}
+//		if (mService != null) {
+//			if (cmd.equalsIgnoreCase("screen")) {
+//				try {
+//					mService.screenOnOff(value);
+//				} catch (RemoteException ex) {
+//					Log.e(TAG, "exception occured when request screen on/off.",
+//							ex);
+//				}
+//				return;
+//			}
+//		}
 		for (int i = 0; i < mCommandReceivers.size(); i++) {
 			CommandReceiver cr = mCommandReceivers.get(i);
 			if (cr != null)
@@ -302,6 +306,7 @@ class NanoHTTPD {
 	}
 
 	public NanoHTTPD(EmulatorService service, int port, String html) throws IOException {
+		
 		mhtml = html;
 		mService = service;
 		myTcpPort = port;
@@ -327,7 +332,7 @@ class NanoHTTPD {
 				try {
 					while (true)
 						new HTTPSession(myServerSocket.accept());// browser에서
-																	// 접속할 때 까지
+																// 접속할 때 까지
 																	// 대기
 				} catch (IOException ioe) {
 				}
@@ -666,6 +671,16 @@ class NanoHTTPD {
 			}
 			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
 				Log.d("interface","mService = " +mService);
+				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
+//				
+//				EmulatorService
+//				public class mService extends Binder{
+//					EmulatorService getService(){
+//						return EmulatorService.this;
+//					}
+//				}
+//				
 				mService.registertoList(mReceiver);
 			}
 
@@ -674,6 +689,7 @@ class NanoHTTPD {
 		private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
 			@Override
 			public String getStatus(String cmd, String value){
+////여기까지 들어오는거 확인 이걸로 해!
 				Log.d("INTERFACE","5");
 				Log.d("INTERFACE","check to here  ");
 				return value;
