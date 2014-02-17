@@ -1,4 +1,5 @@
 package com.example.emulator;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,10 +40,12 @@ import android.os.TransactionTooLargeException;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.emulator.EmulatorService.sendToClass;
 import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
 
 class NanoHTTPD {
+	private String mhtml=null;
 	private final String TAG = "NanoHTTPD";
 
 	// ==================================================
@@ -66,6 +69,46 @@ class NanoHTTPD {
 	 *            Header entries, percent decoded
 	 * @return HTTP response, see class Response for details
 	 */
+
+
+	/**(서버) <> 브라우저 
+	 * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
+	 */
+	private static Hashtable theMimeTypes = new Hashtable();
+	static {
+		StringTokenizer st = new StringTokenizer("css		text/css "
+				+ "htm		text/html " + "html		text/html " + "xml		text/xml "
+				+ "txt		text/plain " + "asc		text/plain " + "gif		image/gif "
+				+ "jpg		image/jpeg " + "jpeg		image/jpeg " + "png		image/png "
+				+ "mp3		audio/mpeg " + "m3u		audio/mpeg-url "
+				+ "mp4		video/mp4 " + "ogv		video/ogg " + "flv		video/x-flv "
+				+ "mov		video/quicktime "
+				+ "swf		application/x-shockwave-flash "
+				+ "js			application/javascript " + "pdf		application/pdf "
+				+ "doc		application/msword " + "ogg		application/x-ogg "
+				+ "zip		application/octet-stream "
+				+ "exe		application/octet-stream "
+				+ "class		application/octet-stream ");
+		while (st.hasMoreTokens())
+			theMimeTypes.put(st.nextToken(), st.nextToken());
+
+	}
+
+	private static int theBufferSize = 16 * 1024;
+
+	// Change these if you want to log to somewhere else than stdout
+	protected static PrintStream myOut = System.out;
+	protected static PrintStream myErr = System.err;
+
+	/**
+	 * GMT date formatter
+	 */
+	private static java.text.SimpleDateFormat gmtFrmt;
+	static {
+		gmtFrmt = new java.text.SimpleDateFormat(
+				"E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+		gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
 	//servefile을 호출한
 	public Response serve(String uri, String method, Properties header,Properties parms) {
 		// 여기서 갑자기 post 'index2.html' 생김 / uri 발생
@@ -254,11 +297,12 @@ class NanoHTTPD {
 		}
 	}
 
-	public NanoHTTPD(int port) throws IOException {
-		this(null, port);
+	public NanoHTTPD(int port,String html) throws IOException {
+		this(null, port, html);
 	}
 
-	public NanoHTTPD(EmulatorService service, int port) throws IOException {
+	public NanoHTTPD(EmulatorService service, int port, String html) throws IOException {
+		mhtml = html;
 		mService = service;
 		myTcpPort = port;
 		mHandlerThread = new HandlerThread("PgsServiceHandler");
@@ -315,7 +359,7 @@ class NanoHTTPD {
 	 * session, i.e. parses the HTTP request and returns the response.
 	 */
 	public class HTTPSession implements Runnable {
-		private EmulatorAIDL mService = null;
+		
 
 		public HTTPSession(Socket s) {
 			mySocket = s;
@@ -586,7 +630,7 @@ class NanoHTTPD {
 				return null;
 			}
 		}
-
+		private sendToClass mClass=null;
 		/**
 		 * Decodes parameters in percent-encoded URI-format ( e.g.
 		 * "name=Jack%20Daniels&pass=Single%20Malt" ) and adds them to given
@@ -613,26 +657,28 @@ class NanoHTTPD {
 			}
 			Log.e("NanoHttpdError", "" + Compare);
 			// //여기서 추가
-			if (Compare.equalsIgnoreCase("screen")
-					|| Compare.equalsIgnoreCase("keyboard")) {
+			if (Compare.equalsIgnoreCase("screen")|| Compare.equalsIgnoreCase("keyboard")){
 				Log.d("screnn/na", "value=" + p.getProperty(Compare));
 				// notifyCommandReceived(Compare, p.getProperty(Compare));
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 				mHandler.sendMessage(mHandler.obtainMessage(
 						NOTIFY_CMD_RECEIVED, cd));
-			} else if (Compare.equalsIgnoreCase("keyboard")) {
-				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-				mHandler.sendMessage(mHandler.obtainMessage(
-						NOTIFY_CMD_RECEIVED, cd));
-			} else if (Compare.equalsIgnoreCase("wifi")
-					|| Compare.equalsIgnoreCase("bluetooth")) {
-				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-				mHandler.sendMessage(mHandler.obtainMessage(
-						NOTIFY_CMD_RECEIVED, cd));
+			}
+			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
+				Log.d("interface","mService = " +mService);
+				mService.registertoList(mReceiver);
 			}
 
 			// dot anything.
 		}
+		private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
+			@Override
+			public String getStatus(String cmd, String value){
+				Log.d("INTERFACE","5");
+				Log.d("INTERFACE","check to here  ");
+				return value;
+			}
+		};
 
 		/**
 		 * Returns an error message as a HTTP response and throws
@@ -768,9 +814,9 @@ class NanoHTTPD {
 			if (mime == null)
 				mime = MIME_DEFAULT_BINARY;
 
-			String context = "<html><head><title>Emulator ver 0.1</title></head><body><textarea rows=1 cols=10>Screen</textarea><text><br></text><text>value<br></text><form method=\"post\"><select name=\"Screen\"><option value=\"on\"selected>on</option><option value=\"off\"selected>off</option></select> <input type=\"submit\"value =\"send\"/></form><text><br><br></text><textarea rows=1 cols=10>Key_Event</textarea><text><br></text><text>key_code<br></text><form method=\"post\"><select name=\"Key_Event\"><option value=\"10\"selected>10</option><option value=\"20\"selected>20</option><option value=\"30\"selected>30</option></select> <input type=\"submit\"value =\"send\"/></form><text><br><br></text><textarea rows=1 cols=10>Power</textarea><text><br></text><text>value<br></text><form method=\"post\"><select name=\"Power\"><option value=\"on\"selected>on</option><option value=\"off\"selected>off</option></select> <input type=\"submit\"value =\"send\"/></form><text><br>Screen : off</text><text><br>Key_Event : <text><br>Power : off</text></body></html>";
-			InputStream is = new ByteArrayInputStream(context.getBytes());
-			long fileLen = context.length();
+			
+			InputStream is = new ByteArrayInputStream(mhtml.getBytes());
+			long fileLen = mhtml.length();
 			res = new Response(HTTP_OK, mime,is);
 			res.addHeader("Content-Length", "" + fileLen);
 		}
@@ -779,16 +825,9 @@ class NanoHTTPD {
 		return res;
 	}
 	
-	
-private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
 
-	@Override
-	public String getStatus(String cmd, String value){
-		Log.d("INTERFACE","check to here  ");
-		return value;
-		
-	}
-};
+	
+	
 //		@Override
 //		public void onCommandReceived(String cmd, String value) {
 //			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
@@ -814,45 +853,6 @@ private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass(
 	
 	
 	
-
-	/**(서버) <> 브라우저 
-	 * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
-	 */
-	private static Hashtable theMimeTypes = new Hashtable();
-	static {
-		StringTokenizer st = new StringTokenizer("css		text/css "
-				+ "htm		text/html " + "html		text/html " + "xml		text/xml "
-				+ "txt		text/plain " + "asc		text/plain " + "gif		image/gif "
-				+ "jpg		image/jpeg " + "jpeg		image/jpeg " + "png		image/png "
-				+ "mp3		audio/mpeg " + "m3u		audio/mpeg-url "
-				+ "mp4		video/mp4 " + "ogv		video/ogg " + "flv		video/x-flv "
-				+ "mov		video/quicktime "
-				+ "swf		application/x-shockwave-flash "
-				+ "js			application/javascript " + "pdf		application/pdf "
-				+ "doc		application/msword " + "ogg		application/x-ogg "
-				+ "zip		application/octet-stream "
-				+ "exe		application/octet-stream "
-				+ "class		application/octet-stream ");
-		while (st.hasMoreTokens())
-			theMimeTypes.put(st.nextToken(), st.nextToken());
-
-	}
-
-	private static int theBufferSize = 16 * 1024;
-
-	// Change these if you want to log to somewhere else than stdout
-	protected static PrintStream myOut = System.out;
-	protected static PrintStream myErr = System.err;
-
-	/**
-	 * GMT date formatter
-	 */
-	private static java.text.SimpleDateFormat gmtFrmt;
-	static {
-		gmtFrmt = new java.text.SimpleDateFormat(
-				"E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-		gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-	}
 	/**
 	 * The distribution licence
 	 */

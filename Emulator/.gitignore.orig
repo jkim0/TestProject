@@ -1,6 +1,11 @@
 bin
 ic_launcher-web.png
+<<<<<<< HEAD
+proguard-project.txt 
+=======
 proguard-project.txt                        
+gen
 libs
 src/**/*.swp
 src/**/NanoHTTPD.java
+>>>>>>> ee28d5f4554e2c908ed1f90df659b531d9d0707a

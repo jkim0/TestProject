@@ -3,7 +3,7 @@
 
    
     <string name="on">ON</string>
-    <string name="off">Emulator</string>
+    <string name="off">OFF</string>
     <string name="wifi_text"> Wi-Fi Settings</string>
     <string name="bluetooth_text">Blue-tooth Settings</string>
     <string name="app_name">Emulator</string>
