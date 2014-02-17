@@ -15,15 +15,14 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
 import com.example.emulator.NanoHTTPD.CommandReceiver;
-
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -186,9 +185,7 @@ public class EmulatorService extends Service {
 				}
 			}
 			else if(cmd.equalsIgnoreCase("memosite")){
-	
-		
-		
+			
 				File folder = new File(to + "files/");
 				folder.mkdirs();
 				File outfile = new File(to + "files/" +"cmd.txt");
@@ -210,73 +207,14 @@ public class EmulatorService extends Service {
 				//아..왜 파이널로해야되????으앙!	
 			}
 			else if(cmd.equalsIgnoreCase("wifi")){
-				Log.d("wifi","1");
-				notify nt = new notify(cmd, value);
-				 mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
-         		
-          	//  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
-								
-				boolean status = true;
-				if(value.equalsIgnoreCase("on")){
-					status=true;
-				}
-				else{
-					status= false;
-				}
-				
-				WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-				ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-				NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-				//connect
-				        if (status == true && !wifiManager.isWifiEnabled()) {
-				            wifiManager.setWifiEnabled(true);		
-				            boolean keep=true;
-				            while(keep){
-				            	if(mWifiInfo.isConnected()==true){
-				            	  notify nt1 = new notify(cmd, value);
-				            	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt1));
-				            		break;
-				            	}
-				            }
-				            Toast.makeText(getApplicationContext(), "wifiInfo =" + mWifiInfo, Toast.LENGTH_LONG).show();
-				             Log.d("WIFI_on","available = "+mWifiInfo.isAvailable());
-				             Log.d("WIFI_on","available = "+mWifiInfo.isConnected());
-				             
-				             
-				   // disconnect          
-				        } else if (status == false && wifiManager.isWifiEnabled()) {
-				            wifiManager.setWifiEnabled(false);
-				            Toast.makeText(getApplicationContext(), "wifiInfo = "+ mWifiInfo, Toast.LENGTH_LONG).show();
-				            Log.d("WIFI_off","available = "+mWifiInfo.isAvailable());
-				             Log.d("WIFI_off","available = "+mWifiInfo.isConnected()); 
-				             	boolean keep = true;
-				             while(keep){
-					            	if(mWifiInfo.isConnected()==false){
-					            		 notify nt2 = new notify(cmd, value);
-						            	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt2));
-						            	  break;
-					            	}
-					            }
-				        }			
-				
-				
-				//	wifiManager();	
-				/*
-				boolean status = true;
-				
-				  WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-			        if (status == true && !wifiManager.isWifiEnabled()) {
-			            wifiManager.setWifiEnabled(true);
-			        } else if (status == false && wifiManager.isWifiEnabled()) {
-			            wifiManager.setWifiEnabled(false);
-			        }
-*/				
+				wifi_Manager(cmd, value);				
 			}
 			else if(cmd.equalsIgnoreCase("broadcast")){
 				
 			}
 			else if(cmd.equalsIgnoreCase("bluetooth")){
-				
+				bluetooth_Manager(cmd, value);
+					
 			}
 			else if(cmd.equalsIgnoreCase("getStatus")){
 				
@@ -285,9 +223,53 @@ public class EmulatorService extends Service {
 		}
 
 	};
-	private void check_status(){
+	private void wifi_Manager(String cmd, String value){	
 		
+		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
+		boolean keep = true;
+		while(keep){
+			if(value.equalsIgnoreCase("on")){
+				wifiManager.setWifiEnabled(true);
+				if(mWifiInfo.isConnected()==true){
+					break;
+				}
+			}
+			else if(value.equalsIgnoreCase("off")){
+				wifiManager.setWifiEnabled(false);
+				if(mWifiInfo.isConnected()==false){
+					break;
+				}
+			}
+		}
+			
+	  notify nt = new notify(cmd, value);
+  	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 	}
+		    	
+	private void bluetooth_Manager(String cmd, String value){
+		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+		mBtAdapter.enable();
+		boolean check=true;
+		while(check){
+			if(value.equalsIgnoreCase("on")){
+				if(mBtAdapter.isEnabled()==true){
+					break;
+				}
+			}
+			else if(value.equalsIgnoreCase("off")){
+				if(mBtAdapter.disable()==true){
+					break;
+				}
+			}
+		}
+		
+		notify nt = new notify(cmd, value);
+		mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));	
+	}
+	
+
 	private void keyEvent(String key_value){
 				
 		final int input = Integer.parseInt(key_value);

@@ -22,6 +22,12 @@
 -function
 1.on
 2.off
+
+#userCommand
+-function
+1.on
+2.off
+
 #keyboard
 - function
 1.KEYCODE_SOFT_LEFT

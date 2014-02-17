@@ -249,7 +249,7 @@ class NanoHTTPD {
 	 * <p>
 	 * Throws an IOException if the socket is already in use
 	 */
-	private sendToClass mClass=null;
+
 
 	public interface CommandReceiver {
 
@@ -672,15 +672,7 @@ class NanoHTTPD {
 			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
 				Log.d("interface","mService = " +mService);
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
-//				
-//				EmulatorService
-//				public class mService extends Binder{
-//					EmulatorService getService(){
-//						return EmulatorService.this;
-//					}
-//				}
-//				
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));		
 				mService.registertoList(mReceiver);
 			}
 
@@ -840,34 +832,6 @@ class NanoHTTPD {
 													// server accepts partial													// content requestes
 		return res;
 	}
-	
-
-	
-	
-//		@Override
-//		public void onCommandReceived(String cmd, String value) {
-//			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
-//			if (cmd.equalsIgnoreCase("screen")) {
-//				Log.d("screen","value= "+value);
-//				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-//				if (value.equalsIgnoreCase("on")) {
-//					//screen on
-//					pm.userActivity(SystemClock.uptimeMillis(), false);			
-//				} else if (value.equalsIgnoreCase("off")) {
-//					//screen off
-//					pm.goToSleep(2000);
-//					pm.wakeUp(2000);
-//				}
-//			}
-//			else if(cmd.equ
-
-//	public static void getStatus(String cmd, String value){
-//		Log.d("EXAMPLE","cmd = "+cmd + "value = "+value);
-/////여기서 스트링만들고..
-//	}
-//	
-	
-	
 	
 	/**
 	 * The distribution licence
