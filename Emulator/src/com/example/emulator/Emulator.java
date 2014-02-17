@@ -76,7 +76,6 @@ public class Emulator extends Activity {
 		}
 	}
 	
-	
 	private BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 	private ArrayList<DeviceInfo> mBTList,mWifiList = null;
 	private Switch Mode_wifi,Mode_blueTooth;
@@ -95,7 +94,6 @@ public class Emulator extends Activity {
 		}
 	};
 	
-
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {

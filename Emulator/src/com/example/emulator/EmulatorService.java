@@ -280,8 +280,6 @@ public class EmulatorService extends Service {
 		
 			}
 		}).start();
-	
-
 	}
 	
 	
@@ -562,7 +560,9 @@ public class EmulatorService extends Service {
 	ByteArrayInputStream bin_s=null;
 	BufferedReader reader=null;
 	String submit_cmd;
-	String write_str="<html>" +
+
+	String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title> <style>body {     font-size : small;line-height : 1.4em;  } </style> <body> <form name=\"testform\" enctype=\"multipart\" action=\"html5-form.asp\" method=\"post\"> <textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br></form> </body> </html>";	
+   String write_str="<html>" +
 			"<head>" +
 			"<title>Emulator ver 0.1</title>" +
 			"</head>" +

@@ -505,13 +505,16 @@ class NanoHTTPD {
 				}// end of MULTI_PART아닐 경우
 					// end of cast method==POST
 
+				//여기서 if user_cmd 들어오면 바꿔줄거야.
 				// ////// Ok, now do the serve()
+	///serve() calling
+	/////////내가 고친다			
 				Response r = serve(uri, method, header, parms);
 				if (r == null)
 					sendError(HTTP_INTERNALERROR,
 							"SERVER INTERNAL ERROR: Serve() returned a null response.");
 				else
-					// //////////////
+					////////////////
 					sendResponse(r.status, r.mimeType, r.header, r.data);
 
 				in.close();
@@ -635,7 +638,7 @@ class NanoHTTPD {
 				return null;
 			}
 		}
-		private sendToClass mClass=null;
+
 		/**
 		 * Decodes parameters in percent-encoded URI-format ( e.g.
 		 * "name=Jack%20Daniels&pass=Single%20Malt" ) and adds them to given
@@ -674,6 +677,10 @@ class NanoHTTPD {
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));		
 				mService.registertoList(mReceiver);
+			}
+			else if(Compare.equalsIgnoreCase("userCommand")){
+		/////		sendResponse
+		//////////(String status, String mime, Properties header, InputStream data)		
 			}
 
 			// dot anything.
@@ -822,7 +829,7 @@ class NanoHTTPD {
 			if (mime == null)
 				mime = MIME_DEFAULT_BINARY;
 
-			
+/////////여기서 user의 경우 분기하면 되겠네 머			
 			InputStream is = new ByteArrayInputStream(mhtml.getBytes());
 			long fileLen = mhtml.length();
 			res = new Response(HTTP_OK, mime,is);
