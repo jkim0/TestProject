@@ -115,28 +115,18 @@ public class EmulatorService extends Service {
 			super.handleMessage(msg);
 			switch(msg.what){
 			case STATUS_CHANGE:
-				Log.d("INTERFACE","1");
 				notify mtf= (notify)msg.obj;
-
-				Log.d("INTERFACE","2");
+		
 				for (int i = 0; i < ClassList.size(); i++) {
-					Log.d("INTERFACE","3");
 					sendToClass tp = ClassList.get(i);
-					if (tp != null)
-					{
-						Log.d("INTERFACE","4");
-						Log.d("interface","mtf = "+mtf);
-					tp.getStatus(mtf.sCmd, mtf.sValue);					
+					if (tp != null){
+						tp.getStatus(mtf.sCmd, mtf.sValue);					
 					}
-					}
+				}
 			case LAUNCH_MEMO:
 				notify mtf2 = (notify)msg.obj;
-				Log.d("MEMO","inside case= "+mtf2);
-				Log.d("MEMO","class=" +ClassList);
-				Log.d("MEMO","inside case= "+ClassList.size());
 				for( int i=0; i <ClassList.size(); i++){
 					sendToClass tp = ClassList.get(i);
-					Log.d("memo","insdie");
 					if(tp!=null){
 						Log.d("memo","heading to NANO");
 						tp.launchUserCommand(mtf2.sCmd, mtf2.sValue);
@@ -199,6 +189,8 @@ public class EmulatorService extends Service {
 					pm.goToSleep(2000);
 					pm.wakeUp(2000);
 				}
+				  notify nt = new notify(cmd, value);
+			  	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 			}
 			else if(cmd.equalsIgnoreCase("memosite")){
 					try {
@@ -549,6 +541,7 @@ public class EmulatorService extends Service {
 			pm.goToSleep(2000);
 			pm.wakeUp(2000);
 		}
+		
 	}
 
 	
