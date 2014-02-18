@@ -173,7 +173,7 @@ public class EmulatorService extends Service {
 		
 			File_Read(null);
 		
-			mHttpd = new NanoHTTPD(this, 8091,write_str);
+			mHttpd = new NanoHTTPD(this, 8091, write_str);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 		
 	}
@@ -698,9 +698,16 @@ public class EmulatorService extends Service {
 						write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
 								Cmd +"</option>";
 						
-						if(Cmd.equalsIgnoreCase("off"))	{
-							status = status + "off" + "</text>";	
-							Log.d("READ","status="+status);
+						if(Cmd.equalsIgnoreCase("off"))
+						{
+							if(submit_cmd.equalsIgnoreCase("screen"))
+							{
+								status = status + "on" + "</text>";
+							}
+							else
+							{
+								status = status + "off" + "</text>";
+							}
 						}
 					}
 
