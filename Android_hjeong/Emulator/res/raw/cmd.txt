@@ -1,0 +1,14 @@
+#Command
+- function
+1.one
+2.two
+
+#screen
+- function
+1.on
+2.off
+
+#wifi
+-function
+1.on
+2.off     
