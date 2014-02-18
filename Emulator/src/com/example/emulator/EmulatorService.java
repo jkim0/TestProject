@@ -76,7 +76,7 @@ public class EmulatorService extends Service {
 	
 	public interface sendToClass{
 		public String getStatus(String cmd, String value);
-		public void launchUserCommand(String cmd, String value);
+		public String launchUserCommand(String cmd, String value);
 	}
 	
 	private ArrayList<sendToClass> ClassList = new ArrayList<sendToClass>();

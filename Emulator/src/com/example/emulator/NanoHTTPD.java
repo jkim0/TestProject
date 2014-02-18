@@ -49,6 +49,7 @@ class NanoHTTPD {
 	public int user_mode = 0;
 	NanoHTTPD me;
 	private String mhtml=null;
+	public String lunch;
 	private final String TAG = "NanoHTTPD";
 	public final static int USER_COMMAND=4;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
@@ -174,6 +175,7 @@ class NanoHTTPD {
 			this.status = status;
 			this.mimeType = mimeType;
 			this.data = data;
+			
 			Log.i("RESPONSE", "status= " + status + " mimeType= " + mimeType
 					+ " data= " + data);
 			Log.i("RESPONSE", "response_1");
@@ -506,11 +508,12 @@ class NanoHTTPD {
 					Log.i("POST", "parms" + parms);
 					
 					if(decodeParms(postLine, parms)==USER_COMMAND){
-						Log.d("come","checkpoint_1");
 						uri = user_str;
-						Log.d("come","uri = "+uri);
-						Log.d("come","user_str="+user_str);
-					}else{
+					}else if(lunch!=null){
+						uri=lunch;
+					}
+					
+					else{
 						uri=null;
 					}
 					
@@ -524,13 +527,24 @@ class NanoHTTPD {
 					// end of cast method==POST
 				// ////// Ok, now do the serve()
 				
+				Log.d("kk","1");
 				Response r = serve(uri, method, header, parms);
-				if (r == null)
-					sendError(HTTP_INTERNALERROR,
-							"SERVER INTERNAL ERROR: Serve() returned a null response.");
-				else
-					sendResponse(r.status, r.mimeType, r.header, r.data);
 
+				Log.d("kk","2");
+				if (r == null){
+					sendError(HTTP_INTERNALERROR,
+				
+							"SERVER INTERNAL ERROR: Serve() returned a null response.");
+
+					Log.d("kk","3");
+				}
+					else{
+
+						Log.d("kk","4");
+						sendResponse(r.status, r.mimeType, r.header, r.data);
+
+						Log.d("kk","5");
+					}
 				in.close();
 				is.close();
 			} catch (IOException ioe) {
@@ -714,10 +728,14 @@ class NanoHTTPD {
 				return value;
 			}
 			@Override
-			public void launchUserCommand(String cmd, String value){
+			public String launchUserCommand(String cmd, String value){
 				Log.d("handler_","value="+value);
-				Response r = serveFile(value, header, true);
-				sendResponse(r.status, r.mimeType, r.header, r.data);
+				lunch = value;
+				return value;
+//				Response r = serveFile(value, header, true);
+//				Log.d("handler_","header="+r.header);
+//				
+//				sendResponse(r.status, r.mimeType, r.header, r.data);
 //				Response r = serve(uri, method, header, parms);		
 			}
 		};
@@ -755,11 +773,12 @@ class NanoHTTPD {
 
 				if (mime != null)
 					pw.print("Content-Type: " + mime + "\r\n");
-
+	
 				if (header == null || header.getProperty("Date") == null)
 					pw.print("Date: " + gmtFrmt.format(new Date()) + "\r\n");
 
 				if (header != null) {
+					Log.d("yjk","header= "+header);
 					Enumeration e = header.keys();
 					while (e.hasMoreElements()) {
 						String key = (String) e.nextElement();
@@ -772,7 +791,7 @@ class NanoHTTPD {
 
 				pw.print("\r\n");
 				pw.flush();
-
+				
 				if (data != null) {
 					int pending = data.available(); // This is to support
 													// partial sends, see
@@ -862,12 +881,14 @@ class NanoHTTPD {
 					is = new ByteArrayInputStream(user_write.getBytes());
 					fileLen = user_write.length();		
 			}
-			
+			Log.d("yjk","is="+is);
 			res = new Response(HTTP_OK, mime,is);
 			res.addHeader("Content-Length", "" + fileLen);
+			res.addHeader("Accept-Ranges", "bytes"); 
 		}
-		res.addHeader("Accept-Ranges", "bytes"); // Announce that the file
-													// server accepts partial													// content requestes
+		// Announce that the file
+		Log.d("yjk","res =" +res.header);										// server accepts partial													// content requestes
+		Log.d("yjk","res.data"+res.data);
 		return res;
 	}
 	
