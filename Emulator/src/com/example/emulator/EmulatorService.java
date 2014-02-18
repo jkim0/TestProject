@@ -68,6 +68,8 @@ public class EmulatorService extends Service {
 			return EmulatorService.this;
 		}
 	}
+	
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -610,7 +612,9 @@ public class EmulatorService extends Service {
 	   }
 	   
 	   int cnt = 0;		//Check for current readed line cnt
-	 String str;
+	   
+	   String str;
+	   
 	   while((cnt < line_Cnt)&&(str=reader.readLine())!=null)
 		{
 						//read one line
@@ -633,13 +637,9 @@ public class EmulatorService extends Service {
 						+ "</form>";
 		
 		Add_status();
-		
-		//write_str = write_str + "</body></html>";	
 
 	}
     
-
-
 	 public void Add_status(){
 
 	    	write_str = write_str + status; 	    	
