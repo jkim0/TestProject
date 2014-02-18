@@ -711,6 +711,25 @@ class NanoHTTPD {
 ////여기까지 들어오는거 확인 이걸로 해!
 				Log.d("INTERFACE","5");
 				Log.d("INTERFACE","check to here  ");
+				String replace = "";
+				replace = cmd + " : " + value;
+				
+				if(value.equalsIgnoreCase("on"))
+				{
+					mhtml.replace(cmd + " : " + "off", replace);
+				}
+				
+				else if(value.equalsIgnoreCase("off"))
+				{
+					mhtml.replace(cmd + " : " + "on", replace);
+				}
+				
+				else
+				{
+					
+				}
+				
+				
 				return value;
 			}
 			@Override
