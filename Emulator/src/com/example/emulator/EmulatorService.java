@@ -710,22 +710,6 @@ public class EmulatorService extends Service {
 			
 		}
 
-//	private File write_file(String str){
-//		File dir = new File("data/data/com.example.emulator/files/");
-//		dir.mkdirs();
-//		File out = new File("data/data/com.example.emulator/files/index.html");
-//		try {
-//			out.createNewFile();
-//			FileOutputStream fo = new FileOutputStream(out);
-//			fo.write(str.getBytes());
-//			fo.close();
-//			return dir;
-//		} catch (IOException e) {
-//			return null;
-//		}
-//	}
-
-
 	 private static Hashtable theKeyBoard = new Hashtable();
 	    static
 	    {

@@ -48,7 +48,7 @@ import com.example.emulator.NanoHTTPD.Response;
 class NanoHTTPD {
 	public int user_mode = 0;
 	NanoHTTPD me;
-	private String mhtml=null;
+	public String mhtml=null;
 	public String lunch;
 	private final String TAG = "NanoHTTPD";
 	public final static int USER_COMMAND=4; 
@@ -388,7 +388,6 @@ class NanoHTTPD {
 		public void run() {
 	
 			try {
-				boolean USER_MODE;
 				InputStream is = mySocket.getInputStream();
 				if (is == null)
 					return;
@@ -514,11 +513,7 @@ class NanoHTTPD {
 					Log.i("kk","branch = "+branch);
 					if(branch==USER_COMMAND){
 						uri = user_str;
-					}
-//					else if(branch==LAUNCH_MEMO){
-//						Log.i("kk","uri= "+launch_uri);
-//						uri= launch_uri;
-//					}	
+					}	
 					else if(branch==LAUNCH_MEMO){
 						uri = launch_uri;
 						Log.i("kk","uri= "+launch_uri);
@@ -526,8 +521,6 @@ class NanoHTTPD {
 					else{
 						uri=null;
 					}
-					
-			//왠지는 모르지만 저위에 if문 통과하고 그 뒤에, 관리		
 				
 					Log.i("POST", "parms= " + parms);
 					Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
@@ -741,19 +734,27 @@ class NanoHTTPD {
 			@Override
 			public String getStatus(String cmd, String value){
 ////여기까지 들어오는거 확인 이걸로 해!
+				String check=mhtml;
 				Log.d("INTERFACE","5");
 				Log.d("INTERFACE","check to here  ");
+				Log.d("INTERFACE","mhtml="+mhtml);
+			
 				String replace = "";
 				replace = cmd + " : " + value;
 				
 				if(value.equalsIgnoreCase("on"))
 				{
-					mhtml.replace(cmd + " : " + "off", replace);
+					Log.i("INTERFACE","on");
+					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
+					mhtml=mhtml.replace(cmd + " : " + "off", replace);
+					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
 				}
 				
-				else if(value.equalsIgnoreCase("off"))
-				{
-					mhtml.replace(cmd + " : " + "on", replace);
+				else if(value.equalsIgnoreCase("off")){
+					Log.i("INTERFACE","off");
+					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"on"));
+					mhtml =mhtml.replace(cmd + " : " + "on", replace);
+					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
 				}
 				
 				else
@@ -840,7 +841,7 @@ class NanoHTTPD {
 							break;
 						out.write(buff, 0, read);
 						pending -= read;
-						Log.d("sendresponse2","string data.read= "+yjk);
+				//		Log.d("sendresponse2","string data.read= "+yjk);
 					}
 
 				}
@@ -899,11 +900,10 @@ class NanoHTTPD {
 
 			if (mime == null)
 				mime = MIME_DEFAULT_BINARY;
-
-/////////여기서 user의 경우 분기하면 되겠네 머		
+	
 			InputStream is;
 			long fileLen;
-	//처음 input창 받을때 띄워줘야할 부분	
+	
 			if(user_write==null){
 				is = new ByteArrayInputStream(mhtml.getBytes());
 				fileLen = mhtml.length();
@@ -913,14 +913,13 @@ class NanoHTTPD {
 					is = new ByteArrayInputStream(user_write.getBytes());
 					fileLen = user_write.length();		
 			}
-			Log.d("yjk","is="+is);
 			res = new Response(HTTP_OK, mime,is);
 			res.addHeader("Content-Length", "" + fileLen);
 			res.addHeader("Accept-Ranges", "bytes"); 
 		}
 		// Announce that the file
-		Log.d("yjk","res =" +res.header);										// server accepts partial													// content requestes
-		Log.d("yjk","res.data"+res.data);
+										// server accepts partial													
+		// content requestes
 		return res;
 	}
 	
