@@ -68,6 +68,8 @@ public class EmulatorService extends Service {
 			return EmulatorService.this;
 		}
 	}
+	
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -173,7 +175,7 @@ public class EmulatorService extends Service {
 		
 			File_Read(null);
 		
-			mHttpd = new NanoHTTPD(this, 8091,write_str);
+			mHttpd = new NanoHTTPD(this, 8091, write_str);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 		
 	}
@@ -610,7 +612,9 @@ public class EmulatorService extends Service {
 	   }
 	   
 	   int cnt = 0;		//Check for current readed line cnt
-	 String str;
+	   
+	   String str;
+	   
 	   while((cnt < line_Cnt)&&(str=reader.readLine())!=null)
 		{
 						//read one line
@@ -633,13 +637,9 @@ public class EmulatorService extends Service {
 						+ "</form>";
 		
 		Add_status();
-		
-		//write_str = write_str + "</body></html>";	
 
 	}
     
-
-
 	 public void Add_status(){
 
 	    	write_str = write_str + status; 	    	
@@ -698,9 +698,16 @@ public class EmulatorService extends Service {
 						write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
 								Cmd +"</option>";
 						
-						if(Cmd.equalsIgnoreCase("off"))	{
-							status = status + "off" + "</text>";	
-							Log.d("READ","status="+status);
+						if(Cmd.equalsIgnoreCase("off"))
+						{
+							if(submit_cmd.equalsIgnoreCase("screen"))
+							{
+								status = status + "on" + "</text>";
+							}
+							else
+							{
+								status = status + "off" + "</text>";
+							}
 						}
 					}
 
