@@ -51,7 +51,9 @@ class NanoHTTPD {
 	private String mhtml=null;
 	public String lunch;
 	private final String TAG = "NanoHTTPD";
-	public final static int USER_COMMAND=4;
+	public final static int USER_COMMAND=4; 
+	public final static int LAUNCH_MEMO=5;
+	public String launch_uri=null;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	
@@ -119,6 +121,7 @@ class NanoHTTPD {
 	//servefile을 호출한
 	public Response serve(String uri, String method, Properties header,Properties parms) {
 		// 여기서 갑자기 post 'index2.html' 생김 / uri 발생
+		Log.d("kk","inside_serve");
 		myOut.println(method + " '" + uri + "' ");
 		if(uri!=null){
 			if(method.equalsIgnoreCase("GET")||uri.equalsIgnoreCase("/")|| uri.equalsIgnoreCase("/favicon.ico")){
@@ -140,13 +143,13 @@ class NanoHTTPD {
 		while (e.hasMoreElements()) {
 			String value = (String) e.nextElement();
 			Log.d("ENUMERATION", "e =" + e);
-			if (value.equalsIgnoreCase("memosite")) {
-				CmdData cd = new CmdData(value, parms.getProperty(value));
-				Log.d("message","value="+value);
-				Log.d("message","parms="+parms.getProperty(value));
-				mHandler.sendMessage(mHandler.obtainMessage(
-						NOTIFY_CMD_RECEIVED, cd));
-			}
+//			if (value.equalsIgnoreCase("memosite")) {
+//				CmdData cd = new CmdData(value, parms.getProperty(value));
+//				Log.d("message","value="+value);
+//				Log.d("message","parms="+parms.getProperty(value));
+//				mHandler.sendMessage(mHandler.obtainMessage(
+//						NOTIFY_CMD_RECEIVED, cd));
+//			}
 			myOut.println("  PRM: '" + value + "' = '"
 					+ parms.getProperty(value) + "'");
 		}
@@ -325,14 +328,13 @@ class NanoHTTPD {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case NOTIFY_CMD_RECEIVED:
-					Log.d("come","0;;;");
+					Log.d("come","inside handler;;;");
 					CmdData cd = (CmdData) msg.obj;
 					notifyCommandReceived(cd.mCmd, cd.mValue);
 					// case MAKING_HTML:
 					// CmdData cd2=(CmdData)msg.obj;
-		
-
 				}
+				
 			}
 		};
 
@@ -373,9 +375,9 @@ class NanoHTTPD {
 	 * 열면, 거기에 html파일이있었잖아, 그러면 그거를 파싱해주는거지??? 그래서 response를 보내준다~~~ Handles one
 	 * session, i.e. parses the HTTP request and returns the response.
 	 */
-	public Properties header = new Properties();
+
 	public class HTTPSession implements Runnable {
-		
+
 		public HTTPSession(Socket s) {
 			mySocket = s;
 			Thread t = new Thread(this);
@@ -410,7 +412,7 @@ class NanoHTTPD {
 
 				Properties pre = new Properties();
 				Properties parms = new Properties();
-	//			Properties header = new Properties();
+				Properties header = new Properties();
 				Properties files = new Properties();
 
 				// Decode the header into parms and header java properties
@@ -505,18 +507,28 @@ class NanoHTTPD {
 					Log.i("POST", "postLine:b4:" + postLine);
 					postLine = postLine.trim(); // postLine에서 좌우 빈공간 스페이스 제거하고
 					Log.i("POST", "postLine:a4:" + postLine);
-					Log.i("POST", "parms" + parms);
-					
-					if(decodeParms(postLine, parms)==USER_COMMAND){
+					Log.i("POST", "parms///////" + parms);
+					Log.i("kk","the right b4 decode parsm");
+					int branch= decodeParms(postLine, parms);
+
+					Log.i("kk","branch = "+branch);
+					if(branch==USER_COMMAND){
 						uri = user_str;
-					}else if(lunch!=null){
-						uri=lunch;
 					}
-					
+//					else if(branch==LAUNCH_MEMO){
+//						Log.i("kk","uri= "+launch_uri);
+//						uri= launch_uri;
+//					}	
+					else if(branch==LAUNCH_MEMO){
+						uri = launch_uri;
+						Log.i("kk","uri= "+launch_uri);
+					}
 					else{
 						uri=null;
 					}
 					
+			//왠지는 모르지만 저위에 if문 통과하고 그 뒤에, 관리		
+				
 					Log.i("POST", "parms= " + parms);
 					Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
 					Log.d("POST", "uri = " + uri);
@@ -526,15 +538,13 @@ class NanoHTTPD {
 				}// end of MULTI_PART아닐 경우
 					// end of cast method==POST
 				// ////// Ok, now do the serve()
-				
+	
 				Log.d("kk","1");
 				Response r = serve(uri, method, header, parms);
 
 				Log.d("kk","2");
 				if (r == null){
-					sendError(HTTP_INTERNALERROR,
-				
-							"SERVER INTERNAL ERROR: Serve() returned a null response.");
+					sendError(HTTP_INTERNALERROR,"SERVER INTERNAL ERROR: Serve() returned a null response.");
 
 					Log.d("kk","3");
 				}
@@ -693,25 +703,33 @@ class NanoHTTPD {
 				Compare = e.substring(0, sep).trim();
 			}
 			Log.e("NanoHttpdError", "" + Compare);
+			Log.e("chekc memo","memo= "+ p.getProperty(Compare));
 			// //여기서 추가
-			if (Compare.equalsIgnoreCase("screen")|| Compare.equalsIgnoreCase("keyboard")){
-				Log.d("screnn/na", "value=" + p.getProperty(Compare));
+			if (Compare.equalsIgnoreCase("screen")|| Compare.equalsIgnoreCase("keyboard")||Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
+				Log.d("kk", "value=" + p.getProperty(Compare));
 				// notifyCommandReceived(Compare, p.getProperty(Compare));
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 				mHandler.sendMessage(mHandler.obtainMessage(
 						NOTIFY_CMD_RECEIVED, cd));
-			}
-			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
-				Log.d("interface","mService = " +mService);
-				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));		
 				mService.registertoList(mReceiver);
+				return 0;
+			}
+			else if(Compare.equalsIgnoreCase("memosite")){
+				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+				Log.d("kk","memosite/b4 sendMSG");
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
+				mService.registertoList(mReceiver);
+				Log.d("kk","memosite /bf return");
+				return LAUNCH_MEMO;
 			}
 			else if(Compare.equalsIgnoreCase("userCommand")){
 				if(p.getProperty(Compare).equalsIgnoreCase("on")){
+				
 					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+					Log.d("kk","usercommand/b4 sendMSG");
 					mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
 					mService.registertoList(mReceiver);
+					Log.d("kk","usercommand/bf return");
 					return USER_COMMAND;
 				}
 			}
@@ -747,15 +765,10 @@ class NanoHTTPD {
 				return value;
 			}
 			@Override
-			public String launchUserCommand(String cmd, String value){
+			public void launchUserCommand(String cmd, String value){
 				Log.d("handler_","value="+value);
-				lunch = value;
-				return value;
-//				Response r = serveFile(value, header, true);
-//				Log.d("handler_","header="+r.header);
-//				
-//				sendResponse(r.status, r.mimeType, r.header, r.data);
-//				Response r = serve(uri, method, header, parms);		
+				launch_uri = value;
+				Log.i("kk","inside luanch= lunch="+ launch_uri);
 			}
 		};
 

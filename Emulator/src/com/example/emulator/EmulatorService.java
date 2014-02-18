@@ -78,7 +78,7 @@ public class EmulatorService extends Service {
 	
 	public interface sendToClass{
 		public String getStatus(String cmd, String value);
-		public String launchUserCommand(String cmd, String value);
+		public void launchUserCommand(String cmd, String value);
 	}
 	
 	private ArrayList<sendToClass> ClassList = new ArrayList<sendToClass>();
@@ -116,7 +116,6 @@ public class EmulatorService extends Service {
 			switch(msg.what){
 			case STATUS_CHANGE:
 				notify mtf= (notify)msg.obj;
-		
 				for (int i = 0; i < ClassList.size(); i++) {
 					sendToClass tp = ClassList.get(i);
 					if (tp != null){
@@ -124,7 +123,9 @@ public class EmulatorService extends Service {
 					}
 				}
 			case LAUNCH_MEMO:
+				Log.i("service_handler","launch_memo");
 				notify mtf2 = (notify)msg.obj;
+				Log.i("service_handler","size= "+ClassList.size());
 				for( int i=0; i <ClassList.size(); i++){
 					sendToClass tp = ClassList.get(i);
 					if(tp!=null){
