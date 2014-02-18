@@ -55,7 +55,9 @@ public class EmulatorService extends Service {
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
 	public static final int STATUS_CHANGE = 5;
-	
+	public static final int LAUNCH_MEMO=4;
+	public int memo=1;
+	public String user=null;
 	
 	NotificationManager mNM;
 	
@@ -74,6 +76,7 @@ public class EmulatorService extends Service {
 	
 	public interface sendToClass{
 		public String getStatus(String cmd, String value);
+		public void launchUserCommand(String cmd, String value);
 	}
 	
 	private ArrayList<sendToClass> ClassList = new ArrayList<sendToClass>();
@@ -115,7 +118,6 @@ public class EmulatorService extends Service {
 
 				Log.d("INTERFACE","2");
 				for (int i = 0; i < ClassList.size(); i++) {
-
 					Log.d("INTERFACE","3");
 					sendToClass tp = ClassList.get(i);
 					if (tp != null)
@@ -125,7 +127,19 @@ public class EmulatorService extends Service {
 					tp.getStatus(mtf.sCmd, mtf.sValue);					
 					}
 					}
-						
+			case LAUNCH_MEMO:
+				notify mtf2 = (notify)msg.obj;
+				Log.d("MEMO","inside case= "+mtf2);
+				Log.d("MEMO","class=" +ClassList);
+				Log.d("MEMO","inside case= "+ClassList.size());
+				for( int i=0; i <ClassList.size(); i++){
+					sendToClass tp = ClassList.get(i);
+					Log.d("memo","insdie");
+					if(tp!=null){
+						Log.d("memo","heading to NANO");
+						tp.launchUserCommand(mtf2.sCmd, mtf2.sValue);
+					}
+					}
 //				sendToClass stc = null;
 //				 stc.getStatus(mtf.sCmd, mtf.sValue);
 //			//	NanoHTTPD.printStatus(mtf.fsCmd, mtf.sValue);
@@ -133,13 +147,18 @@ public class EmulatorService extends Service {
 			}
 		}
 	};
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification();
-		NanoHttpd();
+		try {
+			NanoHttpd();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/* copy from raw card */
@@ -149,19 +168,14 @@ public class EmulatorService extends Service {
 
 
 	private NanoHTTPD mHttpd = null;
-	private void NanoHttpd() {
+	private void NanoHttpd() throws IOException {
 		//여기서 파일 오픈해서 읽어서html 띄어주면 되는거잖아..
-		try {
-			  File_Read();
-			//File wwwroot = write_file(write_str);
-			//Log.d("wwwroot","wwwroot="+wwwroot);
+		
+			File_Read(null);
+		
 			mHttpd = new NanoHTTPD(this, 8091,write_str);
-//			fromService=this;
-
 			mHttpd.registerCommandReceiver(mCommandReceiver);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 	
 //	private WifiManager mWifiManager;
@@ -185,20 +199,18 @@ public class EmulatorService extends Service {
 				}
 			}
 			else if(cmd.equalsIgnoreCase("memosite")){
-			
-				File folder = new File(to + "files/");
-				folder.mkdirs();
-				File outfile = new File(to + "files/" +"cmd.txt");
-				try {
-					outfile.createNewFile();
-					//FileOutputstream (outfile) 에다가 tempdata를 쓴다.
-					FileOutputStream fo = new FileOutputStream(outfile);
-					fo.write(value.getBytes());
-					fo.close();
+					try {
+						Log.d("MSG","value="+value);
+						File_Read(value);
+						Log.d("MSG","write= "+write_str);
+						  notify nt = new notify("Launch_memo", write_str );
+					  	  mHandler.sendMessage(mHandler.obtainMessage(LAUNCH_MEMO, nt));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					
-				} catch (IOException e) {
-					e.printStackTrace();
-				}	
+				//parsing value;
+				//send it again and open it
 
 			}
 			else if(cmd.equalsIgnoreCase("keyboard")){
@@ -560,59 +572,58 @@ public class EmulatorService extends Service {
 	ByteArrayInputStream bin_s=null;
 	BufferedReader reader=null;
 	String submit_cmd;
+	String write_str;
+	String status="";
+	Boolean check= true;
+	public void File_Read(String tmp) throws IOException{
 
-	String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title> <style>body {     font-size : small;line-height : 1.4em;  } </style> <body> <form name=\"testform\" enctype=\"multipart\" action=\"html5-form.asp\" method=\"post\"> <textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br></form> </body> </html>";	
-   String write_str="<html>" +
-			"<head>" +
-			"<title>Emulator ver 0.1</title>" +
-			"</head>" +
-			"<body>";
-	String status;
-	
-	public void File_Read() throws IOException{
-		 
-		Toast.makeText(this, "File_Read Call", Toast.LENGTH_SHORT).show();
- 
-	   Resources res = getResources();							//res
-	   InputStream in_s = res.openRawResource(R.raw.cmd);		//cmd.txt를 InputStream에
-	   
+		write_str="<html>" +
+					"<head>" +
+					"<title>Emulator ver 0.1</title>" +
+					"</head>" +
+					"<body>";
+		status= "";
+		InputStream in_s;
+		if(tmp==null){
+
+			Resources res = getResources();							//res
+			in_s = res.openRawResource(R.raw.cmd);		//cmd.txt를 InputStream에
+		}
+		else {
+			in_s= new ByteArrayInputStream(tmp.getBytes());
+			
+		}
+	  
 	   rlen=in_s.available();			//Total Length
-	   //Returns an estimated number of bytes that can be read or skipped without blocking for more input
+	   
+		//Returns an estimated number of bytes that can be read or skipped without blocking for more input
 	   byte[] buffer = new byte[in_s.available()];
 	   in_s.read(buffer);
 	   
 	   bin_s = new ByteArrayInputStream(buffer, 0, rlen); //Parsing을	(bufferreader 사용)
 	   reader = new BufferedReader( new InputStreamReader( bin_s )); //편하게 하기 위해서
 	   
-	   
-	   Log.i("Buffer Length","#####rlen = "+rlen);
-	   for(int i=0;i<rlen;i++)			//Check text Total line
-	   {
-		   if(buffer[i]== 10)
-		   {
+	   for(int i=0;i<rlen;i++){			//Check text Total line
+		   if(buffer[i]== 10){
 			   line_Cnt++;
 		   }
-		   //Log.i("buffer","buffer[i] = "+buffer[i]);
 	   }
 	   
 	   int cnt = 0;		//Check for current readed line cnt
-	   
-	   while(cnt < line_Cnt)
+	 String str;
+	   while((cnt < line_Cnt)&&(str=reader.readLine())!=null)
 		{
-			String str = reader.readLine();			//read one line
-			
+						//read one line
+			Log.d("READ","str="+str);
 			cnt++;							//readed one line cnt increase +1
-			if(str.length() == 0)			//Newline '\n'
+			
+			//아마 넘어오면서 뭔가 인코딩되서 넘어오는거같은데, 그거때매 여기서 자꾸죽는듯.....
+			if(str.length() == 0)			//Newline '\n' 
 			{
-				Log.i("Parsing","Newline");
 				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>" +
 						"<text><br><br></text>";
-
-			}
-			
-			else			//한 줄 띄기가 아닐 때만 Parsing을 호출
-			{
+			}else{			//한 줄 띄기가 아닐 때만 Parsing을 호출
 				Parsing(str);
 			}
 		}
@@ -623,94 +634,73 @@ public class EmulatorService extends Service {
 		
 		Add_status();
 		
-		//write_str = write_str + "</body></html>";
-		
-		Log.i("##########Check","line : "+cnt);
+		//write_str = write_str + "</body></html>";	
+
 	}
     
 
 
 	 public void Add_status(){
-	    	
-	    	write_str = write_str + status; 
-	    	
-	    	write_str = write_str + "</body></html>";
-	    }
-	    
-	    public void Parsing(String parsing){
-					
-			StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
-			
-			String str_partition=null;
 
-			
+	    	write_str = write_str + status; 	    	
+	    	write_str = write_str + "</body></html>";
+	}
+	    
+    public void Parsing(String parsing){
+			StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
+			String str_partition=null;
 			if(stoken1.hasMoreTokens())
 			{
 				str_partition = stoken1.nextToken();
-				if(parsing != str_partition)			//#이 있다는 것
-				{
-
+				if(parsing != str_partition){		//#이 있다는 것
+			
 					int space_index=str_partition.indexOf(' ');
-					if(space_index != -1)
-					{
+					if(space_index != -1){
 						str_partition = str_partition.trim();
 					}
 					
 					submit_cmd = str_partition;
-					Log.i("Parsing","################");
 					write_str = write_str + "<textarea rows=1 cols=10>"
 							+ str_partition + "</textarea>";
 					status = status + "<text><br>" + str_partition + " : ";
-					
-					Log.i("######","String:"+str_partition);
-
+//					Log.i("######","String:"+str_partition);
 				}
-				
-				else
-				{
+				else{
 
 					stoken1 = new StringTokenizer( parsing, "-" );
 					str_partition = stoken1.nextToken();
 					if(parsing != str_partition)			//-이 있다는 것
 					{
 						int space_index=str_partition.indexOf(' ');
-						if(space_index != -1)
-						{
+						if(space_index != -1){
 							str_partition = str_partition.trim();
 						}
-						
-						
-						Log.i("-------","String:"+str_partition);
-						
+					
+	//					Log.i("-------","String:"+str_partition);	
 						write_str = write_str + "<text><br></text><text>"
 								+ str_partition + "<br></text>" +
 								"<form method=\"post\">" +
 								"<select name=\"" + submit_cmd + "\">";
 					}
 					
-					else									//command
-					{
+					else{									//command
+
 						int length = str_partition.length();
 						int index = str_partition.indexOf('.');
 						int space_index=str_partition.indexOf(' ');
-					
-						
+											
 						String Cmd = str_partition.substring(index+1, length);
 						
-						if(space_index != -1)
-						{
+						if(space_index != -1){
 							Cmd = Cmd.trim();
 						}
-						
-						Log.i("****Command*****","String:"+Cmd);
-											
+	//					Log.i("****Command*****","String:"+Cmd);
 						write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
 								Cmd +"</option>";
 						
-						
-						if(Cmd.equalsIgnoreCase("off"))
-						{
+						if(Cmd.equalsIgnoreCase("off"))	{
 							status = status + "off" + "</text>";	
+							Log.d("READ","status="+status);
 						}
 					}
 
@@ -719,20 +709,20 @@ public class EmulatorService extends Service {
 			
 		}
 
-	private File write_file(String str){
-		File dir = new File("data/data/com.example.emulator/files/");
-		dir.mkdirs();
-		File out = new File("data/data/com.example.emulator/files/index.html");
-		try {
-			out.createNewFile();
-			FileOutputStream fo = new FileOutputStream(out);
-			fo.write(str.getBytes());
-			fo.close();
-			return dir;
-		} catch (IOException e) {
-			return null;
-		}
-	}
+//	private File write_file(String str){
+//		File dir = new File("data/data/com.example.emulator/files/");
+//		dir.mkdirs();
+//		File out = new File("data/data/com.example.emulator/files/index.html");
+//		try {
+//			out.createNewFile();
+//			FileOutputStream fo = new FileOutputStream(out);
+//			fo.write(str.getBytes());
+//			fo.close();
+//			return dir;
+//		} catch (IOException e) {
+//			return null;
+//		}
+//	}
 
 
 	 private static Hashtable theKeyBoard = new Hashtable();

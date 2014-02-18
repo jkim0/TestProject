@@ -46,10 +46,14 @@ import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
 
 class NanoHTTPD {
+	public int user_mode = 0;
 	NanoHTTPD me;
 	private String mhtml=null;
 	private final String TAG = "NanoHTTPD";
-
+	public final static int USER_COMMAND=4;
+	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
+	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
+	
 	// ==================================================
 	// API parts
 	// ==================================================
@@ -115,7 +119,11 @@ class NanoHTTPD {
 	public Response serve(String uri, String method, Properties header,Properties parms) {
 		// 여기서 갑자기 post 'index2.html' 생김 / uri 발생
 		myOut.println(method + " '" + uri + "' ");
-
+		if(uri!=null){
+			if(method.equalsIgnoreCase("GET")||uri.equalsIgnoreCase("/")|| uri.equalsIgnoreCase("/favicon.ico")){
+				uri=null;
+			}
+		}
 		Enumeration e = header.propertyNames();
 		Log.i("check", "header.propertyNames:" + header.propertyNames());
 		Log.i("check", "e:" + e);
@@ -130,14 +138,13 @@ class NanoHTTPD {
 		// /prm에서 여기서 value== memosite
 		while (e.hasMoreElements()) {
 			String value = (String) e.nextElement();
-			// ///////memosite분기위치에요여기가....
 			Log.d("ENUMERATION", "e =" + e);
 			if (value.equalsIgnoreCase("memosite")) {
-
 				CmdData cd = new CmdData(value, parms.getProperty(value));
+				Log.d("message","value="+value);
+				Log.d("message","parms="+parms.getProperty(value));
 				mHandler.sendMessage(mHandler.obtainMessage(
 						NOTIFY_CMD_RECEIVED, cd));
-
 			}
 			myOut.println("  PRM: '" + value + "' = '"
 					+ parms.getProperty(value) + "'");
@@ -273,8 +280,7 @@ class NanoHTTPD {
 //				try {
 //					mService.screenOnOff(value);
 //				} catch (RemoteException ex) {
-//					Log.e(TAG, "exception occured when request screen on/off.",
-//							ex);
+//					Log.e(TAG, "exception occured when request screen on/off.",//							ex);
 //				}
 //				return;
 //			}
@@ -317,10 +323,12 @@ class NanoHTTPD {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case NOTIFY_CMD_RECEIVED:
+					Log.d("come","0;;;");
 					CmdData cd = (CmdData) msg.obj;
 					notifyCommandReceived(cd.mCmd, cd.mValue);
 					// case MAKING_HTML:
 					// CmdData cd2=(CmdData)msg.obj;
+		
 
 				}
 			}
@@ -363,9 +371,9 @@ class NanoHTTPD {
 	 * 열면, 거기에 html파일이있었잖아, 그러면 그거를 파싱해주는거지??? 그래서 response를 보내준다~~~ Handles one
 	 * session, i.e. parses the HTTP request and returns the response.
 	 */
+	public Properties header = new Properties();
 	public class HTTPSession implements Runnable {
 		
-
 		public HTTPSession(Socket s) {
 			mySocket = s;
 			Thread t = new Thread(this);
@@ -374,7 +382,9 @@ class NanoHTTPD {
 		}
 
 		public void run() {
+	
 			try {
+				boolean USER_MODE;
 				InputStream is = mySocket.getInputStream();
 				if (is == null)
 					return;
@@ -398,7 +408,7 @@ class NanoHTTPD {
 
 				Properties pre = new Properties();
 				Properties parms = new Properties();
-				Properties header = new Properties();
+	//			Properties header = new Properties();
 				Properties files = new Properties();
 
 				// Decode the header into parms and header java properties
@@ -494,27 +504,31 @@ class NanoHTTPD {
 					postLine = postLine.trim(); // postLine에서 좌우 빈공간 스페이스 제거하고
 					Log.i("POST", "postLine:a4:" + postLine);
 					Log.i("POST", "parms" + parms);
-					decodeParms(postLine, parms);
+					
+					if(decodeParms(postLine, parms)==USER_COMMAND){
+						Log.d("come","checkpoint_1");
+						uri = user_str;
+						Log.d("come","uri = "+uri);
+						Log.d("come","user_str="+user_str);
+					}else{
+						uri=null;
+					}
+					
 					Log.i("POST", "parms= " + parms);
 					Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
 					Log.d("POST", "uri = " + uri);
-					// uri = "/index3.html";
-					Log.d("POST",
-							"pre.getProperty(uri)= " + pre.getProperty("uri"));
+					Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
 					Log.d("POST", "uri = " + uri);
+					
 				}// end of MULTI_PART아닐 경우
 					// end of cast method==POST
-
-				//여기서 if user_cmd 들어오면 바꿔줄거야.
 				// ////// Ok, now do the serve()
-	///serve() calling
-	/////////내가 고친다			
+				
 				Response r = serve(uri, method, header, parms);
 				if (r == null)
 					sendError(HTTP_INTERNALERROR,
 							"SERVER INTERNAL ERROR: Serve() returned a null response.");
 				else
-					////////////////
 					sendResponse(r.status, r.mimeType, r.header, r.data);
 
 				in.close();
@@ -529,7 +543,8 @@ class NanoHTTPD {
 				// Thrown by sendError, ignore and exit the thread.
 			}
 		}
-
+		
+	
 		/**
 		 * Decodes the sent headers and loads the data into java Properties' key
 		 * - value pairs
@@ -646,10 +661,10 @@ class NanoHTTPD {
 		 * the simplicity of Properties -- if you need multiples, you might want
 		 * to replace the Properties with a Hashtable of Vectors or such.
 		 */
-		private void decodeParms(String parms, Properties p)
+		private int decodeParms(String parms, Properties p)
 				throws InterruptedException {
 			if (parms == null)
-				return;
+				return 0;
 
 			String Compare = null;
 
@@ -679,12 +694,17 @@ class NanoHTTPD {
 				mService.registertoList(mReceiver);
 			}
 			else if(Compare.equalsIgnoreCase("userCommand")){
-		/////		sendResponse
-		//////////(String status, String mime, Properties header, InputStream data)		
+				if(p.getProperty(Compare).equalsIgnoreCase("on")){
+					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+					mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
+					mService.registertoList(mReceiver);
+					return USER_COMMAND;
+				}
 			}
-
-			// dot anything.
+			return 0;	
 		}
+			// dot anything.
+	
 		private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
 			@Override
 			public String getStatus(String cmd, String value){
@@ -692,6 +712,13 @@ class NanoHTTPD {
 				Log.d("INTERFACE","5");
 				Log.d("INTERFACE","check to here  ");
 				return value;
+			}
+			@Override
+			public void launchUserCommand(String cmd, String value){
+				Log.d("handler_","value="+value);
+				Response r = serveFile(value, header, true);
+				sendResponse(r.status, r.mimeType, r.header, r.data);
+//				Response r = serve(uri, method, header, parms);		
 			}
 		};
 
@@ -709,14 +736,15 @@ class NanoHTTPD {
 		/**
 		 * Sends given response to the socket.
 		 */
-		private void sendResponse(String status, String mime,
-				Properties header, InputStream data) {
+		
+		
+		private void sendResponse(String status, String mime, Properties header, InputStream data) {
 			// data : file경로가 들어있어!!
 			try {
 				Log.d("sendresponse", "status = " + status);
 				Log.d("sendresponse", "mime = " + mime);
 				Log.d("sendresponse", "header = " + header);
-				Log.d("sendresponse", "InputStream = " + data);
+				Log.d("sendresponse", "InputStream = " + data.toString());
 
 				if (status == null)
 					throw new Error("sendResponse(): Status can't be null.");
@@ -761,7 +789,7 @@ class NanoHTTPD {
 							break;
 						out.write(buff, 0, read);
 						pending -= read;
-						// Log.d("sendresponse2","string data.read= "+yjk);
+						Log.d("sendresponse2","string data.read= "+yjk);
 					}
 
 				}
@@ -779,7 +807,7 @@ class NanoHTTPD {
 		}
 
 		private Socket mySocket;
-	}
+     }
 
 	/**
 	 * URL-encodes everything between "/"-characters. Encodes spaces as '%20'
@@ -804,23 +832,15 @@ class NanoHTTPD {
 	 * Serves file from homeDir and its' subdirectories (only). Uses only URI,
 	 * ignores all headers and HTTP parameters.
 	 */
-	public Response serveFile(String uri, Properties header, boolean allowDirectoryListing) {
-		Log.d("SERVEFILE", "uri=" + uri);
-
+	public Response serveFile(String user_write, Properties header, boolean allowDirectoryListing) {
 		Log.d("SERVEFILE", "header=" + header);
-
+		Log.d("SERVEFILE","user_write="+user_write);
 		Response res = null;
-		Log.e("CHECK", "uri:" + uri);
-		Log.e("CHECK", "header:" + header);
 		Log.e("CHECK", "ADL:" + allowDirectoryListing);
-
-		// 여기까진 들어온다
 
 		// 파일이 디렉토리면 트루, 근데 fulse야 그렇다면 디렉토리 아니라는거지.
 		// Make sure we won't die of an exception later
-		Log.d("8989", "uir=" + uri + "+");
-		Log.d("8989", "len=" + uri.length());
-	
+
 		if (res == null) {
 			// Get MIME type from file name extension, if possible
 			String mime = null;
@@ -829,9 +849,20 @@ class NanoHTTPD {
 			if (mime == null)
 				mime = MIME_DEFAULT_BINARY;
 
-/////////여기서 user의 경우 분기하면 되겠네 머			
-			InputStream is = new ByteArrayInputStream(mhtml.getBytes());
-			long fileLen = mhtml.length();
+/////////여기서 user의 경우 분기하면 되겠네 머		
+			InputStream is;
+			long fileLen;
+	//처음 input창 받을때 띄워줘야할 부분	
+			if(user_write==null){
+				is = new ByteArrayInputStream(mhtml.getBytes());
+				fileLen = mhtml.length();
+			}
+			else{
+					Log.d("SERVEFILE","come");
+					is = new ByteArrayInputStream(user_write.getBytes());
+					fileLen = user_write.length();		
+			}
+			
 			res = new Response(HTTP_OK, mime,is);
 			res.addHeader("Content-Length", "" + fileLen);
 		}
