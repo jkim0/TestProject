@@ -743,6 +743,7 @@ class NanoHTTPD {
 			
 				String replace = "";
 				replace = cmd + " : " + value;
+				int index=-1;
 				
 				if(value.equalsIgnoreCase("on"))
 				{
@@ -776,8 +777,10 @@ class NanoHTTPD {
 					
 					//	<text><br>keyboard : keycode_13 </text>
 				}
+
 				return value;
 			}
+			
 			@Override
 			public void launchUserCommand(String cmd, String value){
 				Log.d("handler_","value="+value);
@@ -916,7 +919,7 @@ class NanoHTTPD {
 	
 			InputStream is;
 			long fileLen;
-	
+			
 			if(user_write==null){
 				is = new ByteArrayInputStream(mhtml.getBytes());
 				fileLen = mhtml.length();
