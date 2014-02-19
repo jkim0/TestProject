@@ -756,12 +756,17 @@ class NanoHTTPD {
 					mhtml =mhtml.replace(cmd + " : " + "on", replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
 				}
-				
-				else
-				{
+				else if(cmd.equalsIgnoreCase("keyboard")){
+				//	mhtml.
+					Log.d("zuckay", "text="+ mhtml);
+					String tmp = mhtml.substring(mhtml.lastIndexOf("keyboard"), mhtml.indexOf("</body>"));
+					Log.d("zuckay","="+tmp);
+					mhtml= mhtml.replace(tmp,cmd +" : "+value);
+					Log.d("zuckay", "text="+ mhtml);
 					
+					//	<text><br>keyboard : keycode_13 </text>
 				}
-				
+		
 				
 				return value;
 			}

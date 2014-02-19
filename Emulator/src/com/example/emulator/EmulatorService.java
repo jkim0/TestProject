@@ -211,6 +211,8 @@ public class EmulatorService extends Service {
 			else if(cmd.equalsIgnoreCase("keyboard")){
 		
 				keyEvent(theKeyBoard.get(value).toString());
+				notify nt = new notify(cmd, value);
+			  	mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 				//아..왜 파이널로해야되????으앙!	
 			}
 			else if(cmd.equalsIgnoreCase("wifi")){
@@ -550,14 +552,11 @@ public class EmulatorService extends Service {
 		// TODO Auto-generated method stub
 		CharSequence text = getText(R.string.remote_service_started);
 
-		Notification notification = new Notification(R.drawable.stat_sample,
-				text, System.currentTimeMillis());
+		Notification notification = new Notification(R.drawable.stat_sample,text, System.currentTimeMillis());
 
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, Emulator.class), 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,new Intent(this, Emulator.class), 0);
 
-		notification.setLatestEventInfo(this,
-				getText(R.string.remote_service_label), text, contentIntent);
+		notification.setLatestEventInfo(this,getText(R.string.remote_service_label), text, contentIntent);
 
 		mNM.notify(R.string.remote_service_started, notification);
 	}
@@ -629,7 +628,7 @@ public class EmulatorService extends Service {
 		write_str = write_str + "</select> <input type=\"submit\"" + 
 				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
-		
+		Log.d("status","stats=" +status);
 		Add_status();
 
 	}
@@ -663,8 +662,8 @@ public class EmulatorService extends Service {
 
 					stoken1 = new StringTokenizer( parsing, "-" );
 					str_partition = stoken1.nextToken();
-					if(parsing != str_partition)			//-이 있다는 것
-					{
+					if(parsing != str_partition){			//-이 있다는 것
+				
 						int space_index=str_partition.indexOf(' ');
 						if(space_index != -1){
 							str_partition = str_partition.trim();
@@ -692,17 +691,15 @@ public class EmulatorService extends Service {
 						write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
 								Cmd +"</option>";
 						
-						if(Cmd.equalsIgnoreCase("off"))
-						{
-							if(submit_cmd.equalsIgnoreCase("screen"))
-							{
+						if(Cmd.equalsIgnoreCase("off")){
+							if(submit_cmd.equalsIgnoreCase("screen")){
 								status = status + "on" + "</text>";
 							}
-							else
-							{
+							else{
 								status = status + "off" + "</text>";
 							}
 						}
+						
 					}
 
 				}
