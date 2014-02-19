@@ -333,7 +333,9 @@ class NanoHTTPD {
 					notifyCommandReceived(cd.mCmd, cd.mValue);
 					// case MAKING_HTML:
 					// CmdData cd2=(CmdData)msg.obj;
+					break;
 				}
+				
 				
 			}
 		};
@@ -756,18 +758,24 @@ class NanoHTTPD {
 					mhtml =mhtml.replace(cmd + " : " + "on", replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
 				}
-				else if(cmd.equalsIgnoreCase("keyboard")){
+				else{
 				//	mhtml.
 					Log.d("zuckay", "text="+ mhtml);
-					String tmp = mhtml.substring(mhtml.lastIndexOf("keyboard"), mhtml.indexOf("</body>"));
+					String tmp = mhtml.substring(mhtml.lastIndexOf(cmd), mhtml.indexOf("</body>"));
+					Log.d("zuckay","tmp="+tmp);
+					if(tmp != null){
+						Log.d("zuckay","1");
+						if(tmp.contains("</text>"))
+						{
+							tmp = tmp.substring(0, tmp.indexOf("<")-1);
+						}						
+					}
 					Log.d("zuckay","="+tmp);
-					mhtml= mhtml.replace(tmp,cmd +" : "+value);
+					mhtml = mhtml.replace(tmp, cmd +" : "+value);
 					Log.d("zuckay", "text="+ mhtml);
 					
 					//	<text><br>keyboard : keycode_13 </text>
 				}
-		
-				
 				return value;
 			}
 			@Override

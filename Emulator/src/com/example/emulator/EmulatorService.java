@@ -122,7 +122,9 @@ public class EmulatorService extends Service {
 						tp.getStatus(mtf.sCmd, mtf.sValue);					
 					}
 				}
+				break;
 			case LAUNCH_MEMO:
+			
 				Log.i("service_handler","launch_memo");
 				notify mtf2 = (notify)msg.obj;
 				Log.i("service_handler","size= "+ClassList.size());
@@ -132,11 +134,9 @@ public class EmulatorService extends Service {
 						Log.d("memo","heading to NANO");
 						tp.launchUserCommand(mtf2.sCmd, mtf2.sValue);
 					}
-					}
-//				sendToClass stc = null;
-//				 stc.getStatus(mtf.sCmd, mtf.sValue);
-//			//	NanoHTTPD.printStatus(mtf.fsCmd, mtf.sValue);
-				Log.d("EXAMPLE","5");
+				}
+				break;
+				//Log.d("EXAMPLE","5");
 			}
 		}
 	};
