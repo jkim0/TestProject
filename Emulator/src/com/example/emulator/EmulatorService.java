@@ -227,6 +227,12 @@ public class EmulatorService extends Service {
 				
 			}
 			
+			else
+			{
+				notify nt = new notify(cmd, value);
+			  	mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+				Log.i("Not Command","No exist Command");
+			}
 		}
 
 	};
@@ -702,6 +708,11 @@ public class EmulatorService extends Service {
 							{
 								status = status + "off" + "</text>";
 							}
+						}
+						
+						else
+						{
+							status = status + "</text>";
 						}
 					}
 
