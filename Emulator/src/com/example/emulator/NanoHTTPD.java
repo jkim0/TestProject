@@ -486,6 +486,8 @@ class NanoHTTPD {
 				// If the method is POST, there may be parameters
 				// in data section, too, read it:
 				if (method.equalsIgnoreCase("POST")) {
+				int branch;
+					
 					Log.i("POST", "inside");
 
 					String contentType = "";
@@ -495,45 +497,71 @@ class NanoHTTPD {
 					if (st.hasMoreTokens()) {
 						contentType = st.nextToken();
 					}
-					Log.i("POST", "contentType:" + contentType);
-
-					// Handle application/x-www-form-urlencoded
-					String postLine = "";
-					char pbuf[] = new char[512];
-					int read = in.read(pbuf);
-					while (read >= 0 && !postLine.endsWith("\r\n")) {
-						postLine += String.valueOf(pbuf, 0, read);
-						read = in.read(pbuf);
-					}
-					Log.i("POST", "postLine:b4:" + postLine);
-					postLine = postLine.trim(); // postLine에서 좌우 빈공간 스페이스 제거하고
-					Log.i("POST", "postLine:a4:" + postLine);
-					Log.i("POST", "parms///////" + parms);
-					Log.i("kk","the right b4 decode parsm");
-					int branch= decodeParms(postLine, parms);
-
-					Log.i("kk","branch = "+branch);
-					if(branch==USER_COMMAND){
-						uri = user_str;
-					}	
-					else if(branch==LAUNCH_MEMO){
-						uri = launch_uri;
-						Log.i("kk","uri= "+launch_uri);
+					if(contentType.equalsIgnoreCase("multipart/form-data")){
+						Log.i("File Check","#####multipart/form-data#####");
+						// Handle multipart/form-data
+						if ( !st.hasMoreTokens())
+							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary missing. Usage: GET /example/file.html" );
+						String boundaryExp = st.nextToken();
+						st = new StringTokenizer( boundaryExp , "=" );
+						if (st.countTokens() != 2)
+							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary syntax error. Usage: GET /example/file.html" );
+						st.nextToken();
+						String boundary = st.nextToken();
+						Log.i("File Check","boundary_EXP : "+boundaryExp);
+						Log.i("File Check","boundary : "+boundary);
+				/////		
+						decodeMultipartData(boundary, fbuf, in, parms, files);	
+			///////
+						Log.d("MULTIPART","boundary= "+boundary);
+						Log.d("MULTIPART","fbf= "+fbuf.toString());
+						Log.d("MULTIPART","parms= "+parms);
+						Log.d("MULTIPART","files= "+boundary);
+						
 					}
 					else{
-						uri=null;
-					}
-				
-					Log.i("POST", "parms= " + parms);
-					Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
-					Log.d("POST", "uri = " + uri);
-					Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
-					Log.d("POST", "uri = " + uri);
+						Log.i("POST", "contentType:" + contentType);
+
+						// Handle application/x-www-form-urlencoded
+						String postLine = "";
+						char pbuf[] = new char[512];
+						int read = in.read(pbuf);
+						while (read >= 0 && !postLine.endsWith("\r\n")) {
+							postLine += String.valueOf(pbuf, 0, read);
+							read = in.read(pbuf);
+						}
+						Log.i("POST", "postLine:b4:" + postLine);
+						postLine = postLine.trim(); // postLine에서 좌우 빈공간 스페이스 제거하고
+						Log.i("POST", "postLine:a4:" + postLine);
+						Log.i("POST", "parms///////" + parms);
+						Log.i("kk","the right b4 decode parsm");
+						
+						branch= decodeParms(postLine, parms);
+
+						Log.i("kk","branch = "+branch);
+						if(branch==USER_COMMAND){
+							uri = user_str;
+						}	
+						else if(branch==LAUNCH_MEMO){
+							uri = launch_uri;
+							Log.i("kk","uri= "+launch_uri);
+						}
+						else{
+							uri=null;
+						}
 					
-				}// end of MULTI_PART아닐 경우
+						Log.i("POST", "parms= " + parms);
+						Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
+						Log.d("POST", "uri = " + uri);
+						Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
+						Log.d("POST", "uri = " + uri);
+						
+					}
+					
+					// end of MULTI_PART아닐 경우
 					// end of cast method==POST
 				// ////// Ok, now do the serve()
-	
+				}
 				Log.d("kk","1");
 				Response r = serve(uri, method, header, parms);
 
@@ -623,26 +651,171 @@ class NanoHTTPD {
 								+ ioe.getMessage());
 			}
 		}
-
+///////////////////////////////////////여기서부터사실지웠음////////
 		/**
 		 * Decodes the Multipart Body data and put it into java Properties' key
 		 * - value pairs.
 		 **/
+		
+		private void decodeMultipartData(String boundary, byte[] fbuf, BufferedReader in, Properties parms, Properties files)
+				throws InterruptedException
+			{
+				try
+				{
+					int[] bpositions = getBoundaryPositions(fbuf,boundary.getBytes());
+					int boundarycount = 1;
+					String mpline = in.readLine();
+					while ( mpline != null )
+					{
+						if (mpline.indexOf(boundary) == -1)
+							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but next chunk does not start with boundary. Usage: GET /example/file.html" );
+						boundarycount++;
+						Properties item = new Properties();
+						mpline = in.readLine();
+						while (mpline != null && mpline.trim().length() > 0)
+						{
+							int p = mpline.indexOf( ':' );
+							if (p != -1)
+								item.put( mpline.substring(0,p).trim().toLowerCase(), mpline.substring(p+1).trim());
+							mpline = in.readLine();
+						}
+						if (mpline != null)
+						{
+							String contentDisposition = item.getProperty("content-disposition");
+							if (contentDisposition == null)
+							{
+								sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but no content-disposition info found. Usage: GET /example/file.html" );
+							}
+							StringTokenizer st = new StringTokenizer( contentDisposition , "; " );
+							Properties disposition = new Properties();
+							while ( st.hasMoreTokens())
+							{
+								String token = st.nextToken();
+								int p = token.indexOf( '=' );
+								if (p!=-1)
+									disposition.put( token.substring(0,p).trim().toLowerCase(), token.substring(p+1).trim());
+							}
+							String pname = disposition.getProperty("name");
+							pname = pname.substring(1,pname.length()-1);
+
+							String value = "";
+							if (item.getProperty("content-type") == null) {
+								while (mpline != null && mpline.indexOf(boundary) == -1)
+								{
+									mpline = in.readLine();
+									if ( mpline != null)
+									{
+										int d = mpline.indexOf(boundary);
+										if (d == -1)
+											value+=mpline;
+										else
+											value+=mpline.substring(0,d-2);
+									}
+								}
+							}
+							else
+							{
+								if (boundarycount> bpositions.length)
+									sendError( HTTP_INTERNALERROR, "Error processing request" );
+								int offset = stripMultipartHeaders(fbuf, bpositions[boundarycount-2]);
+							//	String path = saveTmpFile(fbuf, offset, bpositions[boundarycount-1]-offset-4);
+							//	files.put(pname, path);
+								value = disposition.getProperty("filename");
+								value = value.substring(1,value.length()-1);
+								do {
+									mpline = in.readLine();
+								} while (mpline != null && mpline.indexOf(boundary) == -1);
+							}
+							Log.d("yjk","pname="+pname);
+							Log.d("yjk","value="+value);
+			/////////////////				
+							parms.put(pname, value);
+						}
+					}
+				}
+				catch ( IOException ioe )
+				{
+					sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
+				}
+			}
+		
 		/**
 		 * Find the byte positions where multipart boundaries start.
 		 **/
-
+		public int[] getBoundaryPositions(byte[] b, byte[] boundary)
+		{
+			int matchcount = 0;
+			int matchbyte = -1;
+			Vector matchbytes = new Vector();
+			for (int i=0; i<b.length; i++)
+			{
+				if (b[i] == boundary[matchcount])
+				{
+					if (matchcount == 0)
+						matchbyte = i;
+					matchcount++;
+					if (matchcount==boundary.length)
+					{
+						matchbytes.addElement(new Integer(matchbyte));
+						matchcount = 0;
+						matchbyte = -1;
+					}
+				}
+				else
+				{
+					i -= matchcount;
+					matchcount = 0;
+					matchbyte = -1;
+				}
+			}
+			int[] ret = new int[matchbytes.size()];
+			for (int i=0; i < ret.length; i++)
+			{
+				ret[i] = ((Integer)matchbytes.elementAt(i)).intValue();
+			}
+			return ret;
+		}
 		/**
 		 * Retrieves the content of a sent file and saves it to a temporary
 		 * file. The full path to the saved file is returned.
 		 **/
 		
+		private String saveTmpFile(byte[] b, int offset, int len)
+		{
+			Log.e("saveTmpFile","start");
+			
+			String path = "";
+			if (len > 0)
+			{
+				String tmpdir = System.getProperty("java.io.tmpdir");
+				try {
+					File temp = File.createTempFile("NanoHTTPD", "", new File(tmpdir));
+					OutputStream fstream = new FileOutputStream(temp);
+					fstream.write(b, offset, len);
+					fstream.close();
+					path = temp.getAbsolutePath();
+				} catch (Exception e) { // Catch exception if any
+					myErr.println("Error: " + e.getMessage());
+				}
+			}
+			return path;
+		}
 
 		/**
 		 * It returns the offset separating multipart file headers from the
 		 * file's data.
 		 **/
-
+		private int stripMultipartHeaders(byte[] b, int offset)
+		{
+			int i = 0;
+			for (i=offset; i<b.length; i++)
+			{
+				if (b[i] == '\r' && b[++i] == '\n' && b[++i] == '\r' && b[++i] == '\n')
+					break;
+			}
+			return i+1;
+		}
+///////////////////////////////////////여기까지사실지웠음////////
 		/**
 		 * Decodes the percent encoding scheme. <br/>
 		 * For example: "an+example%20string" -> "an example string"
@@ -709,14 +882,7 @@ class NanoHTTPD {
 				mService.registertoList(mReceiver);
 				return 0;
 			}
-			else if(Compare.equalsIgnoreCase("memosite")){
-				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-				Log.d("kk","memosite/b4 sendMSG");
-				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
-				mService.registertoList(mReceiver);
-				Log.d("kk","memosite /bf return");
-				return LAUNCH_MEMO;
-			}
+			
 			else if(Compare.equalsIgnoreCase("userCommand")){
 				if(p.getProperty(Compare).equalsIgnoreCase("on")){
 				

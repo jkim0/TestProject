@@ -8,6 +8,21 @@
 1.KEYCODE_SOFT_LEFT
 2.KEYCODE_SOFT_RIGHT       
 
+#screen
+-f
+1.on
+2.off
+
+#bluetooth
+-f
+1.on
+2.off
+
+#wifi
+-f
+1.on
+2.off
+
 #userCommand
 -function
 1.on

@@ -23,6 +23,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -47,6 +49,7 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Filter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
@@ -56,6 +59,7 @@ public class EmulatorService extends Service {
 	public final static int SCREEN_ON = 1;
 	public static final int STATUS_CHANGE = 5;
 	public static final int LAUNCH_MEMO=4;
+	public static final int MSG_WIFI_CHECK = 100;
 	public int memo=1;
 	public String user=null;
 	
@@ -106,6 +110,43 @@ public class EmulatorService extends Service {
 		}
 	}
 	
+
+	
+	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			Log.d("STATUS","(0)inside broadcastReceiver");
+			Log.d("STATUS","intent.getaction =" +action);
+			notify nt = null;
+		
+			if (WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)) {
+				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
+
+				if (state == WifiManager.WIFI_STATE_ENABLED) {	
+					nt = new notify("wifi","on");
+
+				}
+				else if (state==WifiManager.WIFI_STATE_DISABLED){
+					nt = new notify("wifi","off");
+				}
+			}
+			else if(BluetoothAdapter.ACTION_STATE_CHANGED.equalsIgnoreCase(action)){
+				int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
+				//EXTRA_STATE= state_on/off / state_turning_on/off
+				if(state== BluetoothAdapter.STATE_ON){
+					nt =new notify("bluetooth","on");
+				}
+				else if(state==BluetoothAdapter.STATE_OFF){
+					nt =new notify("bluetooth","off");
+				}
+			}
+			Log.d("STATUS","1)get status = "+nt);
+			 mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+		}
+    };
+	
+	
 	
 //notify the change of BlueTooth or Wifi	
 	private Handler mHandler= new Handler(){
@@ -123,8 +164,8 @@ public class EmulatorService extends Service {
 					}
 				}
 				break;
-			case LAUNCH_MEMO:
-			
+				
+			case LAUNCH_MEMO:	
 				Log.i("service_handler","launch_memo");
 				notify mtf2 = (notify)msg.obj;
 				Log.i("service_handler","size= "+ClassList.size());
@@ -144,6 +185,19 @@ public class EmulatorService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+	//wifi 상태확인 필터
+		IntentFilter wfilter = new IntentFilter();
+		wfilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);		
+		registerReceiver(mReceiver, wfilter);
+	//bluetooth 상태확인 필터
+		IntentFilter bfilter = new IntentFilter();
+		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+//		bfilter.addAction(BluetoothDevice.ACTION_FOUND);
+//		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+//		bfilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+//		bfilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+		
+		
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification();
 		try {
@@ -158,11 +212,8 @@ public class EmulatorService extends Service {
 	//public static final String from = "res/raw/index.html";
 	public static final String to = "/data/data/com.example.emulator/";
 	
-
-
 	private NanoHTTPD mHttpd = null;
 	private void NanoHttpd() throws IOException {
-		//여기서 파일 오픈해서 읽어서html 띄어주면 되는거잖아..
 		
 			File_Read(null);
 		
@@ -170,8 +221,6 @@ public class EmulatorService extends Service {
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 		
 	}
-	
-//	private WifiManager mWifiManager;
 	
 	//저기 클래스의 interface 를 받아와 (commandReceiver)
 	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
@@ -202,8 +251,7 @@ public class EmulatorService extends Service {
 					  	  mHandler.sendMessage(mHandler.obtainMessage(LAUNCH_MEMO, nt));
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
-					
+					}		
 				//parsing value;
 				//send it again and open it
 
@@ -216,14 +264,33 @@ public class EmulatorService extends Service {
 				//아..왜 파이널로해야되????으앙!	
 			}
 			else if(cmd.equalsIgnoreCase("wifi")){
-				wifi_Manager(cmd, value);				
+			//	wifi_Manager(cmd, value);
+				WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+				ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+				NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
+			
+					if(value.equalsIgnoreCase("on")){
+						wifiManager.setWifiEnabled(true);
+					}
+					else if(value.equalsIgnoreCase("off")){
+						wifiManager.setWifiEnabled(false);				
+					}			
 			}
 			else if(cmd.equalsIgnoreCase("broadcast")){
 				
 			}
 			else if(cmd.equalsIgnoreCase("bluetooth")){
-				bluetooth_Manager(cmd, value);
+//				bluetooth_Manager(cmd, value);
 					
+				BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+				mBtAdapter.enable();
+					if(value.equalsIgnoreCase("on")){
+						mBtAdapter.isEnabled();
+					}
+					else if(value.equalsIgnoreCase("off")){
+						mBtAdapter.disable();
+					}
+	
 			}
 			else if(cmd.equalsIgnoreCase("getStatus")){
 				
@@ -243,45 +310,24 @@ public class EmulatorService extends Service {
 		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-		boolean keep = true;
-		while(keep){
 			if(value.equalsIgnoreCase("on")){
 				wifiManager.setWifiEnabled(true);
-				if(mWifiInfo.isConnected()==true){
-					break;
-				}
 			}
 			else if(value.equalsIgnoreCase("off")){
-				wifiManager.setWifiEnabled(false);
-				if(mWifiInfo.isConnected()==false){
-					break;
-				}
+				wifiManager.setWifiEnabled(false);				
 			}
-		}
-			
-	  notify nt = new notify(cmd, value);
-  	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 	}
 		    	
 	private void bluetooth_Manager(String cmd, String value){
 		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 		mBtAdapter.enable();
-		boolean check=true;
-		while(check){
 			if(value.equalsIgnoreCase("on")){
-				if(mBtAdapter.isEnabled()==true){
-					break;
-				}
+				mBtAdapter.isEnabled();
 			}
 			else if(value.equalsIgnoreCase("off")){
-				if(mBtAdapter.disable()==true){
-					break;
-				}
+				mBtAdapter.disable();
 			}
-		}
-		
-		notify nt = new notify(cmd, value);
-		mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));	
+
 	}
 	
 
@@ -296,241 +342,6 @@ public class EmulatorService extends Service {
 			}
 		}).start();
 	}
-	
-	
-	
-	/*
-	private ConnectivityManager mConnMnger;
-	private NetworkInfo wifiInfo;
-	private NetworkInfo mobileInfo;
-	private WifiManager mWifiMnger;
-	
-	public String[] from= new String[]{"bssid","ssid","capablities","frequency","level"};
-	public int[] to1 = new int[]{R.id.bssid, R.id.ssid, R.id.capabilities, R.id.frequency, R.id.level};
-    
-	public void wifiManager(){
-	//part1)network  연결해주고 정보 조회하는거당
-		mConnMnger=(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		wifiInfo =mConnMnger.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-		mobileInfo=mConnMnger.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		//refresh(); 여기에 정보들어가나봐주는거야, wifiInfo.available();
-		//part2) AP찾아주기
-		
-		mWifiMnger =(WifiManager) getSystemService(Context.WIFI_SERVICE);
-		
-		List<ScanResult> scanResult;
-       ArrayList<HashMap<String, String>> list= new ArrayList<HashMap<String,String>>();
-	//refreshe이하부분이야사실  
-       scanResult=mWifiMnger.getScanResults();
-
-       //ap식별할수있는  id / ap이름 / 보안정보(wep, wpa등/아니면 비어잇던) / ap가 사용하는 주파수(mhz)/ ap의 신호세기(dBm) 
-       //row.xml을 구현해야하나봅니다.
-       SimpleAdapter adatper=new SimpleAdapter(this, list,R .layout.row , from, to1);
-	}
-	
-	*/
-	/*
-	
-	private void wifiManager(){
-	 	
-		// wifi 검색
-		WifiManager mwifi = (WifiManager) this.getSystemService(WIFI_SERVICE);
-		List Aplist = mwifi.getScanResults();
-
-		int index =0;
-		ScanResult ap = (ScanResult) Aplist.get(index);﻿
-
-		ap.SSID; // ap의 ssid
-		ap.level; // ap의 신호크기
-
-		 
-		//wifi 연결
-		WifiConfiguration wfc;
-		if(ap.capabilities.contains("WEP") == true)
-
-		{
-		wfc = ConnectWifi.ConnectWEP(ap.SSID);
-
-		wfc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-		wfc.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-		wfc.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-		wfc.wepKeys[0] = password;
-
-		}
-
-		 else if(ap.capabilities.contains("WPA") == true)
-
-		{
-
-		wfc = ConnectWifi.ConnectWPA(ap.SSID);
-		wfc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);  
-		wfc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);  
-		wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);  
-		wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-		wfc.preSharedKey = password;
-
-		}
-
-		 else
-		 wfc = ConnectWifi.ConnectOpenCapabilites(ap.SSID);
-
-
-		int networkID = mwifi.addNetwork(wfc);
-		mwifi.enableNetwork(networkID, true);
-
-		// wifi 관련 브로드캐스트 액션
-
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(WifiManager.NETWORK_IDS_CHANGED_ACTION);
-		intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION); // 와이파이상태
-		intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION); // AP 리스트 검색
-		intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
-		intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION); // AP가 검색이 되면 이벤트가 들어옮
-		intentFilter.addAction(WifiManager.EXTRA_SUPPLICANT_ERROR);
-		intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION); //와이파이 활성화
-		intentFilter.addAction(WifiManager.RSSI_CHANGED_ACTION); // 안테나 감도 변경
-
-		registerReceiver(만든 리시버, intentFilter);
-
-		//* ConnectWifi 클래스 열어 드립니다. *
-
-		public class ConnectWifi {
-
-
-		// 암호 필요 없을경우 
-
-		public static WifiConfiguration ConnectOpenCapabilites( String ssid ) {
-
-		WifiConfiguration wfc = new WifiConfiguration();
-		wfc.SSID = "\"".concat(ssid).concat("\"");
-		wfc.priority = 40;
-		wfc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);  
-		wfc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);  
-		wfc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);  
-		wfc.allowedAuthAlgorithms.clear();  
-		wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);  
-
-
-		wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);  
-		wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);  
-		wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);  
-		wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-		//connect(wfc);
-		return wfc;
-		}
-
-		/**
-
-		* WEP  방식 일 때 설정
-
-		 
-
-		*/ /*
-
-		public static WifiConfiguration ConnectWEP( String ssid ) {
-
-		WifiConfiguration wfc = new WifiConfiguration();
-		wfc.SSID = "\"".concat(ssid).concat("\"");
-		wfc.priority = 40;
-		String password = "123456789";
-		wfc.status = WifiConfiguration.Status.DISABLED; 
-		wfc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-		wfc.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-		wfc.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-
-		       
-
-		        int length = password.length();
-		        if ((length == 10 || length == 26 || length == 58) && password.matches("[0-9A-Fa-f]*")) {
-		            wfc.wepKeys[0] = password;
-		        } 
-		        else {
-		        wfc.wepKeys[0] = '"' + password + '"';
-		        }
-
-		        //connect(wfc);
-		        return wfc;
-		}
-
-		/**
-		* WPA, WPA2 방식 일 때 설정
-
-
-		*//*
-
-		public static WifiConfiguration ConnectWPA( String ssid ) {
-		// 공통 부분
-
-		WifiConfiguration wfc = new WifiConfiguration();
-		wfc.SSID = "\"".concat(ssid).concat("\"");
-		wfc.priority = 40;
-		wfc.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);  
-		wfc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);  
-		wfc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);  
-		wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);  
-		wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);  
-		wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);  
-		wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-
-		String password = "123456789";
-		wfc.preSharedKey = "\"".concat(password).concat("\"");
-		//connect(wfc);
-
-		return wfc;
-		}
-
-		/**
-		* 원하는 네트워크 아이디에 AP 에 연결
-		*/
-/*
-		public static void connect(WifiConfiguration wfc, WifiManager wifi, String ssid){
-		boolean isId = false;
-		int networkID = 0;
-		int tempID = 0;
-		String tempSSID;
-		List<WifiConfiguration> wifiConfigurationList;
-		wifiConfigurationList = wifi.getConfiguredNetworks();
-		for(WifiConfiguration w : wifiConfigurationList){
-		if(w.SSID.equals("\""+ssid+"\"")){
-
-		isId = true;
-		tempID = w.networkId;
-		tempSSID = w.SSID;
-		break;
-
-		} else {
-		//Log.e("check", "else : id = "+w.SSID);
-		}
-
-		}
-
-		if (isId == true) {
-
-		networkID = tempID;
-
-		} 
-		else {
-
-		networkID = wifi.addNetwork(wfc);
-
-		}
-
-		boolean bEnableNetwork = wifi.enableNetwork(networkID, true);
-
-		   if (bEnableNetwork) {
-		    Log.d(TAG, "Connected!");
-
-		   } else {
-		    Log.d(TAG, "Disconnected!");
-
-		   }
-
-		}
-
-		}
-
-
-	}*/
 
 	@Override
 	public void onDestroy() {
@@ -705,14 +516,10 @@ public class EmulatorService extends Service {
 								status = status + "off" + "</text>";
 							}
 						}
-						
-<<<<<<< HEAD
-=======
-						else
-						{
+						else{
 							status = status + "</text>";
 						}
->>>>>>> 88841ea169e8c3b4b7b3e2b4703abcf2e0a6484d
+
 					}
 
 				}
@@ -880,7 +687,7 @@ public class EmulatorService extends Service {
 			   "KEYCODE_NUMPAD_8          152 "+
 			   "KEYCODE_NUMPAD_9          153 "+
 			   "KEYCODE_NUMPAD_DIVIDE     154 "+
-			   "EYCODE_NUMPAD_MULTIPLY   155 "+
+			   "KEYCODE_NUMPAD_MULTIPLY   155 "+
 			   "KEYCODE_NUMPAD_SUBTRACT   156 "+
 			   "KEYCODE_NUMPAD_ADD        157 "+
 			   "KEYCODE_NUMPAD_DOT        158 "+
@@ -889,7 +696,7 @@ public class EmulatorService extends Service {
 			   "KEYCODE_NUMPAD_EQUALS     161 "+
 			   "KEYCODE_NUMPAD_LEFT_PAREN   162 "+
 			   "KEYCODE_NUMPAD_RIGHT_PAREN   163 "+
-			   "EYCODE_VOLUME_MUTE       164 "+
+			   "KEYCODE_VOLUME_MUTE       164 "+
 			   "KEYCODE_INFO              165 "+
 			   "KEYCODE_CHANNEL_UP        166 "+
 			   "KEYCODE_CHANNEL_DOWN      167 "+
@@ -955,4 +762,3 @@ public class EmulatorService extends Service {
 					
 		}
 }
-
