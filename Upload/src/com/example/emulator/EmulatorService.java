@@ -1,5 +1,6 @@
 package com.example.emulator;
 
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -516,6 +517,10 @@ public class EmulatorService extends Service {
 								status = status + "off" + "</text>";
 							}
 						}
+<<<<<<< HEAD
+=======
+
+>>>>>>> d9a5fc1c3f016f91a7f9eb691fe029ddc6b13ca2
 
 					else
 						{
