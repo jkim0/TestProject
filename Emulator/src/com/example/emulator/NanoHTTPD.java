@@ -925,6 +925,10 @@ class NanoHTTPD {
 				String replace = "";
 				replace = cmd + " : " + value;
 				int index=-1;
+				Log.d("getstatus", "cmd : "+cmd +"(len="+cmd.length());
+				Log.d("getstatus", "value : "+value+"(len="+value.length());
+				Log.d("getstatus", "replace : "+replace+"(len="+replace.length());
+				
 				
 				if(value.equalsIgnoreCase("on"))
 				{
