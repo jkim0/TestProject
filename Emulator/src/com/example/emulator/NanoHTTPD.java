@@ -668,13 +668,17 @@ class NanoHTTPD {
 					int[] bpositions = getBoundaryPositions(fbuf,boundary.getBytes());
 					int boundarycount = 1;
 					String mpline = in.readLine();
+					Log.d("MULTI","mpline = "+mpline);
 					while ( mpline != null )
 					{
+						
 						if (mpline.indexOf(boundary) == -1)
 							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but next chunk does not start with boundary. Usage: GET /example/file.html" );
 						boundarycount++;
 						Properties item = new Properties();
 						mpline = in.readLine();
+						Log.d("MULFI","second_mpline"+mpline);
+						
 						//----WebKitFormBoundaryjg80xtbIchFYGnv
 						//Content-Disposition: form-data; name="memosite"
 						//		write down
@@ -685,6 +689,8 @@ class NanoHTTPD {
 							if (p != -1)
 								item.put( mpline.substring(0,p).trim().toLowerCase(), mpline.substring(p+1).trim());
 							mpline = in.readLine();
+
+							Log.d("MULFI","third_mpline"+mpline);
 							// read by one line and save item whose type is properties contentype
 						}
 						if (mpline != null)
