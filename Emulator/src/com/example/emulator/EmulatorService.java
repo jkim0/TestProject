@@ -53,7 +53,6 @@ import android.widget.Filter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-@SuppressLint("NewApi")
 public class EmulatorService extends Service {
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
@@ -183,7 +182,8 @@ public class EmulatorService extends Service {
 			super.handleMessage(msg);
 			switch(msg.what){
 			case STATUS_CHANGE:
-				notify mtf= (notify)msg.obj;
+			    Log.i("Inside Status Change", "WOW");
+                notify mtf= (notify)msg.obj;
 				for (int i = 0; i < ClassList.size(); i++) {
 					sendToClass tp = ClassList.get(i);
 					if (tp != null){
@@ -546,6 +546,15 @@ public class EmulatorService extends Service {
 								status = status + "off" + "</text>";
 							}
 						}
+
+                        else if(Cmd.equalsIgnoreCase("on")){
+                            if(submit_cmd.equalsIgnoreCase("screen")){
+                                status = status + "on" + "</text>";
+                            }
+                            else{
+                                status = status + "off" + "</text>";
+                            }
+                        }
 
 				        else
 					   	{
