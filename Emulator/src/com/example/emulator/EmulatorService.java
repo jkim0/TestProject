@@ -118,7 +118,10 @@ public class EmulatorService extends Service {
 			Log.d("STATUS","intent.getaction =" +action);
 			notify nt = null;
 			if (WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)) {
+				Log.d("STATUS","inside) wifion");
 				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
+				Log.d("STATUS","state = "+state);
+				
 				if (state == WifiManager.WIFI_STATE_ENABLED) {	
 					Toast.makeText(EmulatorService.this, "Wifi ON!", Toast.LENGTH_LONG).show();
 					Log.d("STATUS","wifi on");
@@ -133,7 +136,9 @@ public class EmulatorService extends Service {
 				}
 			}
 			else if(BluetoothAdapter.ACTION_STATE_CHANGED.equalsIgnoreCase(action)){
+				Log.d("STATUS","inside)bluetooth on");
 				int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
+				Log.d("STATUS","state= "+state);
 				//EXTRA_STATE= state_on/off / state_turning_on/off
 			if(state== BluetoothAdapter.STATE_ON){
 		
