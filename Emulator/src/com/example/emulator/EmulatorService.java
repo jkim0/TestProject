@@ -134,7 +134,7 @@ public class EmulatorService extends Service {
 			else if(BluetoothAdapter.ACTION_STATE_CHANGED.equalsIgnoreCase(action)){
 				int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
 				//EXTRA_STATE= state_on/off / state_turning_on/off
-				if(state== BluetoothAdapter.STATE_ON){
+			if(state== BluetoothAdapter.STATE_ON){
 					nt =new notify("bluetooth","on");
 				}
 				else if(state==BluetoothAdapter.STATE_OFF){
