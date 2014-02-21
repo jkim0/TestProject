@@ -528,8 +528,8 @@ public class EmulatorService extends Service {
 							}
 						}
 
-					else
-						{
+				        else
+					   	{
 							status = status + "</text>";
 						}
 
