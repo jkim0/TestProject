@@ -147,7 +147,7 @@ public class EmulatorService extends Service {
 				int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
 				Log.d("STATUS","state= "+state);
 				//EXTRA_STATE= state_on/off / state_turning_on/off
-				BluetoothAdapter.
+	
 			if(state== BluetoothAdapter.STATE_ON){
 		
 				Toast.makeText(EmulatorService.this, "BlueTooth ON!", Toast.LENGTH_LONG).show();
