@@ -186,7 +186,6 @@ public class EmulatorService extends Service {
 					}
 				}
 				break;
-				//Log.d("EXAMPLE","5");
 			}
 		}
 	};
