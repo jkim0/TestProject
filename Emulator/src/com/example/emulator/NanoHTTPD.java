@@ -674,6 +674,7 @@ class NanoHTTPD {
 					int[] bpositions = getBoundaryPositions(fbuf,boundary.getBytes());
 					int boundarycount = 1;
 					String mpline = in.readLine();
+					Log.d("multi","1)mpline="+mpline);
 					while ( mpline != null )
 					{
 						if (mpline.indexOf(boundary) == -1)
@@ -681,6 +682,7 @@ class NanoHTTPD {
 						boundarycount++;
 						Properties item = new Properties();
 						mpline = in.readLine();
+						Log.d("MULTI","2)mpline= "+mpline);
 						//----WebKitFormBoundaryjg80xtbIchFYGnv
 						//Content-Disposition: form-data; name="memosite"
 						//		write down
@@ -691,6 +693,8 @@ class NanoHTTPD {
 							if (p != -1)
 								item.put( mpline.substring(0,p).trim().toLowerCase(), mpline.substring(p+1).trim());
 							mpline = in.readLine();
+
+							Log.d("multi","3)mpline="+mpline);
 							// read by one line and save item whose type is properties contentype
 						}
 						if (mpline != null)
@@ -710,20 +714,20 @@ class NanoHTTPD {
 								if (p!=-1){
 									disposition.put( token.substring(0,p).trim().toLowerCase(), token.substring(p+1).trim());
 						//여기가 name 앞뒤로 구분가능한곳이야. name 이후에 어디까지 받을거야?
+
+									Log.d("multi","mpline="+disposition);
 								}
 							}
 							String pname = disposition.getProperty("name");
 							pname = pname.substring(1,pname.length()-1);
-							if( pname.equalsIgnoreCase("memosite")){
-							
-							}
-						
+												
 				///			
 							String value = "";
 							if (item.getProperty("content-type") == null) {
 								while (mpline != null && mpline.indexOf(boundary) == -1)
 								{
 									mpline = in.readLine();
+									Log.d("multi","mpline");
 									if ( mpline != null)
 									{
 										int d = mpline.indexOf(boundary);
@@ -748,7 +752,6 @@ class NanoHTTPD {
 								} while (mpline != null && mpline.indexOf(boundary) == -1);
 							}
 							Log.d("yjk","pname="+pname);
-							//pname=memosite
 							Log.d("yjk","value="+value);
 							//value=#screen-function1.on2.off#ewifi-function1.on
 			/////////////////				
@@ -948,20 +951,16 @@ class NanoHTTPD {
 				Log.d("getstatus", "cmd : "+cmd +"(len="+cmd.length());
 				Log.d("getstatus", "value : "+value+"(len="+value.length());
 				Log.d("getstatus", "replace : "+replace+"(len="+replace.length());
-				
-				
-				if(value.equalsIgnoreCase("on"))
+						
+				if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("off"))
 				{
+					String tmp = mhtml.substring(mhtml.lastIndexOf(cmd), mhtml.indexOf("</body>"));
+					tmp = tmp.substring(0,tmp.indexOf("<")-1);
 					Log.i("INTERFACE","on");
 					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
-					mhtml=mhtml.replace(cmd + " : " + "off", replace);
+					mhtml = mhtml.replace(tmp, replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
-				}			
-				else if(value.equalsIgnoreCase("off")){
-					Log.i("INTERFACE","off");
-					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"on"));
-					mhtml =mhtml.replace(cmd + " : " + "on", replace);
-					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
+
 				}
 				else{
 				//	mhtml.
@@ -977,8 +976,7 @@ class NanoHTTPD {
 					}
 					Log.d("zuckay","="+tmp);
 					mhtml = mhtml.replace(tmp, cmd +" : "+value);
-					Log.d("zuckay", "text="+ mhtml);
-					
+					Log.d("zuckay", "text="+ mhtml);				
 					//	<text><br>keyboard : keycode_13 </text>
 				}
 
