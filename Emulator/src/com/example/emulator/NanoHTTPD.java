@@ -47,7 +47,6 @@ import com.example.emulator.NanoHTTPD.Response;
 
 class NanoHTTPD {
 	public int user_mode = 0;
-	NanoHTTPD me;
 	public String mhtml=null;
 	public String lunch;
 	private final String TAG = "NanoHTTPD";
