@@ -516,13 +516,9 @@ public class EmulatorService extends Service {
 								status = status + "off" + "</text>";
 							}
 						}
-<<<<<<< HEAD
-						else{
-=======
 
 						else
 						{
->>>>>>> 6d900418f5a1bde0120bf73dddc548712b75ba82
 							status = status + "</text>";
 						}
 
