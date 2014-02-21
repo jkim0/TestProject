@@ -53,7 +53,6 @@ class NanoHTTPD {
 	private final String TAG = "NanoHTTPD";
 	public final static int USER_COMMAND=4; 
 	public final static int LAUNCH_MEMO=5;
-	@SuppressLint("NewApi")
 	public String launch_uri=null;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
