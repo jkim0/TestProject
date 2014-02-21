@@ -110,8 +110,6 @@ public class EmulatorService extends Service {
 		}
 	}
 	
-
-	
 	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -192,11 +190,13 @@ public class EmulatorService extends Service {
 	//bluetooth 상태확인 필터
 		IntentFilter bfilter = new IntentFilter();
 		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+//		bfilter.addAction(BluetoothAdapter.STATE_ON);
+//		bfilter.addAction(BluetoothAdapter.STATE_OFF);
 //		bfilter.addAction(BluetoothDevice.ACTION_FOUND);
 //		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
 //		bfilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 //		bfilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-		
+//		
 		
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification();
@@ -516,13 +516,10 @@ public class EmulatorService extends Service {
 								status = status + "off" + "</text>";
 							}
 						}
-<<<<<<< HEAD
-						else{
-=======
 
-						else
+					else
 						{
->>>>>>> 6d900418f5a1bde0120bf73dddc548712b75ba82
+
 							status = status + "</text>";
 						}
 

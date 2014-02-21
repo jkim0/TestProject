@@ -53,6 +53,7 @@ class NanoHTTPD {
 	private final String TAG = "NanoHTTPD";
 	public final static int USER_COMMAND=4; 
 	public final static int LAUNCH_MEMO=5;
+	@SuppressLint("NewApi")
 	public String launch_uri=null;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
@@ -489,28 +490,32 @@ class NanoHTTPD {
 				int branch;
 					
 					Log.i("POST", "inside");
-
 					String contentType = "";
-					String contentTypeHeader = header.getProperty("content-type");
-					Log.i("POST", "contentTypeHeader:" + contentTypeHeader);
+					String contentTypeHeader = header.getProperty("content-type"); 
+					Log.i("POST", "contentTypeHeader:" + contentTypeHeader); 
+					//contentTypeHeader:multipart/form-data; boundary=----WebKitFormBoundaryjg8OxQtbIvhFYGnv
 					StringTokenizer st = new StringTokenizer(contentTypeHeader,	"; ");
+					//contentType:multipart/form-data 
 					if (st.hasMoreTokens()) {
 						contentType = st.nextToken();
+						//contentType== multipart/form-data
 					}
 					if(contentType.equalsIgnoreCase("multipart/form-data")){
 						Log.i("File Check","#####multipart/form-data#####");
 						// Handle multipart/form-data
 						if ( !st.hasMoreTokens())
 							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary missing. Usage: GET /example/file.html" );
-						String boundaryExp = st.nextToken();
+						String boundaryExp = st.nextToken(); //그냥다음파트로 포인트넘김
+						//boundary=----WebKitFormBoundaryjg8OxQtbIvhFYGnv
 						st = new StringTokenizer( boundaryExp , "=" );
+					   // 아직 =  로 자르기시작만했다??
 						if (st.countTokens() != 2)
 							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary syntax error. Usage: GET /example/file.html" );
-						st.nextToken();
-						String boundary = st.nextToken();
+						st.nextToken(); //토큰쪽?  string = boundary 
+						String boundary = st.nextToken(); //  ----WebKitFormBoundaryjg80xtbIchFYGnv (저장한다) in boundary
 						Log.i("File Check","boundary_EXP : "+boundaryExp);
 						Log.i("File Check","boundary : "+boundary);
-				/////		
+				/////		(-webKitFormBoundaryFormBoundaryj 그 이하로 들어가기시작한다, fbuf,in,parms,files);
 						decodeMultipartData(boundary, fbuf, in, parms, files);	
 			///////
 						Log.d("MULTIPART","boundary= "+boundary);
@@ -672,12 +677,17 @@ class NanoHTTPD {
 						boundarycount++;
 						Properties item = new Properties();
 						mpline = in.readLine();
+						//----WebKitFormBoundaryjg80xtbIchFYGnv
+						//Content-Disposition: form-data; name="memosite"
+						//		write down
+						//		------WebKitFormBoundaryjg8OxQtbIvhFYGnv--
 						while (mpline != null && mpline.trim().length() > 0)
 						{
 							int p = mpline.indexOf( ':' );
 							if (p != -1)
 								item.put( mpline.substring(0,p).trim().toLowerCase(), mpline.substring(p+1).trim());
 							mpline = in.readLine();
+							// read by one line and save item whose type is properties contentype
 						}
 						if (mpline != null)
 						{
@@ -713,7 +723,7 @@ class NanoHTTPD {
 									}
 								}
 							}
-							else
+							else //multipart인경우에요우리
 							{
 								if (boundarycount> bpositions.length)
 									sendError( HTTP_INTERNALERROR, "Error processing request" );
