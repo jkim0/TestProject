@@ -930,20 +930,16 @@ class NanoHTTPD {
 				Log.d("getstatus", "replace : "+replace+"(len="+replace.length());
 				
 				
-				if(value.equalsIgnoreCase("on"))
+				if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("off"))
 				{
+					String tmp = mhtml.substring(mhtml.lastIndexOf(cmd), mhtml.indexOf("</body>"));
+					tmp = tmp.substring(0,tmp.indexOf("<")-1);
 					Log.i("INTERFACE","on");
 					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
-					mhtml=mhtml.replace(cmd + " : " + "off", replace);
+					mhtml = mhtml.replace(tmp, replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
 				}
 				
-				else if(value.equalsIgnoreCase("off")){
-					Log.i("INTERFACE","off");
-					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"on"));
-					mhtml =mhtml.replace(cmd + " : " + "on", replace);
-					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
-				}
 				else{
 				//	mhtml.
 					Log.d("zuckay", "text="+ mhtml);
