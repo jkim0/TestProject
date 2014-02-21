@@ -964,7 +964,6 @@ class NanoHTTPD {
 					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
 					mhtml = mhtml.replace(tmp, replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
-
 				}
 				else{
 				//	mhtml.

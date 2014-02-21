@@ -53,6 +53,10 @@ import android.widget.Filter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+
+
+
+@SuppressLint("NewApi")
 public class EmulatorService extends Service {
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
@@ -257,7 +261,7 @@ public class EmulatorService extends Service {
 	//저기 클래스의 interface 를 받아와 (commandReceiver)
 	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
 		
-		@SuppressLint("NewApi")
+		
 		@Override
 		public void onCommandReceived(String cmd, String value) {
 			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
@@ -380,9 +384,9 @@ public class EmulatorService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		mNM.cancel(R.string.remote_service_started);
+	
 	}
 	
-	@SuppressLint("NewApi")
 	public void screenOnOff(String value) throws RemoteException {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 	
@@ -542,26 +546,28 @@ public class EmulatorService extends Service {
 						write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
 								Cmd +"</option>";
 						
-						if(Cmd.equalsIgnoreCase("off")){
-							if(flag)
+						if(flag)
+						{
+							if(Cmd.equalsIgnoreCase("off") || Cmd.equalsIgnoreCase("on"))
 							{
-								if(submit_cmd.equalsIgnoreCase("screen")){
-									status = status + "on" + "</text>";
+								if(flag)
+								{
+									if(submit_cmd.equalsIgnoreCase("screen")){
+										status = status + "on" + "</text>";
+									}
+									else{
+										status = status + "off" + "</text>";
+									}
+									flag = false;
 								}
-								else{
-									status = status + "off" + "</text>";
-								}
-								flag = false;
+							}
+	
+					       else
+						   	{
+								status = status + "</text>";
 							}
 						}
-
-				       else
-					   	{
-							status = status + "</text>";
-						}
-
 					}
-
 				}
 			}	
 			
