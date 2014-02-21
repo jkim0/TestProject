@@ -512,14 +512,20 @@ class NanoHTTPD {
 						st.nextToken(); //토큰쪽?  string = boundary 
 						String boundary = st.nextToken(); //  ----WebKitFormBoundaryjg80xtbIchFYGnv (저장한다) in boundary
 						Log.i("File Check","boundary_EXP : "+boundaryExp);
+						// boundary_EXP= boundary=----WebKitFormBoundaryTV
 						Log.i("File Check","boundary : "+boundary);
+						//boundary: ==webkitformboundaryTV
 				/////		(-webKitFormBoundaryFormBoundaryj 그 이하로 들어가기시작한다, fbuf,in,parms,files);
 						decodeMultipartData(boundary, fbuf, in, parms, files);	
 			///////
 						Log.d("MULTIPART","boundary= "+boundary);
+						//----WebKitFormBoundaryTVnAfjNidBDhfAFo
 						Log.d("MULTIPART","fbf= "+fbuf.toString());
+						//B@41a93430 
 						Log.d("MULTIPART","parms= "+parms);
+						//memosite=#screen-function1.on2.off#ewifi-functiin1.on
 						Log.d("MULTIPART","files= "+boundary);
+						
 						
 					}
 					else{
@@ -565,13 +571,13 @@ class NanoHTTPD {
 					// end of cast method==POST
 				// ////// Ok, now do the serve()
 				}
+				// decodeMultipart 끝나고
 				Log.d("kk","1");
 				Response r = serve(uri, method, header, parms);
 
 				Log.d("kk","2");
 				if (r == null){
 					sendError(HTTP_INTERNALERROR,"SERVER INTERNAL ERROR: Serve() returned a null response.");
-
 					Log.d("kk","3");
 				}
 					else{
@@ -742,8 +748,22 @@ class NanoHTTPD {
 								} while (mpline != null && mpline.indexOf(boundary) == -1);
 							}
 							Log.d("yjk","pname="+pname);
+							//pname=memosite
 							Log.d("yjk","value="+value);
+							//value=#screen-function1.on2.off#ewifi-function1.on
 			/////////////////				
+							if(pname.equalsIgnoreCase("memosite")){
+									
+									CmdData cd = new CmdData("memosite", value);
+									Log.d("kk","usercommand/b4 sendMSG");
+									mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
+									mService.registertoList(mReceiver);
+									Log.d("kk","usercommand/bf return");
+							//		return USER_COMMAND;
+								
+							
+						//	return LAUNCH_MEMO;	
+							}
 							parms.put(pname, value);
 						}
 					}
@@ -936,8 +956,7 @@ class NanoHTTPD {
 					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
 					mhtml=mhtml.replace(cmd + " : " + "off", replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
-				}
-				
+				}			
 				else if(value.equalsIgnoreCase("off")){
 					Log.i("INTERFACE","off");
 					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"on"));
