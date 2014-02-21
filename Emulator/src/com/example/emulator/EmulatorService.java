@@ -117,20 +117,27 @@ public class EmulatorService extends Service {
 			Log.d("STATUS","(0)inside broadcastReceiver");
 			Log.d("STATUS","intent.getaction =" +action);
 			notify nt = null;
+			
 			if (WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)) {
-				Log.d("STATUS","inside) wifion");
+				Log.d("STATUS","inside) wifi Changed");
 				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
 				Log.d("STATUS","state = "+state);
-				
-				if (state == WifiManager.WIFI_STATE_ENABLED) {	
+				if (state == WifiManager.WIFI_STATE_ENABLED||state==WifiManager.WIFI_STATE_ENABLING) {	
 					Toast.makeText(EmulatorService.this, "Wifi ON!", Toast.LENGTH_LONG).show();
 					Log.d("STATUS","wifi on");
 					nt = new notify("wifi","on");
 
 				}
-				else if (state==WifiManager.WIFI_STATE_DISABLED){
-
+				
+				else if (state==WifiManager.WIFI_STATE_DISABLED||state==WifiManager.WIFI_STATE_DISABLING){
 					Toast.makeText(EmulatorService.this, "Wifi OFF!", Toast.LENGTH_LONG).show();
+					nt = new notify("wifi","off");
+					Log.d("STATUS","wifi off");
+				}
+				
+				else
+				{
+					Log.d("STATUS", "No recognition");
 					nt = new notify("wifi","off");
 					Log.d("STATUS","wifi off");
 				}
@@ -140,6 +147,7 @@ public class EmulatorService extends Service {
 				int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
 				Log.d("STATUS","state= "+state);
 				//EXTRA_STATE= state_on/off / state_turning_on/off
+				BluetoothAdapter.
 			if(state== BluetoothAdapter.STATE_ON){
 		
 				Toast.makeText(EmulatorService.this, "BlueTooth ON!", Toast.LENGTH_LONG).show();
@@ -149,6 +157,11 @@ public class EmulatorService extends Service {
 				else if(state==BluetoothAdapter.STATE_OFF){
 
 					Toast.makeText(EmulatorService.this, "Bluetooth OFF", Toast.LENGTH_LONG).show();
+					nt =new notify("bluetooth","off");
+					Log.d("STATUS","bluetooth off");
+				}
+				else{
+					Log.d("STATUS", "No recognition");
 					nt =new notify("bluetooth","off");
 					Log.d("STATUS","bluetooth off");
 				}
@@ -205,6 +218,8 @@ public class EmulatorService extends Service {
 	//bluetooth 상태확인 필터
 		IntentFilter bfilter = new IntentFilter();
 		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+		registerReceiver(mReceiver,bfilter);
+		
 //		bfilter.addAction(BluetoothAdapter.STATE_ON);
 //		bfilter.addAction(BluetoothAdapter.STATE_OFF);
 //		bfilter.addAction(BluetoothDevice.ACTION_FOUND);
