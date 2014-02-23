@@ -120,7 +120,7 @@ public class EmulatorService extends Service {
 			String action = intent.getAction();
 			Log.d("STATUS","(0)inside broadcastReceiver");
 			Log.d("STATUS","intent.getaction =" +action);
-			notify nt = null;
+//			notify nt = null;
 			
 			if (WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)) {
 				Log.d("STATUS","inside) wifi Changed");
@@ -129,20 +129,20 @@ public class EmulatorService extends Service {
 				if (state == WifiManager.WIFI_STATE_ENABLED||state==WifiManager.WIFI_STATE_ENABLING) {	
 					Toast.makeText(EmulatorService.this, "Wifi ON!", Toast.LENGTH_LONG).show();
 					Log.d("STATUS","wifi on");
-					nt = new notify("wifi","on");
+//					nt = new notify("wifi","on");
 
 				}
 				
 				else if (state==WifiManager.WIFI_STATE_DISABLED||state==WifiManager.WIFI_STATE_DISABLING){
 					Toast.makeText(EmulatorService.this, "Wifi OFF!", Toast.LENGTH_LONG).show();
-					nt = new notify("wifi","off");
+//					nt = new notify("wifi","off");
 					Log.d("STATUS","wifi off");
 				}
 				
 				else
 				{
 					Log.d("STATUS", "No recognition");
-					nt = new notify("wifi","off");
+//					nt = new notify("wifi","off");
 					Log.d("STATUS","wifi off");
 				}
 			}
@@ -155,24 +155,24 @@ public class EmulatorService extends Service {
 			if(state== BluetoothAdapter.STATE_ON){
 		
 				Toast.makeText(EmulatorService.this, "BlueTooth ON!", Toast.LENGTH_LONG).show();
-					nt =new notify("bluetooth","on");
+//					nt =new notify("bluetooth","on");
 					Log.d("STATUS","bluetooth on");
 				}
 				else if(state==BluetoothAdapter.STATE_OFF){
 
 					Toast.makeText(EmulatorService.this, "Bluetooth OFF", Toast.LENGTH_LONG).show();
-					nt =new notify("bluetooth","off");
+//					nt =new notify("bluetooth","off");
 					Log.d("STATUS","bluetooth off");
 				}
 				else{
 					Log.d("STATUS", "No recognition");
-					nt =new notify("bluetooth","off");
+//					nt =new notify("bluetooth","off");
 					Log.d("STATUS","bluetooth off");
 				}
 			}
-			Log.d("STATUS","1)get status = "+nt);
-			Log.d("STATUS","1++ nt= "+nt.sCmd+"= "+nt.sValue);
-			 mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+//			Log.d("STATUS","1)get status = "+nt);
+//			Log.d("STATUS","1++ nt= "+nt.sCmd+"= "+nt.sValue);
+//			 mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 		}
     };
 	
@@ -295,7 +295,7 @@ public class EmulatorService extends Service {
 			}
 			else if(cmd.equalsIgnoreCase("keyboard")){
 		
-				keyEvent(theKeyBoard.get(value).toString());
+			//	keyEvent(theKeyBoard.get(value).toString());
 				notify nt = new notify(cmd, value);
 			  	mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 				//아..왜 파이널로해야되????으앙!	
@@ -305,30 +305,35 @@ public class EmulatorService extends Service {
 				WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 				ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-			
+				notify nt=null;
 					if(value.equalsIgnoreCase("on")){
 						wifiManager.setWifiEnabled(true);
+						nt = new notify(cmd, value);
 					}
 					else if(value.equalsIgnoreCase("off")){
 						wifiManager.setWifiEnabled(false);				
+						nt = new notify(cmd, value);
 					}			
-					
+					mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 			}
 			else if(cmd.equalsIgnoreCase("broadcast")){
 				
 			}
 			else if(cmd.equalsIgnoreCase("bluetooth")){
 //				bluetooth_Manager(cmd, value);
-					
+				notify nt=null;
 				BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 				mBtAdapter.enable();
 					if(value.equalsIgnoreCase("on")){
 						mBtAdapter.isEnabled();
+						nt = new notify(cmd, value);
 					}
 					else if(value.equalsIgnoreCase("off")){
 						mBtAdapter.disable();
+
+						nt = new notify(cmd, value);
 					}
-	
+					mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 			}
 			else if(cmd.equalsIgnoreCase("getStatus")){
 				
@@ -375,7 +380,7 @@ public class EmulatorService extends Service {
 		Log.d("kb","input="+input);
 		new Thread(new Runnable(){
 			public void run(){
-				new Instrumentation().sendKeyDownUpSync(input);
+		//		new Instrumentation().sendKeyDownUpSync(input);
 		
 			}
 		}).start();

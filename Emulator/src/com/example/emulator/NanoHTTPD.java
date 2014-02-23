@@ -44,7 +44,9 @@ import android.widget.Toast;
 import com.example.emulator.EmulatorService.sendToClass;
 import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
-
+import com.example.emulator.EmulatorService;
+import com.example.emulator.NanoHTTPD;
+import com.example.emulator.NanoHTTPD.CommandReceiver;
 class NanoHTTPD {
 	public int user_mode = 0;
 	public String mhtml=null;
@@ -575,9 +577,11 @@ class NanoHTTPD {
 					Log.d("kk","4");
 					sendResponse(r.status, r.mimeType, r.header, r.data);
 					Log.d("kk","5");
+				
 				}
 				in.close();
 				is.close();
+				
 			} catch (IOException ioe) {
 				try {
 					sendError(	HTTP_INTERNALERROR,"SERVER INTERNAL ERROR: IOException:"
@@ -933,7 +937,8 @@ class NanoHTTPD {
 			Log.e("NanoHttpdError", "" + Compare);
 			Log.e("chekc memo","memo= "+ p.getProperty(Compare));
 			// //여기서 추가
-			if (Compare.equalsIgnoreCase("screen")|| Compare.equalsIgnoreCase("keyboard")||Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
+			if (Compare.equalsIgnoreCase("screen")|| Compare.equalsIgnoreCase("keyboard")){
+	
 				Log.d("kk", "value=" + p.getProperty(Compare));
 				// notifyCommandReceived(Compare, p.getProperty(Compare));
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
@@ -942,10 +947,20 @@ class NanoHTTPD {
 				mService.registertoList(mReceiver);
 				return 0;
 			}
+			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
+	
+					Log.d("kk", "value=" + p.getProperty(Compare));
+					// notifyCommandReceived(Compare, p.getProperty(Compare));
+					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+					mHandler.sendMessage(mHandler.obtainMessage(
+							NOTIFY_CMD_RECEIVED, cd));
+					mService.registertoList(mReceiver);
+					return 0;
+			}
 			
 			else if(Compare.equalsIgnoreCase("userCommand")){
 				if(p.getProperty(Compare).equalsIgnoreCase("on")){
-				
+		
 					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 					Log.d("kk","usercommand/b4 sendMSG");
 					mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
@@ -1021,6 +1036,7 @@ class NanoHTTPD {
 			@Override
 			public void launchUserCommand(String cmd, String value){
 				Log.d("handler_","value="+value);
+				branch=LAUNCH_MEMO;
 				launch_uri = value;
 				Log.i("kk","inside luanch= lunch="+ launch_uri);
 			}
