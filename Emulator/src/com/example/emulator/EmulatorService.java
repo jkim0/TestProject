@@ -192,7 +192,7 @@ public class EmulatorService extends Service {
 				for (int i = 0; i < ClassList.size(); i++) {
 					sendToClass tp = ClassList.get(i);
 					if (tp != null){
-						tp.getStatus(mtf.sCmd, mtf.sValue);					
+						tp.getStatus(mtf.sCmd, mtf.sValue);	
 					}
 				}
 				break;

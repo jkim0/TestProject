@@ -55,6 +55,9 @@ class NanoHTTPD {
 	public int branch;
 	public String launch_uri=null;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
+	
+	public Properties header = new Properties();
+	
 	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	
 	// ==================================================
@@ -413,7 +416,7 @@ class NanoHTTPD {
 
 				Properties pre = new Properties();
 				Properties parms = new Properties();
-				Properties header = new Properties();
+//				Properties header = new Properties();
 				Properties files = new Properties();
 
 				// Decode the header into parms and header java properties
@@ -976,15 +979,10 @@ class NanoHTTPD {
 				if(branch==LAUNCH_MEMO)
 				Log.d("INTERFACE","check to here  ");
 				Log.d("INTERFACE","mhtml="+mhtml);
-			
 				String replace = "";
 				replace = cmd + " : " + value;
 				int index=-1;
 				int len_replace= replace.length();
-				
-//				Log.d("getstatus", "cmd : "+cmd +"(len="+cmd.length());
-//				Log.d("getstatus", "value : "+value+"(len="+value.length());
-//				Log.d("getstatus", "replace : "+replace+"(len="+replace.length());
 						
 				if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("off"))
 				{
@@ -997,20 +995,16 @@ class NanoHTTPD {
 					if(len_replace < len_tmp){
 						Log.d("interface","len_tmp="+len_tmp);
 						for(int i=len_replace; i< len_tmp;i++){
-							tmp += " ";
+							replace += " ";
 							Log.d("interface","tmp="+tmp);
 							Log.d("interface","tmp.len= "+tmp.length());
 						}
 					}
-//					if(value.equalsIgnoreCase("on"))
-//					{
-//						replace = replace + " ";
-//					}
+					
 					mhtml = mhtml.replace(tmp, replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
 				}
 				else{
-				//	mhtml.
 					Log.d("zuckay", "text="+ mhtml);
 					String tmp = mhtml.substring(mhtml.lastIndexOf(cmd), mhtml.indexOf("</body>"));
 					Log.d("zuckay","tmp="+tmp);
@@ -1026,7 +1020,8 @@ class NanoHTTPD {
 					Log.d("zuckay", "text="+ mhtml);				
 					//	<text><br>keyboard : keycode_13 </text>
 				}
-
+				Response R = serveFile(null,header,true);
+				sendResponse(R.status, R.mimeType, R.header, R.data );
 				return value;
 			}
 			
@@ -1183,7 +1178,7 @@ class NanoHTTPD {
 			res.addHeader("Accept-Ranges", "bytes"); 
 		}
 		// Announce that the file
-										// server accepts partial													
+		// server accepts partial													
 		// content requestes
 		return res;
 	}
