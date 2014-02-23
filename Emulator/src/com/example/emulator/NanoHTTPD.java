@@ -997,7 +997,7 @@ class NanoHTTPD {
 					if(len_replace < len_tmp){
 						Log.d("interface","len_tmp="+len_tmp);
 						for(int i=len_replace; i< len_tmp;i++){
-							tmp += " ";
+							replace += " ";
 							Log.d("interface","tmp="+tmp);
 							Log.d("interface","tmp.len= "+tmp.length());
 						}
@@ -1006,6 +1006,11 @@ class NanoHTTPD {
 //					{
 //						replace = replace + " ";
 //					}
+					Log.i("#####YYS","replace_str : "+replace);
+					Log.i("#####YYS","tmp_str : "+tmp);
+					Log.i("#####YYS","replace_str_Length : "+replace.length());
+					Log.i("#####YYS","tmp_str_Length : "+tmp.length());
+					
 					mhtml = mhtml.replace(tmp, replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
 				}
