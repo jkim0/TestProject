@@ -52,6 +52,7 @@ class NanoHTTPD {
 	private final String TAG = "NanoHTTPD";
 	public final static int USER_COMMAND=4; 
 	public final static int LAUNCH_MEMO=5;
+	public int branch;
 	public String launch_uri=null;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
@@ -485,7 +486,7 @@ class NanoHTTPD {
 				// If the method is POST, there may be parameters
 				// in data section, too, read it:
 				if (method.equalsIgnoreCase("POST")) {
-				int branch;
+
 					
 					Log.i("POST", "inside");
 					String contentType = "";
@@ -516,7 +517,7 @@ class NanoHTTPD {
 						Log.i("File Check","boundary : "+boundary);
 						//boundary: ==webkitformboundaryTV
 				/////		(-webKitFormBoundaryFormBoundaryj 그 이하로 들어가기시작한다, fbuf,in,parms,files);
-						decodeMultipartData(boundary, fbuf, in, parms, files);	
+						branch=decodeMultipartData(boundary, fbuf, in, parms, files);	
 			///////
 						Log.d("MULTIPART","boundary= "+boundary);
 						//----WebKitFormBoundaryTVnAfjNidBDhfAFo
@@ -525,8 +526,10 @@ class NanoHTTPD {
 						Log.d("MULTIPART","parms= "+parms);
 						//memosite=#screen-function1.on2.off#ewifi-functiin1.on
 						Log.d("MULTIPART","files= "+boundary);
-						
-						
+						 if(branch==LAUNCH_MEMO){
+							uri = launch_uri;
+							Log.i("kk","uri= "+launch_uri);
+						}
 					}
 					else{
 						Log.i("POST", "contentType:" + contentType);
@@ -551,10 +554,7 @@ class NanoHTTPD {
 						if(branch==USER_COMMAND){
 							uri = user_str;
 						}	
-						else if(branch==LAUNCH_MEMO){
-							uri = launch_uri;
-							Log.i("kk","uri= "+launch_uri);
-						}
+						
 						else{
 							uri=null;
 						}
@@ -584,7 +584,6 @@ class NanoHTTPD {
 
 						Log.d("kk","4");
 						sendResponse(r.status, r.mimeType, r.header, r.data);
-
 						Log.d("kk","5");
 					}
 				in.close();
@@ -666,7 +665,7 @@ class NanoHTTPD {
 		 * - value pairs.
 		 **/
 		
-		private void decodeMultipartData(String boundary, byte[] fbuf, BufferedReader in, Properties parms, Properties files)
+		private int decodeMultipartData(String boundary, byte[] fbuf, BufferedReader in, Properties parms, Properties files)
 				throws InterruptedException
 			{
 				try
@@ -745,7 +744,7 @@ class NanoHTTPD {
 										Log.d("multi","inside second(vlaue)) mpline="+mpline);
 										int d = mpline.indexOf(boundary);
 										if (d == -1){
-											value+=mpline; 
+											value+="\r\n"+mpline; 
 											Log.d("multi","-1)mpline="+mpline);
 											}
 										else{
@@ -793,7 +792,7 @@ class NanoHTTPD {
 									mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
 									mService.registertoList(mReceiver);
 									Log.d("kk","usercommand/bf return");
-							//		return USER_COMMAND;
+									return USER_COMMAND;
 								
 							
 						//	return LAUNCH_MEMO;	
@@ -801,10 +800,12 @@ class NanoHTTPD {
 							parms.put(pname, value);
 						}
 					}
+					return 0;
 				}
 				catch ( IOException ioe )
 				{
 					sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
+					return -1;
 				}
 			}
 		
@@ -972,7 +973,7 @@ class NanoHTTPD {
 			public String getStatus(String cmd, String value){
 ////여기까지 들어오는거 확인 이걸로 해!
 				String check=mhtml;
-				
+				if(branch==LAUNCH_MEMO)
 				Log.d("INTERFACE","check to here  ");
 				Log.d("INTERFACE","mhtml="+mhtml);
 			
