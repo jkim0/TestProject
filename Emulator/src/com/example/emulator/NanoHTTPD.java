@@ -146,13 +146,7 @@ class NanoHTTPD {
 		while (e.hasMoreElements()) {
 			String value = (String) e.nextElement();
 			Log.d("ENUMERATION", "e =" + e);
-//			if (value.equalsIgnoreCase("memosite")) {
-//				CmdData cd = new CmdData(value, parms.getProperty(value));
-//				Log.d("message","value="+value);
-//				Log.d("message","parms="+parms.getProperty(value));
-//				mHandler.sendMessage(mHandler.obtainMessage(
-//						NOTIFY_CMD_RECEIVED, cd));
-//			}
+
 			myOut.println("  PRM: '" + value + "' = '"
 					+ parms.getProperty(value) + "'");
 		}
@@ -334,8 +328,6 @@ class NanoHTTPD {
 					Log.d("come","inside handler;;;");
 					CmdData cd = (CmdData) msg.obj;
 					notifyCommandReceived(cd.mCmd, cd.mValue);
-					// case MAKING_HTML:
-					// CmdData cd2=(CmdData)msg.obj;
 					break;
 				}
 				
@@ -454,7 +446,6 @@ class NanoHTTPD {
 					splitbyte++;
 				}
 				splitbyte++;
-
 				// Write the part of body already read to ByteArrayOutputStream
 				// f
 				ByteArrayOutputStream f = new ByteArrayOutputStream();
@@ -570,11 +561,8 @@ class NanoHTTPD {
 						
 					}
 					
-					// end of MULTI_PART아닐 경우
-					// end of cast method==POST
 				// ////// Ok, now do the serve()
 				}
-				// decodeMultipart 끝나고
 				Log.d("kk","1");
 				Response r = serve(uri, method, header, parms);
 
@@ -583,12 +571,11 @@ class NanoHTTPD {
 					sendError(HTTP_INTERNALERROR,"SERVER INTERNAL ERROR: Serve() returned a null response.");
 					Log.d("kk","3");
 				}
-					else{
-
-						Log.d("kk","4");
-						sendResponse(r.status, r.mimeType, r.header, r.data);
-						Log.d("kk","5");
-					}
+				else{
+					Log.d("kk","4");
+					sendResponse(r.status, r.mimeType, r.header, r.data);
+					Log.d("kk","5");
+				}
 				in.close();
 				is.close();
 			} catch (IOException ioe) {
@@ -795,7 +782,7 @@ class NanoHTTPD {
 									mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
 									mService.registertoList(mReceiver);
 									Log.d("kk","usercommand/bf return");
-									return USER_COMMAND;
+									return LAUNCH_MEMO;
 								
 							
 						//	return LAUNCH_MEMO;	
@@ -967,6 +954,9 @@ class NanoHTTPD {
 					return USER_COMMAND;
 				}
 			}
+			else if(Compare.equalsIgnoreCase("refresh")){
+				branch =0;
+			}
 			return 0;	
 		}
 			// dot anything.
@@ -975,10 +965,15 @@ class NanoHTTPD {
 			@Override
 			public String getStatus(String cmd, String value){
 ////여기까지 들어오는거 확인 이걸로 해!
+				String txt="";
 				String check=mhtml;
-				if(branch==LAUNCH_MEMO)
+				if(branch==LAUNCH_MEMO){
+					txt= launch_uri;
+				}
+				else{
+					txt=mhtml;
+				}
 				Log.d("INTERFACE","check to here  ");
-				Log.d("INTERFACE","mhtml="+mhtml);
 				String replace = "";
 				replace = cmd + " : " + value;
 				int index=-1;
@@ -986,31 +981,25 @@ class NanoHTTPD {
 						
 				if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("off"))
 				{
-					String tmp = mhtml.substring(mhtml.lastIndexOf(cmd), mhtml.indexOf("</body>"));
+					String tmp = txt.substring(txt.lastIndexOf(cmd), txt.indexOf("</body>"));
 					tmp = tmp.substring(0,tmp.indexOf("<"));
 					int len_tmp = tmp.length();
 					Log.i("INTERFACE","on");
-					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
 			
 					if(len_replace < len_tmp){
 						Log.d("interface","len_tmp="+len_tmp);
 						for(int i=len_replace; i< len_tmp;i++){
 							replace += " ";
-							Log.d("interface","tmp="+tmp);
-							Log.d("interface","tmp.len= "+tmp.length());
 						}
 					}
-					Log.i("#####YYS","replace_str : "+replace);
-					Log.i("#####YYS","tmp_str : "+tmp);
-					Log.i("#####YYS","replace_str_Length : "+replace.length());
-					Log.i("#####YYS","tmp_str_Length : "+tmp.length());
+			
 					
-					mhtml = mhtml.replace(tmp, replace);
-					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
+					txt = txt.replace(tmp, replace);
+					Log.i("interface","same?= "+ txt.equalsIgnoreCase(check));
 				}
 				else{
-					Log.d("zuckay", "text="+ mhtml);
-					String tmp = mhtml.substring(mhtml.lastIndexOf(cmd), mhtml.indexOf("</body>"));
+					Log.d("zuckay", "text="+ txt);
+					String tmp = mhtml.substring(txt.lastIndexOf(cmd), txt.indexOf("</body>"));
 					Log.d("zuckay","tmp="+tmp);
 					if(tmp != null){
 						Log.d("zuckay","1");
@@ -1020,12 +1009,12 @@ class NanoHTTPD {
 						}						
 					}
 					Log.d("zuckay","="+tmp);
-					mhtml = mhtml.replace(tmp, cmd +" : "+value);
-					Log.d("zuckay", "text="+ mhtml);				
+					txt= txt.replace(tmp, cmd +" : "+value);
+					Log.d("zuckay", "text="+ txt);				
 					//	<text><br>keyboard : keycode_13 </text>
 				}
-				Response R = serveFile(null,header,true);
-				sendResponse(R.status, R.mimeType, R.header, R.data );
+//				Response R = serveFile(null,header,true);
+//				sendResponse(R.status, R.mimeType, R.header, R.data );
 				return value;
 			}
 			
@@ -1036,7 +1025,7 @@ class NanoHTTPD {
 				Log.i("kk","inside luanch= lunch="+ launch_uri);
 			}
 		};
-
+		
 		/**
 		 * Returns an error message as a HTTP response and throws
 		 * InterruptedException to stop further request processing.
@@ -1051,8 +1040,7 @@ class NanoHTTPD {
 		/**
 		 * Sends given response to the socket.
 		 */
-		
-		
+			
 		private void sendResponse(String status, String mime, Properties header, InputStream data) {
 			// data : file경로가 들어있어!!
 			try {
@@ -1094,7 +1082,6 @@ class NanoHTTPD {
 													// partial sends, see
 													// serveFile()
 					byte[] buff = new byte[theBufferSize];
-
 					char yjk1;
 					int i = 0;
 					while (pending > 0) {

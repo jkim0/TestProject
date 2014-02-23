@@ -312,6 +312,7 @@ public class EmulatorService extends Service {
 					else if(value.equalsIgnoreCase("off")){
 						wifiManager.setWifiEnabled(false);				
 					}			
+					
 			}
 			else if(cmd.equalsIgnoreCase("broadcast")){
 				
@@ -432,6 +433,7 @@ public class EmulatorService extends Service {
 					"</head>" +
 					"<body>";
 		status= "";
+		int user=0;
 		InputStream in_s;
 		if(tmp==null){
 
@@ -440,7 +442,7 @@ public class EmulatorService extends Service {
 		}
 		else {
 			in_s= new ByteArrayInputStream(tmp.getBytes());
-			
+			user=1;
 		}
 	  
 	   rlen=in_s.available();			//Total Length
@@ -478,11 +480,16 @@ public class EmulatorService extends Service {
 				Parsing(str);
 			}
 		}
-		
+	
 		write_str = write_str + "</select> <input type=\"submit\"" + 
 				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
-		Log.d("status","stats=" +status);
+	
+		if(user==1){
+			write_str +=  "<form method=\"post\"> <select name=\"refresh\"></select><input type=\"submit\" value=\"go back to main menu\"/></form>";
+
+					}
+	 Log.d("status","stats=" +status);
 		Add_status();
 
 	}
