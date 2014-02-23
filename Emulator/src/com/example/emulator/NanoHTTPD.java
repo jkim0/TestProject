@@ -987,7 +987,7 @@ class NanoHTTPD {
 				if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("off"))
 				{
 					String tmp = mhtml.substring(mhtml.lastIndexOf(cmd), mhtml.indexOf("</body>"));
-					tmp = tmp.substring(0,tmp.indexOf("<")-1);
+					tmp = tmp.substring(0,tmp.indexOf("<"));
 					int len_tmp = tmp.length();
 					Log.i("INTERFACE","on");
 					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
@@ -1000,6 +1000,10 @@ class NanoHTTPD {
 							Log.d("interface","tmp.len= "+tmp.length());
 						}
 					}
+					Log.i("#####YYS","replace_str : "+replace);
+					Log.i("#####YYS","tmp_str : "+tmp);
+					Log.i("#####YYS","replace_str_Length : "+replace.length());
+					Log.i("#####YYS","tmp_str_Length : "+tmp.length());
 					
 					mhtml = mhtml.replace(tmp, replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
@@ -1012,7 +1016,7 @@ class NanoHTTPD {
 						Log.d("zuckay","1");
 						if(tmp.contains("</text>"))
 						{
-							tmp = tmp.substring(0, tmp.indexOf("<")-1);
+							tmp = tmp.substring(0, tmp.indexOf("<"));
 						}						
 					}
 					Log.d("zuckay","="+tmp);
