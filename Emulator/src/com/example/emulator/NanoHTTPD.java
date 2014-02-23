@@ -676,6 +676,8 @@ class NanoHTTPD {
 					String mpline = in.readLine();
 
 					Log.d("multi","1)mpline="+mpline);
+					//   1)mpline=------WebKitFormBoundaryCOpFVapfG85osA76
+
 					while ( mpline != null )
 					{
 						
@@ -685,6 +687,8 @@ class NanoHTTPD {
 						Properties item = new Properties();
 						mpline = in.readLine();
 						Log.d("MULTI","2)mpline= "+mpline);
+						//2)mpline= Content-Disposition: form-data; name="memosite"
+
 
 						//----WebKitFormBoundaryjg80xtbIchFYGnv
 						//Content-Disposition: form-data; name="memosite"
@@ -692,13 +696,15 @@ class NanoHTTPD {
 						//		------WebKitFormBoundaryjg8OxQtbIvhFYGnv--
 						while (mpline != null && mpline.trim().length() > 0)
 						{
+							Log.d("multi","3)mpline="+mpline);
+
 							int p = mpline.indexOf( ':' );
 							if (p != -1)
 								item.put( mpline.substring(0,p).trim().toLowerCase(), mpline.substring(p+1).trim());
 							mpline = in.readLine();
 
-							Log.d("multi","3)mpline="+mpline);
-
+							Log.d("multi","4)mpline="+mpline);
+							//null
 							// read by one line and save item whose type is properties contentype
 						}
 						if (mpline != null)
@@ -718,12 +724,13 @@ class NanoHTTPD {
 								if (p!=-1){
 									disposition.put( token.substring(0,p).trim().toLowerCase(), token.substring(p+1).trim());
 						//여기가 name 앞뒤로 구분가능한곳이야. name 이후에 어디까지 받을거야?
-
-									Log.d("multi","mpline="+disposition);
+									Log.d("multi","d)mpline="+disposition);
 								}
 							}
 							String pname = disposition.getProperty("name");
 							pname = pname.substring(1,pname.length()-1);
+							Log.d("multi","pname = "+pname);
+		
 												
 				///			
 							String value = "";
@@ -731,14 +738,23 @@ class NanoHTTPD {
 								while (mpline != null && mpline.indexOf(boundary) == -1)
 								{
 									mpline = in.readLine();
-									Log.d("multi","mpline");
+									Log.d("multi","mvalue = "+mpline);
 									if ( mpline != null)
 									{
+										Log.d("multi","boundary="+boundary);
+										Log.d("multi","inside second(vlaue)) mpline="+mpline);
 										int d = mpline.indexOf(boundary);
-										if (d == -1)
-											value+=mpline;
-										else
+										if (d == -1){
+											value+=mpline; 
+											Log.d("multi","-1)mpline="+mpline);
+											}
+										else{
+
+											Log.d("multi","NOT(-1)mpline="+mpline+"(d)="+d);
+											Log.d("multi","mpline.substring(0,d)"+mpline.substring(0,d));
 											value+=mpline.substring(0,d-2);
+										
+										}
 									}
 								}
 							}
@@ -746,13 +762,24 @@ class NanoHTTPD {
 							{
 								if (boundarycount> bpositions.length)
 									sendError( HTTP_INTERNALERROR, "Error processing request" );
+								Log.d("value","fbuf= "+fbuf.toString());
+								Log.d("value","bpositions[boundarycount-2]= "+bpositions[boundarycount-2]);
+								
 								int offset = stripMultipartHeaders(fbuf, bpositions[boundarycount-2]);
+								Log.d("value","offset= "+offset);
+								
 							//	String path = saveTmpFile(fbuf, offset, bpositions[boundarycount-1]-offset-4);
 							//	files.put(pname, path);
 								value = disposition.getProperty("filename");
+								Log.d("value","bf)value= "+value);
 								value = value.substring(1,value.length()-1);
+								Log.d("value","af)value= "+value);
+								Log.d("value","boudary= "+boundary);
+								Log.d("value","boudary(indexof)= "+mpline.indexOf(boundary));
+								
 								do {
 									mpline = in.readLine();
+									Log.d("value","mpline(dowhile) = "+mpline);
 								} while (mpline != null && mpline.indexOf(boundary) == -1);
 							}
 							Log.d("yjk","pname="+pname);
