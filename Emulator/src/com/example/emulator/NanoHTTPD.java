@@ -945,27 +945,38 @@ class NanoHTTPD {
 			public String getStatus(String cmd, String value){
 ////여기까지 들어오는거 확인 이걸로 해!
 				String check=mhtml;
-				Log.d("INTERFACE","5");
+				
 				Log.d("INTERFACE","check to here  ");
 				Log.d("INTERFACE","mhtml="+mhtml);
 			
 				String replace = "";
 				replace = cmd + " : " + value;
 				int index=-1;
-				Log.d("getstatus", "cmd : "+cmd +"(len="+cmd.length());
-				Log.d("getstatus", "value : "+value+"(len="+value.length());
-				Log.d("getstatus", "replace : "+replace+"(len="+replace.length());
+				int len_replace= replace.length();
+				
+//				Log.d("getstatus", "cmd : "+cmd +"(len="+cmd.length());
+//				Log.d("getstatus", "value : "+value+"(len="+value.length());
+//				Log.d("getstatus", "replace : "+replace+"(len="+replace.length());
 						
 				if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("off"))
 				{
 					String tmp = mhtml.substring(mhtml.lastIndexOf(cmd), mhtml.indexOf("</body>"));
 					tmp = tmp.substring(0,tmp.indexOf("<")-1);
+					int len_tmp = tmp.length();
 					Log.i("INTERFACE","on");
 					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
-					if(value.equalsIgnoreCase("on"))
-					{
-						replace = replace + " ";
+			
+					if(len_replace < len_tmp){
+//						char temp[]=new char[len_tmp-len_replace];
+						for(int i=len_replace; i< len_tmp;i++){
+						//temp[i]=' ';
+							tmp += " ";
+						}
 					}
+//					if(value.equalsIgnoreCase("on"))
+//					{
+//						replace = replace + " ";
+//					}
 					mhtml = mhtml.replace(tmp, replace);
 					Log.i("interface","same?= "+ mhtml.equalsIgnoreCase(check));
 				}
