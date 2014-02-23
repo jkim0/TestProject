@@ -549,22 +549,21 @@ public class EmulatorService extends Service {
 						{
 							if(Cmd.equalsIgnoreCase("off") || Cmd.equalsIgnoreCase("on"))
 							{
-								if(flag)
+								if(submit_cmd.equalsIgnoreCase("screen"))
 								{
-									if(submit_cmd.equalsIgnoreCase("screen")){
-										status = status + "on" + "</text>";
-									}
-									else{
-										status = status + "off" + "</text>";
-									}
-									flag = false;
+									status = status + "on" + "</text>";
+								}
+								else
+								{
+									status = status + "off" + "</text>";
 								}
 							}
-	
+							
 					       else
 						   	{
 								status = status + "</text>";
 							}
+							flag = false;
 						}
 					}
 				}

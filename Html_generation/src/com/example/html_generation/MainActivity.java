@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-
+	boolean flag = true;
 	byte buffer[];				//저장할 버퍼
 	int rlen;						//파일 읽어오는 것의 크기(글자 수)
 	int line_Cnt=1;					//Total line cnt
@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
         
         Log.i("Parsing_Result.html",""+write_str);
         		
-        doCopy();
+        Log.i("STATUS_HTMLCODE",""+status);
         
         button1.setOnClickListener(new View.OnClickListener() {
 			
@@ -104,6 +104,7 @@ public class MainActivity extends Activity {
 				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>" +
 						"<text><br><br></text>";
+				flag = true;
 			}
 			
 			else			//한 줄 띄기가 아닐 때만 Parsing을 호출
@@ -197,9 +198,24 @@ public class MainActivity extends Activity {
 							Cmd +"</option>";
 					
 					
-					if(Cmd.equalsIgnoreCase("off"))
+					Log.i("#########Parsing Command",""+Cmd);
+					if(flag)
 					{
-						status = status + "off" + "</text>";	
+						if(Cmd.equalsIgnoreCase("off") || Cmd.equalsIgnoreCase("on"))
+						{
+							if(submit_cmd.equalsIgnoreCase("screen")){
+								status = status + "on" + "</text>";
+							}
+							else{
+								status = status + "off" + "</text>";
+							}
+							flag = false;
+						}
+
+				       else
+					   	{
+							status = status + "</text>";
+						}
 					}
 				}
 			}
@@ -207,40 +223,7 @@ public class MainActivity extends Activity {
 		
 	}
     
-   public static final String to = "/data/data/com.example.html_generation/";
-	public static final String copy_name = "index.html";
-
-	public File doCopy() {
-
-		File folder = new File(to + "files/");
-		folder.mkdirs();
-		File outfile = new File(to + "files/" + copy_name);
-		
-		
-		try {
-			// AssetManager assetManager = getResources().getAssets();
-			// InputStream is = assetManager.open(HTML_NAME,
-			// AssetManager.ACCESS_BUFFER);
-			
-			// make byte[] from inputstream
-			
-			//create file 
-			outfile.createNewFile();
-			//FileOutputstream (outfile) 에다가 tempdata를 쓴다.
-		
-			FileOutputStream fo = new FileOutputStream(outfile);
-			byte[] buff2 = write_str.getBytes();
-			
-			fo.write(buff2);
-			fo.close();
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return folder;
-	}
-
+  
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
