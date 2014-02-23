@@ -462,15 +462,14 @@ public class EmulatorService extends Service {
 	   
 	   String str;
 	   
-	   while((cnt < line_Cnt)&&(str=reader.readLine())!=null)
-		{
+	   while((cnt < line_Cnt)&&(str=reader.readLine())!=null){
 						//read one line
 			Log.d("READ","str="+str);
 			cnt++;							//readed one line cnt increase +1
 			
 			//아마 넘어오면서 뭔가 인코딩되서 넘어오는거같은데, 그거때매 여기서 자꾸죽는듯.....
-			if(str.length() == 0)			//Newline '\n' 
-			{
+			if(str.length() == 0){			//Newline '\n' 
+			
 				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>" +
 						"<text><br><br></text>";
