@@ -995,10 +995,11 @@ class NanoHTTPD {
 					Log.i("INTERFACE","exist?= "+mhtml.contains(cmd+" : "+"off"));
 			
 					if(len_replace < len_tmp){
-//						char temp[]=new char[len_tmp-len_replace];
+						Log.d("interface","len_tmp="+len_tmp);
 						for(int i=len_replace; i< len_tmp;i++){
-						//temp[i]=' ';
 							tmp += " ";
+							Log.d("interface","tmp="+tmp);
+							Log.d("interface","tmp.len= "+tmp.length());
 						}
 					}
 //					if(value.equalsIgnoreCase("on"))
