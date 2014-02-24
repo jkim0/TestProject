@@ -793,7 +793,7 @@ class NanoHTTPD {
 									CmdData cd = new CmdData("memosite", value);
 									Log.d("kk","usercommand/b4 sendMSG");
 									mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
-									mService.registertoList(mReceiver);
+					//				mService.registertoList(mReceiver);
 									Log.d("kk","usercommand/bf return");
 									return LAUNCH_MEMO;
 								
@@ -953,7 +953,7 @@ class NanoHTTPD {
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 				mHandler.sendMessage(mHandler.obtainMessage(
 						NOTIFY_CMD_RECEIVED, cd));
-				mService.registertoList(mReceiver);
+			//	mService.registertoList(mReceiver);
 				return 0;
 			}
 //			else if(Compare.equalsIgnoreCase("memosite")){
@@ -970,7 +970,7 @@ class NanoHTTPD {
 					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 					mHandler.sendMessage(mHandler.obtainMessage(
 							NOTIFY_CMD_RECEIVED, cd));
-					mService.registertoList(mReceiver);
+				//	mService.registertoList(mReceiver);
 					return 0;
 			}
 			
@@ -980,7 +980,7 @@ class NanoHTTPD {
 					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 					Log.d("kk","usercommand/b4 sendMSG");
 					mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
-					mService.registertoList(mReceiver);
+		//			mService.registertoList(mReceiver);
 					Log.d("kk","usercommand/bf return");
 					return USER_COMMAND;
 				}

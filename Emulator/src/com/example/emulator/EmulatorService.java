@@ -18,7 +18,6 @@ import java.util.StringTokenizer;
 
 
 import com.example.emulator.NanoHTTPD.CommandReceiver;
-import com.example.emulator.NanoHTTPD.Information;
 
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
@@ -224,6 +223,7 @@ public class EmulatorService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Information info = new Information();
 	//wifi 상태확인 필터
 		IntentFilter wfilter = new IntentFilter();
 		wfilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);		
