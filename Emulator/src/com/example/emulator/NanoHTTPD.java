@@ -52,8 +52,7 @@ import com.example.emulator.NanoHTTPD;
 import com.example.emulator.NanoHTTPD.CommandReceiver;
 class NanoHTTPD {
 	private String mhtml=null;
-	private String status=null;
-	
+	private String state=null;
 	public int user_mode = 0;
 	public String lunch;
 	public final static int USER_COMMAND=4; 
@@ -1071,10 +1070,9 @@ class NanoHTTPD {
 		
 		private void getstatus(Information info)
 		{
-			String wifi;
-			String bluetooth;
-			String screen;
-			
+			state = "<text><br>Wifi State : " + info.wifi +
+					"</text>" + "<text><br>Bluetooth State" + info.bluetooth +
+					"</text>" + "<text><br>Screen State" + info.screen + "</text></body></html>"; 
 		}
 		/**
 		 * Returns an error message as a HTTP response and throws

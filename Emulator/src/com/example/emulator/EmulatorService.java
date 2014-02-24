@@ -244,6 +244,31 @@ public class EmulatorService extends Service {
 		sfilter.addAction(Intent.ACTION_SCREEN_ON);
 		registerReceiver(mReceiver, sfilter);
 		
+		
+		
+		
+		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
+		
+		if(wifiManager.isWifiEnabled())
+		{
+			info.wifi = "ON";
+		}
+		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+		mBtAdapter.enable();
+		if(mBtAdapter.enable())
+		{
+			info.bluetooth = "ON";
+		}
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		if(pm.isScreenOn())
+		{
+			info.screen = "ON";
+		}
+		
+		
+		
 //		bfilter.addAction(BluetoothAdapter.STATE_ON);
 //		bfilter.addAction(BluetoothAdapter.STATE_OFF);
 //		bfilter.addAction(BluetoothDevice.ACTION_FOUND);
