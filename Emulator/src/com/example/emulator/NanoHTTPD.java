@@ -306,35 +306,6 @@ class NanoHTTPD {
 	private Handler mHandler = null; //
 
 	private final int NOTIFY_CMD_RECEIVED = 0;
-
-	public class Information{
-		public boolean wifi;
-		public boolean bluetooth;
-		public boolean screen;
-		
-		Information()
-		{
-			wifi = false;
-			bluetooth = false;
-			screen = false;
-		}
-		
-		boolean getValue_wifi()
-		{
-			return wifi;
-		}
-		
-		boolean getValue_bluetooth()
-		{
-			return bluetooth;
-		}
-		
-		boolean getValue_screen()
-		{
-			return screen;
-		}
-	}
-	
 	
 	
 	private class CmdData {
@@ -1020,7 +991,7 @@ class NanoHTTPD {
 			return 0;	
 		}
 			// dot anything.
-	
+	/*
 		private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
 			@Override
 			public String getStatus(String cmd, String value){
@@ -1096,7 +1067,12 @@ class NanoHTTPD {
 				
 			}
 		};
+		*/
 		
+		private void getstatus(Information info)
+		{
+			
+		}
 		/**
 		 * Returns an error message as a HTTP response and throws
 		 * InterruptedException to stop further request processing.

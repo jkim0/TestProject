@@ -15,7 +15,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+
 import com.example.emulator.NanoHTTPD.CommandReceiver;
+import com.example.emulator.NanoHTTPD.Information;
+
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.Notification;
@@ -66,6 +70,9 @@ public class EmulatorService extends Service {
 	public int memo=1;
 	public String user=null;
 	boolean flag = true;
+
+	public Information info;
+	
 	
 	NotificationManager mNM;
 	
@@ -115,6 +122,7 @@ public class EmulatorService extends Service {
 	}
 	
 	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
