@@ -51,19 +51,19 @@ import com.example.emulator.EmulatorService;
 import com.example.emulator.NanoHTTPD;
 import com.example.emulator.NanoHTTPD.CommandReceiver;
 class NanoHTTPD {
+	private String mhtml=null;
+	private String status=null;
+	
 	public int user_mode = 0;
-	public String mhtml=null;
 	public String lunch;
-	private final String TAG = "NanoHTTPD";
 	public final static int USER_COMMAND=4; 
 	public final static int LAUNCH_MEMO=5;
 	public int branch;
 	public String launch_uri=null;
+	
 	public boolean set_user=false;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
-	
-	
-	
+		
 	
 	public Properties header = new Properties();
 	
@@ -1071,7 +1071,17 @@ class NanoHTTPD {
 		
 		private void getstatus(Information info)
 		{
+			String wifi;
+			String bluetooth;
+			String screen;
 			
+			if(info.wifi == true){wifi = "on";}
+			else{wifi = "off";}
+			if(info.bluetooth == true){bluetooth = "on";}
+			else{bluetooth="off";}
+			if(info.screen == true){screen = "on";}
+			else{screen = "off";}
+			status = "<text><br>"  ; 
 		}
 		/**
 		 * Returns an error message as a HTTP response and throws
