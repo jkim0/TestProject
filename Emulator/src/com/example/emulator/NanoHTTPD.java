@@ -305,8 +305,10 @@ class NanoHTTPD {
 	}
 
 	public NanoHTTPD(EmulatorService service, int port, String html, Information pinfo) throws IOException {
+		Log.i("NanoHTTPD","pinfo : "+pinfo);
 		mhtml = html;
 		information=pinfo;
+		Log.i("NanoHTTPD","information : "+information);
 		state = "<text><br>Wifi State : " + information.wifi +
 				"</text>" + "<text><br>Bluetooth State" + information.bluetooth +
 				"</text>" + "<text><br>Screen State" + information.screen + "</text></body></html>";

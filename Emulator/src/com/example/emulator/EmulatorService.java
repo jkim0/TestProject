@@ -67,8 +67,7 @@ public class EmulatorService extends Service {
 	public int memo=1;
 	public String user=null;
 	boolean flag = true;
-
-	public Information info;
+	public Information info=null;
 	
 	
 	NotificationManager mNM;
@@ -206,46 +205,6 @@ public class EmulatorService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Information info = new Information();
-	//wifi 상태확인 필터
-		IntentFilter wfilter = new IntentFilter();
-		wfilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);		
-		registerReceiver(mReceiver, wfilter);
-	//bluetooth 상태확인 필터
-		IntentFilter bfilter = new IntentFilter();
-		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-		registerReceiver(mReceiver,bfilter);
-		
-		IntentFilter sfilter = new IntentFilter();
-		sfilter.addAction(Intent.ACTION_SCREEN_OFF);
-		sfilter.addAction(Intent.ACTION_SCREEN_ON);
-		registerReceiver(mReceiver, sfilter);
-		
-		
-		
-		
-		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-		
-		if(wifiManager.isWifiEnabled())
-		{
-			info.wifi = "ON";
-		}
-		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-		mBtAdapter.enable();
-		if(mBtAdapter.enable())
-		{
-			info.bluetooth = "ON";
-		}
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		if(pm.isScreenOn())
-		{
-			info.screen = "ON";
-		}
-		
-		
-		
 //		bfilter.addAction(BluetoothAdapter.STATE_ON);
 //		bfilter.addAction(BluetoothAdapter.STATE_OFF);
 //		bfilter.addAction(BluetoothDevice.ACTION_FOUND);
@@ -387,7 +346,6 @@ public class EmulatorService extends Service {
 			pm.goToSleep(2000);
 			pm.wakeUp(2000);
 		}
-		
 	}
 
 	
@@ -415,6 +373,46 @@ public class EmulatorService extends Service {
 	Boolean check= true;
 	public void File_Read() throws IOException{
 
+		Information info = new Information();
+		Log.i("####EmulatorService","info : "+info);
+	//wifi 상태확인 필터
+		IntentFilter wfilter = new IntentFilter();
+		wfilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);		
+		registerReceiver(mReceiver, wfilter);
+	//bluetooth 상태확인 필터
+		IntentFilter bfilter = new IntentFilter();
+		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+		registerReceiver(mReceiver,bfilter);
+		
+		IntentFilter sfilter = new IntentFilter();
+		sfilter.addAction(Intent.ACTION_SCREEN_OFF);
+		sfilter.addAction(Intent.ACTION_SCREEN_ON);
+		registerReceiver(mReceiver, sfilter);
+				
+		
+		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
+		
+		if(wifiManager.isWifiEnabled())
+		{
+			info.wifi = "ON";
+		}
+		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+		mBtAdapter.enable();
+		if(mBtAdapter.enable())
+		{
+			info.bluetooth = "ON";
+		}
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		if(pm.isScreenOn())
+		{
+			info.screen = "ON";
+		}
+		
+		Log.i("###EmulatorService###","After info : "+info);
+		
+		
 		write_str="<html>" +
 					"<head>" +
 					"<title>Emulator ver 0.1</title>" +

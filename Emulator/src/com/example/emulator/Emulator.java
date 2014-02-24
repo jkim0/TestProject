@@ -2,8 +2,10 @@ package com.example.emulator;
 
 
 import com.example.emulator.EmulatorService.LocalBinder;
+import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.app.Activity;
@@ -48,7 +50,11 @@ public class Emulator extends Activity {
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
 		mWifi_Setting = (Button)findViewById(R.id.wifi_setting);
+		
+
 		wifiStatus= (TextView) findViewById(R.id.wifi_state);
+		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
 		
 		StringBuilder wifiString= new StringBuilder();
 		wifiString.append("WIFI: ")	
