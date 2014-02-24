@@ -777,12 +777,12 @@ class NanoHTTPD {
 					while (pending > 0) {
 						int read = data.read(buff, 0,
 								((pending > theBufferSize) ? theBufferSize : pending));
-						String yjk = new String(buff);
+						
 						if (read <= 0)
 							break;
 						out.write(buff, 0, read);
 						pending -= read;
-				//		Log.d("sendresponse2","string data.read= "+yjk);
+				
 					}
 
 				}
@@ -828,7 +828,7 @@ class NanoHTTPD {
 	public Response serveFile(String uri, Properties header, boolean allowDirectoryListing) {
 		write_html = mhtml + state;
 		Log.d("SERVEFILE", "header=" + header);
-		 
+		Log.i("###Response serveFile###","write_html : "+write_html);
 		Response res = null;
 		Log.e("CHECK", "ADL:" + allowDirectoryListing);
 
@@ -849,7 +849,7 @@ class NanoHTTPD {
 			is = new ByteArrayInputStream(write_html.getBytes());
 			fileLen = write_html.length();		
 			
-		
+			
 			res = new Response(HTTP_OK, mime,is);
 			res.addHeader("Content-Length", "" + fileLen);
 			res.addHeader("Accept-Ranges", "bytes"); 

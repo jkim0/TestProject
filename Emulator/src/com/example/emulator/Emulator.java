@@ -57,6 +57,8 @@ public class Emulator extends Activity {
 				if ( wifiManager.getConnectionInfo() != null)
 				{
 					WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+					Log.d("WIFI_INFO","wifiInfo.getBSSID= "+wifiInfo.getBSSID());
+					Log.d("WIFI_INFO","wifiInfo.getSSID= "+wifiInfo.getSSID());
 					int ipAddress = wifiInfo.getIpAddress();
 					 String sIp = String.format("%d.%d.%d.%d",
 						       (ipAddress & 0xff),
