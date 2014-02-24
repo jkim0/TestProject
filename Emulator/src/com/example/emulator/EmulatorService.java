@@ -227,7 +227,11 @@ public class EmulatorService extends Service {
 	private void NanoHttpd() throws IOException {
 		
 			File_Read();
-		
+			
+			
+			Log.i("###EmulatorService","wifi : "+info.wifi);
+			Log.i("###EmulatorService","bluetooth : "+info.bluetooth);
+			Log.i("###EmulatorService","screen : "+info.screen);
 			mHttpd = new NanoHTTPD(this, 8091, write_str, info);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 			Log.d("HTML","html:"+write_str);
@@ -236,7 +240,6 @@ public class EmulatorService extends Service {
 	
 	//저기 클래스의 interface 를 받아와 (commandReceiver)
 	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
-		
 		
 		@Override
 		public void onCommandReceived(String cmd, String value) {
@@ -374,7 +377,7 @@ public class EmulatorService extends Service {
 	Boolean check= true;
 	public void File_Read() throws IOException{
 
-		Information info = new Information();
+		info = new Information();
 		Log.i("####EmulatorService","info.blutooth : "+info.bluetooth);
 		Log.i("####EmulatorService","info.wifi : "+info.wifi);
 		Log.i("####EmulatorService","info.screen : "+info.screen);
@@ -402,7 +405,7 @@ public class EmulatorService extends Service {
 			info.wifi = "ON";
 		}
 		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-		mBtAdapter.enable();
+		
 		if(mBtAdapter.enable())
 		{
 			info.bluetooth = "ON";
