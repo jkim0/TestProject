@@ -120,8 +120,8 @@ public class EmulatorService extends Service {
 			String action = intent.getAction();
 			Log.d("STATUS","(0)inside broadcastReceiver");
 			Log.d("STATUS","intent.getaction =" +action);
-//			notify nt = null;
-			
+			PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+	///WIFI	
 			if (WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)) {
 				Log.d("STATUS","inside) wifi Changed");
 				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
@@ -129,46 +129,46 @@ public class EmulatorService extends Service {
 				if (state == WifiManager.WIFI_STATE_ENABLED||state==WifiManager.WIFI_STATE_ENABLING) {	
 					Toast.makeText(EmulatorService.this, "Wifi ON!", Toast.LENGTH_LONG).show();
 					Log.d("STATUS","wifi on");
-//					nt = new notify("wifi","on");
-
 				}
 				
 				else if (state==WifiManager.WIFI_STATE_DISABLED||state==WifiManager.WIFI_STATE_DISABLING){
 					Toast.makeText(EmulatorService.this, "Wifi OFF!", Toast.LENGTH_LONG).show();
-//					nt = new notify("wifi","off");
 					Log.d("STATUS","wifi off");
 				}
-				
-				else
-				{
-					Log.d("STATUS", "No recognition");
-//					nt = new notify("wifi","off");
+				else{
+					Log.d("STATUS", "No recognition");	
 					Log.d("STATUS","wifi off");
 				}
 			}
+	///BLUETOOTH		
 			else if(BluetoothAdapter.ACTION_STATE_CHANGED.equalsIgnoreCase(action)){
 				Log.d("STATUS","inside)bluetooth on");
 				int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
 				Log.d("STATUS","state= "+state);
 				//EXTRA_STATE= state_on/off / state_turning_on/off
 	
-			if(state== BluetoothAdapter.STATE_ON){
-		
-				Toast.makeText(EmulatorService.this, "BlueTooth ON!", Toast.LENGTH_LONG).show();
-//					nt =new notify("bluetooth","on");
-					Log.d("STATUS","bluetooth on");
-				}
+				if(state== BluetoothAdapter.STATE_ON){
+					Toast.makeText(EmulatorService.this, "BlueTooth ON!", Toast.LENGTH_LONG).show();
+						Log.d("STATUS","bluetooth on");
+					}
 				else if(state==BluetoothAdapter.STATE_OFF){
 
 					Toast.makeText(EmulatorService.this, "Bluetooth OFF", Toast.LENGTH_LONG).show();
-//					nt =new notify("bluetooth","off");
 					Log.d("STATUS","bluetooth off");
 				}
 				else{
 					Log.d("STATUS", "No recognition");
-//					nt =new notify("bluetooth","off");
 					Log.d("STATUS","bluetooth off");
 				}
+			}
+	  ///SCREEN
+			else if(Intent.ACTION_SCREEN_OFF.equalsIgnoreCase(action)){
+				Toast.makeText(EmulatorService.this, "Screen OFF", Toast.LENGTH_LONG).show();
+				Log.d("STATUS","screen_off");
+			}
+			else if(Intent.ACTION_SCREEN_ON.equalsIgnoreCase(action)){
+				Toast.makeText(EmulatorService.this, "Screen On", Toast.LENGTH_LONG).show();
+				Log.d("STATUS","screen_on");
 			}
 //			Log.d("STATUS","1)get status = "+nt);
 //			Log.d("STATUS","1++ nt= "+nt.sCmd+"= "+nt.sValue);
@@ -224,6 +224,11 @@ public class EmulatorService extends Service {
 		IntentFilter bfilter = new IntentFilter();
 		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
 		registerReceiver(mReceiver,bfilter);
+		
+		IntentFilter sfilter = new IntentFilter();
+		sfilter.addAction(Intent.ACTION_SCREEN_OFF);
+		sfilter.addAction(Intent.ACTION_SCREEN_ON);
+		registerReceiver(mReceiver, sfilter);
 		
 //		bfilter.addAction(BluetoothAdapter.STATE_ON);
 //		bfilter.addAction(BluetoothAdapter.STATE_OFF);
@@ -380,12 +385,11 @@ public class EmulatorService extends Service {
 		Log.d("kb","input="+input);
 		new Thread(new Runnable(){
 			public void run(){
-				new Instrumentation().sendKeyDownUpSync(input);
-		
+				new Instrumentation().sendKeyDownUpSync(input);	
 			}
 		}).start();
 	}
-
+	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
