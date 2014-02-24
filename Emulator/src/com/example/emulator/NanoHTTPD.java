@@ -1017,7 +1017,6 @@ class NanoHTTPD {
 							replace += " ";
 						}
 					}
-			
 					
 					txt = txt.replace(tmp, replace);
 					Log.i("interface","same?= "+ txt.equalsIgnoreCase(check));
@@ -1038,14 +1037,13 @@ class NanoHTTPD {
 					Log.d("zuckay", "text="+ txt);				
 					
 					
-					if(branch==LAUNCH_MEMO){
-						launch_uri=txt;
-					}
-					else{
-						mhtml=txt;
-					}
-					
 					//	<text><br>keyboard : keycode_13 </text>
+				}
+				if(branch==LAUNCH_MEMO){
+					launch_uri=txt;
+				}
+				else{
+					mhtml=txt;
 				}
 //				Response R = serveFile(null,header,true);
 //				sendResponse(R.status, R.mimeType, R.header, R.data );
