@@ -512,7 +512,7 @@ public class EmulatorService extends Service {
 
 					}
 	}
-	    
+	
     public void Parsing(String parsing){
 			StringTokenizer stoken1 = new StringTokenizer( parsing, "#" );
 			String str_partition=null;
