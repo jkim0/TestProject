@@ -1075,13 +1075,6 @@ class NanoHTTPD {
 			String bluetooth;
 			String screen;
 			
-			if(info.wifi == true){wifi = "on";}
-			else{wifi = "off";}
-			if(info.bluetooth == true){bluetooth = "on";}
-			else{bluetooth="off";}
-			if(info.screen == true){screen = "on";}
-			else{screen = "off";}
-			status = "<text><br>"  ; 
 		}
 		/**
 		 * Returns an error message as a HTTP response and throws
