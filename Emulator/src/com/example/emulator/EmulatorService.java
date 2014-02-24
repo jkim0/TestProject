@@ -286,17 +286,13 @@ public class EmulatorService extends Service {
 			e.printStackTrace();
 		}
 	}
-
-	/* copy from raw card */
-	//public static final String from = "res/raw/index.html";
-	public static final String to = "/data/data/com.example.emulator/";
 	
 	private NanoHTTPD mHttpd = null;
 	private void NanoHttpd() throws IOException {
 		
 			File_Read(null);
 		
-			mHttpd = new NanoHTTPD(this, 8091, write_str);
+			mHttpd = new NanoHTTPD(this, 8091, write_str, info);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
 			Log.d("HTML","html:"+write_str);
 		
