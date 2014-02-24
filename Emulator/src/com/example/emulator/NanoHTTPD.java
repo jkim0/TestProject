@@ -56,6 +56,7 @@ class NanoHTTPD {
 	public final static int LAUNCH_MEMO=5;
 	public int branch;
 	public String launch_uri=null;
+	public boolean set_user=false;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	
 	public Properties header = new Properties();
@@ -522,7 +523,7 @@ class NanoHTTPD {
 //						Log.d("MULTIPART","parms= "+parms);
 //						//memosite=#screen-function1.on2.off#ewifi-functiin1.on
 //						Log.d("MULTIPART","files= "+boundary);
-						 if(branch==LAUNCH_MEMO){
+						 if(branch==LAUNCH_MEMO||set_user==true){
 							uri = launch_uri;
 							Log.i("kk","uri= "+launch_uri);
 						}
@@ -949,13 +950,13 @@ class NanoHTTPD {
 				mService.registertoList(mReceiver);
 				return 0;
 			}
-			else if(Compare.equalsIgnoreCase("memosite")){
-				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-				mHandler.sendMessage(mHandler.obtainMessage(
-						NOTIFY_CMD_RECEIVED, cd));
-				mService.registertoList(mReceiver);
-				return LAUNCH_MEMO;
-			}
+//			else if(Compare.equalsIgnoreCase("memosite")){
+//				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+//				mHandler.sendMessage(mHandler.obtainMessage(
+//						NOTIFY_CMD_RECEIVED, cd));
+//				mService.registertoList(mReceiver);
+//				return LAUNCH_MEMO;
+//			}
 			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
 	
 					Log.d("kk", "value=" + p.getProperty(Compare));
@@ -979,7 +980,7 @@ class NanoHTTPD {
 				}
 			}
 			else if(Compare.equalsIgnoreCase("refresh")){
-				branch =0;
+				set_user=false;
 			}
 			return 0;	
 		}
@@ -1045,6 +1046,7 @@ class NanoHTTPD {
 			@Override
 			public void launchUserCommand(String cmd, String value){
 				Log.d("handler_","value="+value);
+				set_user=true;
 				branch=LAUNCH_MEMO;
 				launch_uri = value;
 				Log.i("LAUNCH","inside luanch= lunch="+ launch_uri);
