@@ -62,6 +62,9 @@ class NanoHTTPD {
 	public boolean set_user=false;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	
+	
+	
+	
 	public Properties header = new Properties();
 	
 	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
@@ -165,7 +168,6 @@ class NanoHTTPD {
 	 * HTTP response. Return one of these from serve().
 	 */
 	public class Response {
-
 		/**
 		 * Default constructor: response = HTTP_OK, data = mime = 'null'
 		 */
@@ -304,35 +306,6 @@ class NanoHTTPD {
 	private Handler mHandler = null; //
 
 	private final int NOTIFY_CMD_RECEIVED = 0;
-
-	public class Information{
-		public boolean wifi;
-		public boolean bluetooth;
-		public boolean screen;
-		
-		Information()
-		{
-			wifi = false;
-			bluetooth = false;
-			screen = false;
-		}
-		
-		boolean getValue_wifi()
-		{
-			return wifi;
-		}
-		
-		boolean getValue_bluetooth()
-		{
-			return bluetooth;
-		}
-		
-		boolean getValue_screen()
-		{
-			return screen;
-		}
-	}
-	
 	
 	
 	private class CmdData {
@@ -820,7 +793,7 @@ class NanoHTTPD {
 									CmdData cd = new CmdData("memosite", value);
 									Log.d("kk","usercommand/b4 sendMSG");
 									mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
-									mService.registertoList(mReceiver);
+					//				mService.registertoList(mReceiver);
 									Log.d("kk","usercommand/bf return");
 									return LAUNCH_MEMO;
 								
@@ -980,7 +953,7 @@ class NanoHTTPD {
 				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 				mHandler.sendMessage(mHandler.obtainMessage(
 						NOTIFY_CMD_RECEIVED, cd));
-				mService.registertoList(mReceiver);
+			//	mService.registertoList(mReceiver);
 				return 0;
 			}
 //			else if(Compare.equalsIgnoreCase("memosite")){
@@ -997,7 +970,7 @@ class NanoHTTPD {
 					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 					mHandler.sendMessage(mHandler.obtainMessage(
 							NOTIFY_CMD_RECEIVED, cd));
-					mService.registertoList(mReceiver);
+				//	mService.registertoList(mReceiver);
 					return 0;
 			}
 			
@@ -1007,7 +980,7 @@ class NanoHTTPD {
 					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
 					Log.d("kk","usercommand/b4 sendMSG");
 					mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
-					mService.registertoList(mReceiver);
+		//			mService.registertoList(mReceiver);
 					Log.d("kk","usercommand/bf return");
 					return USER_COMMAND;
 				}
@@ -1018,7 +991,7 @@ class NanoHTTPD {
 			return 0;	
 		}
 			// dot anything.
-	
+	/*
 		private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
 			@Override
 			public String getStatus(String cmd, String value){
@@ -1094,7 +1067,12 @@ class NanoHTTPD {
 				
 			}
 		};
+		*/
 		
+		private void getstatus(Information info)
+		{
+			
+		}
 		/**
 		 * Returns an error message as a HTTP response and throws
 		 * InterruptedException to stop further request processing.
