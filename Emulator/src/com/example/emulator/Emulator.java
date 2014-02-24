@@ -3,8 +3,10 @@ package com.example.emulator;
 
 import com.example.emulator.EmulatorService.LocalBinder;
 import android.net.ConnectivityManager;
+import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -54,6 +56,17 @@ public class Emulator extends Activity {
 				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
 				Log.d("ACTIVITY","state=="+state);
 				if (state==WifiManager.WIFI_STATE_ENABLED){
+					
+					WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+					WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+					int ipAddress = wifiInfo.getIpAddress();
+					 String sIp = String.format("%d.%d.%d.%d",
+						       (ipAddress & 0xff),
+						       (ipAddress >> 8 & 0xff),
+						       (ipAddress >> 16 & 0xff),
+						       (ipAddress >> 24 & 0xff));
+					
+					Toast.makeText(Emulator.this, sIp, Toast.LENGTH_LONG).show();					
 					StringBuilder wifiString= new StringBuilder();
 					wifiString.append("WIFI: ")	
 					.append(mWifiInfo.isAvailable());
@@ -123,15 +136,6 @@ public class Emulator extends Activity {
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		
-		
-		
 	}
 
 }
