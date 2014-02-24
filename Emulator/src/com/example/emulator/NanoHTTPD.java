@@ -551,7 +551,7 @@ class NanoHTTPD {
 						if(branch==USER_COMMAND){
 							uri = user_str;
 						}	
-						else if(branch==LAUNCH_MEMO){
+						else if(branch==LAUNCH_MEMO||set_user==true){
 								uri = launch_uri;
 								Log.i("kk","uri= "+launch_uri);
 							}

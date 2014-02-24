@@ -295,7 +295,7 @@ public class EmulatorService extends Service {
 			}
 			else if(cmd.equalsIgnoreCase("keyboard")){
 		
-			//	keyEvent(theKeyBoard.get(value).toString());
+				keyEvent(theKeyBoard.get(value).toString());
 				notify nt = new notify(cmd, value);
 			  	mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 				//아..왜 파이널로해야되????으앙!	
@@ -380,7 +380,7 @@ public class EmulatorService extends Service {
 		Log.d("kb","input="+input);
 		new Thread(new Runnable(){
 			public void run(){
-		//		new Instrumentation().sendKeyDownUpSync(input);
+				new Instrumentation().sendKeyDownUpSync(input);
 		
 			}
 		}).start();
