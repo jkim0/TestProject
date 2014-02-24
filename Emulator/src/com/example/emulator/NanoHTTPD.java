@@ -59,6 +59,9 @@ class NanoHTTPD {
 	public boolean set_user=false;
 	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
 	
+	
+	
+	
 	public Properties header = new Properties();
 	
 	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
@@ -162,7 +165,6 @@ class NanoHTTPD {
 	 * HTTP response. Return one of these from serve().
 	 */
 	public class Response {
-
 		/**
 		 * Default constructor: response = HTTP_OK, data = mime = 'null'
 		 */
