@@ -136,13 +136,13 @@ public class EmulatorService extends Service {
 				if (state == WifiManager.WIFI_STATE_ENABLED||state==WifiManager.WIFI_STATE_ENABLING) {	
 					Toast.makeText(EmulatorService.this, "Wifi ON!", Toast.LENGTH_LONG).show();
 					Log.d("STATUS","wifi on");
-					info.wifi =true;
+					info.wifi ="ON";
 				}
 				
 				else if (state==WifiManager.WIFI_STATE_DISABLED||state==WifiManager.WIFI_STATE_DISABLING){
 					Toast.makeText(EmulatorService.this, "Wifi OFF!", Toast.LENGTH_LONG).show();
 					Log.d("STATUS","wifi off");
-					info.wifi=false;
+					info.wifi="OFF";
 				}
 				else{
 					Log.d("STATUS", "No recognition");	
@@ -159,13 +159,13 @@ public class EmulatorService extends Service {
 				if(state== BluetoothAdapter.STATE_ON){
 					Toast.makeText(EmulatorService.this, "BlueTooth ON!", Toast.LENGTH_LONG).show();
 						Log.d("STATUS","bluetooth on");
-						info.bluetooth=true;
+						info.bluetooth="ON";
 					}
 				else if(state==BluetoothAdapter.STATE_OFF){
 
 					Toast.makeText(EmulatorService.this, "Bluetooth OFF", Toast.LENGTH_LONG).show();
 					Log.d("STATUS","bluetooth off");
-					info.bluetooth=false;
+					info.bluetooth="OFF";
 				}
 				else{
 					Log.d("STATUS", "No recognition");
@@ -176,12 +176,12 @@ public class EmulatorService extends Service {
 			else if(Intent.ACTION_SCREEN_OFF.equalsIgnoreCase(action)){
 				Toast.makeText(EmulatorService.this, "Screen OFF", Toast.LENGTH_LONG).show();
 				Log.d("STATUS","screen_off");
-				info.screen=false;
+				info.screen="OFF";
 			}
 			else if(Intent.ACTION_SCREEN_ON.equalsIgnoreCase(action)){
 				Toast.makeText(EmulatorService.this, "Screen On", Toast.LENGTH_LONG).show();
 				Log.d("STATUS","screen_on");
-				info.screen=true;
+				info.screen="ON";
 			}
 //			Log.d("STATUS","1)get status = "+nt);
 //			Log.d("STATUS","1++ nt= "+nt.sCmd+"= "+nt.sValue);
