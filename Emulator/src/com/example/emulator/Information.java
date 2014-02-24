@@ -8,9 +8,9 @@ public class Information{
 	
 	public Information()
 	{
-		wifi = "off";
-		bluetooth = "off";
-		screen = "off";
+		wifi = "OFF";
+		bluetooth = "OFF";
+		screen = "OFF";
 	}
 	
 	public void setValue_wifi(String setwifi, String setbluetooth, String setscreen)
