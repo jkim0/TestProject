@@ -51,8 +51,8 @@ import com.example.emulator.EmulatorService;
 import com.example.emulator.NanoHTTPD;
 import com.example.emulator.NanoHTTPD.CommandReceiver;
 class NanoHTTPD {
-	private String mhtml=null;
-	private String state=null;
+	public String mhtml=null;
+	public String state=null;
 	public Information information= new Information();
 	
 	// ==================================================
@@ -305,10 +305,16 @@ class NanoHTTPD {
 	}
 
 	public NanoHTTPD(EmulatorService service, int port, String html, Information pinfo) throws IOException {
-		Log.i("NanoHTTPD","pinfo : "+pinfo);
+		Log.i("NanoHTTPD","pinfo wifi : "+pinfo.wifi);
+		Log.i("NanoHTTPD","pinfo bluetooth : "+pinfo.bluetooth);
+		Log.i("NanoHTTPD","pinfo screen : "+pinfo.screen);
 		mhtml = html;
 		information=pinfo;
-		Log.i("NanoHTTPD","information : "+information);
+		
+		Log.i("NanoHTTPD","pinfo wifi : "+pinfo.wifi);
+		Log.i("NanoHTTPD","pinfo bluetooth : "+pinfo.bluetooth);
+		Log.i("NanoHTTPD","pinfo screen : "+pinfo.screen);
+		
 		state = "<text><br>Wifi State : " + information.wifi +
 				"</text>" + "<text><br>Bluetooth State" + information.bluetooth +
 				"</text>" + "<text><br>Screen State" + information.screen + "</text></body></html>";
