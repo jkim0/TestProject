@@ -55,9 +55,10 @@ public class Emulator extends Activity {
 			if(WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)){	
 				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
 				Log.d("ACTIVITY","state=="+state);
-				if (state==WifiManager.WIFI_STATE_ENABLED){
-					
-					WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+				WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+				//if (state==WifiManager.WIFI_STATE_ENABLED)
+				if ( wifiManager.getConnectionInfo() != null)
+				{
 					WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 					int ipAddress = wifiInfo.getIpAddress();
 					 String sIp = String.format("%d.%d.%d.%d",
@@ -101,7 +102,6 @@ public class Emulator extends Activity {
 		StringBuilder wifiString= new StringBuilder();
 		wifiString.append("WIFI: ")	
 		.append(mWifiInfo.isAvailable());
-	
 		registerReceiver(wReceiver,filter);
 		
 		wifiStatus.setText(wifiString);
