@@ -53,20 +53,7 @@ import com.example.emulator.NanoHTTPD.CommandReceiver;
 class NanoHTTPD {
 	private String mhtml=null;
 	private String state=null;
-	public int user_mode = 0;
-	public String lunch;
-	public final static int USER_COMMAND=4; 
-	public final static int LAUNCH_MEMO=5;
-	public int branch;
-	public String launch_uri=null;
-	
-	public boolean set_user=false;
-	private String user_str="<!DOCTYPE html><html><head><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
-		
-	
-	public Properties header = new Properties();
-	
-	//private String user_str="<!DOCTYPE html><html><head><meta charset=\"EUC-KR\"><title>html5-tag-list</title><style> body{     font-size : small; line-height : 1.4em;} </style> <body> <form name=\"testform\" enctype=\"multipart\" method=\"post\"> <input type = \"submit\" value=\"send\" ><textarea name=\"memosite\" cols=\"30\" rows=\"10\">write down</textarea><br><br></form></body></html>";
+	public Information information= new Information();
 	
 	// ==================================================
 	// API parts
@@ -134,11 +121,7 @@ class NanoHTTPD {
 		// 여기서 갑자기 post 'index2.html' 생김 / uri 발생
 		Log.d("kk","inside_serve");
 		myOut.println(method + " '" + uri + "' ");
-		if(uri!=null){
-			if(method.equalsIgnoreCase("GET")||uri.equalsIgnoreCase("/")|| uri.equalsIgnoreCase("/favicon.ico")){
-				uri=null;
-			}
-		}
+		
 		Enumeration e = header.propertyNames();
 		Log.i("check", "header.propertyNames:" + header.propertyNames());
 		Log.i("check", "e:" + e);
@@ -323,10 +306,8 @@ class NanoHTTPD {
 
 	public NanoHTTPD(EmulatorService service, int port, String html, Information pinfo) throws IOException {
 		mhtml = html;
+		information=pinfo;
 		getstatus(pinfo);
-		Log.d("NANO","INFO = "+ service.info.bluetooth);
-		Log.d("NANO","INFO = "+ service.info.wifi);
-		Log.d("NANO","INFO = "+ service.info.screen);
 		
 		mService = service;
 		myTcpPort = port;
@@ -359,13 +340,6 @@ class NanoHTTPD {
 		});
 		myThread.setDaemon(true);
 		myThread.start();
-	}
-
-	private void getstatus(Information istate)
-	{
-		state = "<text><br>Wifi State : " + istate.wifi +
-				"</text>" + "<text><br>Bluetooth State" + istate.bluetooth +
-				"</text>" + "<text><br>Screen State" + istate.screen + "</text></body></html>"; 
 	}
 
 	/**
@@ -425,7 +399,7 @@ class NanoHTTPD {
 
 				Properties pre = new Properties();
 				Properties parms = new Properties();
-//				Properties header = new Properties();
+				Properties header = new Properties();
 				Properties files = new Properties();
 
 				// Decode the header into parms and header java properties
@@ -510,39 +484,7 @@ class NanoHTTPD {
 						contentType = st.nextToken();
 						//contentType== multipart/form-data
 					}
-					if(contentType.equalsIgnoreCase("multipart/form-data")){
-						Log.i("File Check","#####multipart/form-data#####");
-						// Handle multipart/form-data
-						if ( !st.hasMoreTokens())
-							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary missing. Usage: GET /example/file.html" );
-						String boundaryExp = st.nextToken(); //그냥다음파트로 포인트넘김
-						//boundary=----WebKitFormBoundaryjg8OxQtbIvhFYGnv
-						st = new StringTokenizer( boundaryExp , "=" );
-					   // 아직 =  로 자르기시작만했다??
-						if (st.countTokens() != 2)
-							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary syntax error. Usage: GET /example/file.html" );
-						st.nextToken(); //토큰쪽?  string = boundary 
-						String boundary = st.nextToken(); //  ----WebKitFormBoundaryjg80xtbIchFYGnv (저장한다) in boundary
-						Log.i("File Check","boundary_EXP : "+boundaryExp);
-						// boundary_EXP= boundary=----WebKitFormBoundaryTV
-						Log.i("File Check","boundary : "+boundary);
-						//boundary: ==webkitformboundaryTV
-				/////		(-webKitFormBoundaryFormBoundaryj 그 이하로 들어가기시작한다, fbuf,in,parms,files);
-						branch=decodeMultipartData(boundary, fbuf, in, parms, files);	
-						Log.d("MULTIPART","branch= (af)decode="+branch);
-//						Log.d("MULTIPART","boundary= "+boundary);
-//						//----WebKitFormBoundaryTVnAfjNidBDhfAFo
-//						Log.d("MULTIPART","fbf= "+fbuf.toString());
-//						//B@41a93430 
-//						Log.d("MULTIPART","parms= "+parms);
-//						//memosite=#screen-function1.on2.off#ewifi-functiin1.on
-//						Log.d("MULTIPART","files= "+boundary);
-						 if(branch==LAUNCH_MEMO||set_user==true){
-							uri = launch_uri;
-							Log.i("kk","uri= "+launch_uri);
-						}
-					}
-					else{
+					
 						Log.i("POST", "contentType:" + contentType);
 
 						// Handle application/x-www-form-urlencoded
@@ -559,29 +501,8 @@ class NanoHTTPD {
 						Log.i("POST", "parms///////" + parms);
 						Log.i("kk","the right b4 decode parsm");
 						
-						branch= decodeParms(postLine, parms);
-
-						Log.i("kk","branch = "+branch);
-						if(branch==USER_COMMAND){
-							uri = user_str;
-						}	
-						else if(branch==LAUNCH_MEMO||set_user==true){
-								uri = launch_uri;
-								Log.i("kk","uri= "+launch_uri);
-							}
-						else{
-							uri=null;
-						}
-					
-						Log.i("POST", "parms= " + parms);
-						Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
-						Log.d("POST", "uri = " + uri);
-						Log.d("POST",	"pre.getProperty(uri)= " + pre.getProperty("uri"));
-						Log.d("POST", "uri = " + uri);
-						
-					}
-					
-				// ////// Ok, now do the serve()
+					   decodeParms(postLine, parms);
+					   //Ok, now do the serve()
 				}
 				Log.d("kk","1");
 				Response r = serve(uri, method, header, parms);
@@ -670,233 +591,7 @@ class NanoHTTPD {
 								+ ioe.getMessage());
 			}
 		}
-///////////////////////////////////////여기서부터사실지웠음////////
-		/**
-		 * Decodes the Multipart Body data and put it into java Properties' key
-		 * - value pairs.
-		 **/
-		
-		private int decodeMultipartData(String boundary, byte[] fbuf, BufferedReader in, Properties parms, Properties files)
-				throws InterruptedException
-			{
-				try
-				{
-					int[] bpositions = getBoundaryPositions(fbuf,boundary.getBytes());
-					int boundarycount = 1;
-					String mpline = in.readLine();
 
-					Log.d("multi","1)mpline="+mpline);
-					//   1)mpline=------WebKitFormBoundaryCOpFVapfG85osA76
-
-					while ( mpline != null )
-					{
-						
-						if (mpline.indexOf(boundary) == -1)
-							sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but next chunk does not start with boundary. Usage: GET /example/file.html" );
-						boundarycount++;
-						Properties item = new Properties();
-						mpline = in.readLine();
-						Log.d("MULTI","2)mpline= "+mpline);
-						//2)mpline= Content-Disposition: form-data; name="memosite"
-
-
-						//----WebKitFormBoundaryjg80xtbIchFYGnv
-						//Content-Disposition: form-data; name="memosite"
-						//		write down
-						//		------WebKitFormBoundaryjg8OxQtbIvhFYGnv--
-						while (mpline != null && mpline.trim().length() > 0)
-						{
-							Log.d("multi","3)mpline="+mpline);
-
-							int p = mpline.indexOf( ':' );
-							if (p != -1)
-								item.put( mpline.substring(0,p).trim().toLowerCase(), mpline.substring(p+1).trim());
-							mpline = in.readLine();
-
-							Log.d("multi","4)mpline="+mpline);
-							//null
-							// read by one line and save item whose type is properties contentype
-						}
-						if (mpline != null)
-						{
-							String contentDisposition = item.getProperty("content-disposition");
-							if (contentDisposition == null)
-							{
-								sendError( HTTP_BADREQUEST, "BAD REQUEST: Content type is multipart/form-data but no content-disposition info found. Usage: GET /example/file.html" );
-							}
-							StringTokenizer st = new StringTokenizer( contentDisposition , "; " );
-							Properties disposition = new Properties();
-							while ( st.hasMoreTokens())
-							{
-								String token = st.nextToken();
-								int p = token.indexOf( '=' );
-					
-								if (p!=-1){
-									disposition.put( token.substring(0,p).trim().toLowerCase(), token.substring(p+1).trim());
-						//여기가 name 앞뒤로 구분가능한곳이야. name 이후에 어디까지 받을거야?
-									Log.d("multi","d)mpline="+disposition);
-								}
-							}
-							String pname = disposition.getProperty("name");
-							pname = pname.substring(1,pname.length()-1);
-							Log.d("multi","pname = "+pname);
-		
-												
-				///			
-							String value = "";
-							if (item.getProperty("content-type") == null) {
-								while (mpline != null && mpline.indexOf(boundary) == -1)
-								{
-									mpline = in.readLine();
-									Log.d("multi","mvalue = "+mpline);
-									if ( mpline != null)
-									{
-										Log.d("multi","boundary="+boundary);
-										Log.d("multi","inside second(vlaue)) mpline="+mpline);
-										int d = mpline.indexOf(boundary);
-										if (d == -1){
-											value+="\r\n"+mpline; 
-											Log.d("multi","-1)mpline="+mpline);
-											}
-										else{
-
-											Log.d("multi","NOT(-1)mpline="+mpline+"(d)="+d);
-											Log.d("multi","mpline.substring(0,d)"+mpline.substring(0,d));
-											value+=mpline.substring(0,d-2);
-										
-										}
-									}
-								}
-							}
-							else //multipart인경우에요우리
-							{
-								if (boundarycount> bpositions.length)
-									sendError( HTTP_INTERNALERROR, "Error processing request" );
-								Log.d("value","fbuf= "+fbuf.toString());
-								Log.d("value","bpositions[boundarycount-2]= "+bpositions[boundarycount-2]);
-								
-								int offset = stripMultipartHeaders(fbuf, bpositions[boundarycount-2]);
-								Log.d("value","offset= "+offset);
-								
-							//	String path = saveTmpFile(fbuf, offset, bpositions[boundarycount-1]-offset-4);
-							//	files.put(pname, path);
-								value = disposition.getProperty("filename");
-								Log.d("value","bf)value= "+value);
-								value = value.substring(1,value.length()-1);
-								Log.d("value","af)value= "+value);
-								Log.d("value","boudary= "+boundary);
-								Log.d("value","boudary(indexof)= "+mpline.indexOf(boundary));
-								
-								do {
-									mpline = in.readLine();
-									Log.d("value","mpline(dowhile) = "+mpline);
-								} while (mpline != null && mpline.indexOf(boundary) == -1);
-							}
-							Log.d("yjk","pname="+pname);
-							Log.d("yjk","value="+value);
-							//value=#screen-function1.on2.off#ewifi-function1.on
-			/////////////////				
-							if(pname.equalsIgnoreCase("memosite")){
-									
-									CmdData cd = new CmdData("memosite", value);
-									Log.d("kk","usercommand/b4 sendMSG");
-									mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
-					//				mService.registertoList(mReceiver);
-									Log.d("kk","usercommand/bf return");
-									return LAUNCH_MEMO;
-								
-							
-						//	return LAUNCH_MEMO;	
-							}
-							parms.put(pname, value);
-						}
-					}
-					return 0;
-				}
-				catch ( IOException ioe )
-				{
-					sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
-					return -1;
-				}
-			}
-		
-		/**
-		 * Find the byte positions where multipart boundaries start.
-		 **/
-		public int[] getBoundaryPositions(byte[] b, byte[] boundary)
-		{
-			int matchcount = 0;
-			int matchbyte = -1;
-			Vector matchbytes = new Vector();
-			for (int i=0; i<b.length; i++)
-			{
-				if (b[i] == boundary[matchcount])
-				{
-					if (matchcount == 0)
-						matchbyte = i;
-					matchcount++;
-					if (matchcount==boundary.length)
-					{
-						matchbytes.addElement(new Integer(matchbyte));
-						matchcount = 0;
-						matchbyte = -1;
-					}
-				}
-				else
-				{
-					i -= matchcount;
-					matchcount = 0;
-					matchbyte = -1;
-				}
-			}
-			int[] ret = new int[matchbytes.size()];
-			for (int i=0; i < ret.length; i++)
-			{
-				ret[i] = ((Integer)matchbytes.elementAt(i)).intValue();
-			}
-			return ret;
-		}
-		/**
-		 * Retrieves the content of a sent file and saves it to a temporary
-		 * file. The full path to the saved file is returned.
-		 **/
-		
-		private String saveTmpFile(byte[] b, int offset, int len)
-		{
-			Log.e("saveTmpFile","start");
-			
-			String path = "";
-			if (len > 0)
-			{
-				String tmpdir = System.getProperty("java.io.tmpdir");
-				try {
-					File temp = File.createTempFile("NanoHTTPD", "", new File(tmpdir));
-					OutputStream fstream = new FileOutputStream(temp);
-					fstream.write(b, offset, len);
-					fstream.close();
-					path = temp.getAbsolutePath();
-				} catch (Exception e) { // Catch exception if any
-					myErr.println("Error: " + e.getMessage());
-				}
-			}
-			return path;
-		}
-
-		/**
-		 * It returns the offset separating multipart file headers from the
-		 * file's data.
-		 **/
-		private int stripMultipartHeaders(byte[] b, int offset)
-		{
-			int i = 0;
-			for (i=offset; i<b.length; i++)
-			{
-				if (b[i] == '\r' && b[++i] == '\n' && b[++i] == '\r' && b[++i] == '\n')
-					break;
-			}
-			return i+1;
-		}
-///////////////////////////////////////여기까지사실지웠음////////
 		/**
 		 * Decodes the percent encoding scheme. <br/>
 		 * For example: "an+example%20string" -> "an example string"
@@ -934,10 +629,10 @@ class NanoHTTPD {
 		 * the simplicity of Properties -- if you need multiples, you might want
 		 * to replace the Properties with a Hashtable of Vectors or such.
 		 */
-		private int decodeParms(String parms, Properties p)
+		private void decodeParms(String parms, Properties p)
 				throws InterruptedException {
 			if (parms == null)
-				return 0;
+				return;
 
 			String Compare = null;
 
@@ -954,129 +649,53 @@ class NanoHTTPD {
 			Log.e("NanoHttpdError", "" + Compare);
 			Log.e("chekc memo","memo= "+ p.getProperty(Compare));
 			// //여기서 추가
-			if (Compare.equalsIgnoreCase("screen")|| Compare.equalsIgnoreCase("keyboard")){
-	
-				Log.d("kk", "value=" + p.getProperty(Compare));
-				// notifyCommandReceived(Compare, p.getProperty(Compare));
-				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-				mHandler.sendMessage(mHandler.obtainMessage(
-						NOTIFY_CMD_RECEIVED, cd));
-			//	mService.registertoList(mReceiver);
-				return 0;
-			}
-//			else if(Compare.equalsIgnoreCase("memosite")){
-//				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-//				mHandler.sendMessage(mHandler.obtainMessage(
-//						NOTIFY_CMD_RECEIVED, cd));
-//				mService.registertoList(mReceiver);
-//				return LAUNCH_MEMO;
-//			}
-			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
-	
-					Log.d("kk", "value=" + p.getProperty(Compare));
-					// notifyCommandReceived(Compare, p.getProperty(Compare));
-					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-					mHandler.sendMessage(mHandler.obtainMessage(
-							NOTIFY_CMD_RECEIVED, cd));
-				//	mService.registertoList(mReceiver);
-					return 0;
-			}
-			
-			else if(Compare.equalsIgnoreCase("userCommand")){
-				if(p.getProperty(Compare).equalsIgnoreCase("on")){
-		
-					CmdData cd = new CmdData(Compare, p.getProperty(Compare));
-					Log.d("kk","usercommand/b4 sendMSG");
-					mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));	
-		//			mService.registertoList(mReceiver);
-					Log.d("kk","usercommand/bf return");
-					return USER_COMMAND;
+			if (Compare.equalsIgnoreCase("screen")){
+				if(p.getProperty(Compare).equalsIgnoreCase(information.screen)){
+					return;
 				}
 			}
-			else if(Compare.equalsIgnoreCase("refresh")){
-				set_user=false;
+			else if(Compare.equalsIgnoreCase("wifi")){
+				if(p.getProperty(Compare).equalsIgnoreCase(information.wifi)){
+					return;
+				}
 			}
-			return 0;	
-		}
-			// dot anything.
-	/*
-		private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
-			@Override
-			public String getStatus(String cmd, String value){
-////여기까지 들어오는거 확인 이걸로 해!
-				String txt="";
-				String check=mhtml;
-				if(branch==LAUNCH_MEMO){
-					txt= launch_uri;
+			else if(Compare.equalsIgnoreCase("bluetooth")){
+				if(p.getProperty(Compare).equalsIgnoreCase(information.bluetooth)){
+					return;
 				}
-				else{
-					txt=mhtml;
-				}
-				Log.d("INTERFACE","check to here  ");
-				String replace = "";
-				replace = cmd + " : " + value;
-				int index=-1;
-				int len_replace= replace.length();
-						
-				if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("off"))
-				{
-					String tmp = txt.substring(txt.lastIndexOf(cmd), txt.indexOf("</body>"));
-					tmp = tmp.substring(0,tmp.indexOf("<"));
-					int len_tmp = tmp.length();
-					Log.i("INTERFACE","on");
-			
-					if(len_replace < len_tmp){
-						Log.d("interface","len_tmp="+len_tmp);
-						for(int i=len_replace; i< len_tmp;i++){
-							replace += " ";
-						}
-					}
-					
-					txt = txt.replace(tmp, replace);
-					Log.i("interface","same?= "+ txt.equalsIgnoreCase(check));
-				}
-				else{
-					Log.d("zuckay", "text="+ txt);
-					String tmp = mhtml.substring(txt.lastIndexOf(cmd), txt.indexOf("</body>"));
-					Log.d("zuckay","tmp="+tmp);
-					if(tmp != null){
-						Log.d("zuckay","1");
-						if(tmp.contains("</text>"))
-						{
-							tmp = tmp.substring(0, tmp.indexOf("<"));
-						}						
-					}
-					Log.d("zuckay","="+tmp);
-					txt= txt.replace(tmp, cmd +" : "+value);
-					Log.d("zuckay", "text="+ txt);				
-					
-					
-					//	<text><br>keyboard : keycode_13 </text>
-				}
-				if(branch==LAUNCH_MEMO){
-					launch_uri=txt;
-				}
-				else{
-					mhtml=txt;
-				}
-//				Response R = serveFile(null,header,true);
-//				sendResponse(R.status, R.mimeType, R.header, R.data );
-				return value;
 			}
-			
-			@Override
-			public void launchUserCommand(String cmd, String value){
-				Log.d("handler_","value="+value);
-				set_user=true;
-				branch=LAUNCH_MEMO;
-				launch_uri = value;
-				Log.i("LAUNCH","inside luanch= lunch="+ launch_uri);
-				Log.d("LAUNCH","branch= "+branch);
+			else if(Compare.equalsIgnoreCase("keyboard")){
 				
 			}
-		};
-		*/
+			else{
+					return;
+			}
+			Log.d("kk", "value=" + p.getProperty(Compare));
+			CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+			mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
+			if(!Compare.equalsIgnoreCase("keyboard")){
+				mService.registertoList(mReceiver);
+			}
+			
+		}
+
+			
+
 		
+	
+			// dot anything.
+	
+		private EmulatorService.sendToClass mReceiver = new EmulatorService.sendToClass() {
+			@Override
+			public void getstatus(Information istate)
+			{
+				information=istate;
+				state = "<text><br>Wifi State : " + istate.wifi +
+						"</text>" + "<text><br>Bluetooth State" + istate.bluetooth +
+						"</text>" + "<text><br>Screen State" + istate.screen + "</text></body></html>"; 
+			}
+
+		};
 	
 		/**
 		 * Returns an error message as a HTTP response and throws
