@@ -3,13 +3,16 @@ package com.example.emulator;
 
 import com.example.emulator.EmulatorService.LocalBinder;
 import android.net.ConnectivityManager;
+import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -29,6 +32,7 @@ public class Emulator extends Activity {
 	EmulatorService mService = null;
 	NetworkInfo mWifiInfo;
 	TextView wifiStatus;
+	TextView wifi_ip;
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		@Override
@@ -57,8 +61,6 @@ public class Emulator extends Activity {
 				if ( wifiManager.getConnectionInfo() != null)
 				{
 					WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-					Log.d("WIFI_INFO","wifiInfo.getBSSID= "+wifiInfo.getBSSID());
-					Log.d("WIFI_INFO","wifiInfo.getSSID= "+wifiInfo.getSSID());
 					int ipAddress = wifiInfo.getIpAddress();
 					 String sIp = String.format("%d.%d.%d.%d",
 						       (ipAddress & 0xff),
@@ -66,7 +68,8 @@ public class Emulator extends Activity {
 						       (ipAddress >> 16 & 0xff),
 						       (ipAddress >> 24 & 0xff));
 					
-					Toast.makeText(Emulator.this, sIp, Toast.LENGTH_LONG).show();					
+					Toast.makeText(Emulator.this, sIp, Toast.LENGTH_LONG).show();
+					wifi_ip.setText("Ip:" + sIp);
 					StringBuilder wifiString= new StringBuilder();
 					wifiString.append("WIFI: ")	
 					.append(mWifiInfo.isAvailable());
