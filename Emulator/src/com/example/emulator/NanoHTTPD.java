@@ -317,13 +317,17 @@ class NanoHTTPD {
 		}
 	}
 
-	public NanoHTTPD(int port,String html) throws IOException {
-		this(null, port, html);
+	public NanoHTTPD(int port,String html, Information pinfo) throws IOException {
+		this(null, port, html, pinfo);
 	}
 
-	public NanoHTTPD(EmulatorService service, int port, String html) throws IOException {
-		
+	public NanoHTTPD(EmulatorService service, int port, String html, Information pinfo) throws IOException {
 		mhtml = html;
+		getstatus(pinfo);
+		Log.d("NANO","INFO = "+ service.info.bluetooth);
+		Log.d("NANO","INFO = "+ service.info.wifi);
+		Log.d("NANO","INFO = "+ service.info.screen);
+		
 		mService = service;
 		myTcpPort = port;
 		mHandlerThread = new HandlerThread("PgsServiceHandler");
@@ -338,8 +342,6 @@ class NanoHTTPD {
 					notifyCommandReceived(cd.mCmd, cd.mValue);
 					break;
 				}
-				
-				
 			}
 		};
 
@@ -357,6 +359,13 @@ class NanoHTTPD {
 		});
 		myThread.setDaemon(true);
 		myThread.start();
+	}
+
+	private void getstatus(Information istate)
+	{
+		state = "<text><br>Wifi State : " + istate.wifi +
+				"</text>" + "<text><br>Bluetooth State" + istate.bluetooth +
+				"</text>" + "<text><br>Screen State" + istate.screen + "</text></body></html>"; 
 	}
 
 	/**
@@ -1068,12 +1077,7 @@ class NanoHTTPD {
 		};
 		*/
 		
-		private void getstatus(Information info)
-		{
-			state = "<text><br>Wifi State : " + info.wifi +
-					"</text>" + "<text><br>Bluetooth State" + info.bluetooth +
-					"</text>" + "<text><br>Screen State" + info.screen + "</text></body></html>"; 
-		}
+	
 		/**
 		 * Returns an error message as a HTTP response and throws
 		 * InterruptedException to stop further request processing.
@@ -1184,6 +1188,8 @@ class NanoHTTPD {
 	 * ignores all headers and HTTP parameters.
 	 */
 	public Response serveFile(String user_write, Properties header, boolean allowDirectoryListing) {
+		String write_html=null;
+		write_html = mhtml + state;
 		Log.d("SERVEFILE", "header=" + header);
 		Log.d("SERVEFILE","user_write="+user_write);
 		Response res = null;
