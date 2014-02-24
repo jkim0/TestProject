@@ -514,14 +514,14 @@ class NanoHTTPD {
 						//boundary: ==webkitformboundaryTV
 				/////		(-webKitFormBoundaryFormBoundaryj 그 이하로 들어가기시작한다, fbuf,in,parms,files);
 						branch=decodeMultipartData(boundary, fbuf, in, parms, files);	
-			///////
-						Log.d("MULTIPART","boundary= "+boundary);
-						//----WebKitFormBoundaryTVnAfjNidBDhfAFo
-						Log.d("MULTIPART","fbf= "+fbuf.toString());
-						//B@41a93430 
-						Log.d("MULTIPART","parms= "+parms);
-						//memosite=#screen-function1.on2.off#ewifi-functiin1.on
-						Log.d("MULTIPART","files= "+boundary);
+						Log.d("MULTIPART","branch= (af)decode="+branch);
+//						Log.d("MULTIPART","boundary= "+boundary);
+//						//----WebKitFormBoundaryTVnAfjNidBDhfAFo
+//						Log.d("MULTIPART","fbf= "+fbuf.toString());
+//						//B@41a93430 
+//						Log.d("MULTIPART","parms= "+parms);
+//						//memosite=#screen-function1.on2.off#ewifi-functiin1.on
+//						Log.d("MULTIPART","files= "+boundary);
 						 if(branch==LAUNCH_MEMO){
 							uri = launch_uri;
 							Log.i("kk","uri= "+launch_uri);
@@ -550,7 +550,10 @@ class NanoHTTPD {
 						if(branch==USER_COMMAND){
 							uri = user_str;
 						}	
-						
+						else if(branch==LAUNCH_MEMO){
+								uri = launch_uri;
+								Log.i("kk","uri= "+launch_uri);
+							}
 						else{
 							uri=null;
 						}
@@ -592,7 +595,6 @@ class NanoHTTPD {
 				// Thrown by sendError, ignore and exit the thread.
 			}
 		}
-		
 	
 		/**
 		 * Decodes the sent headers and loads the data into java Properties' key
@@ -947,6 +949,13 @@ class NanoHTTPD {
 				mService.registertoList(mReceiver);
 				return 0;
 			}
+			else if(Compare.equalsIgnoreCase("memosite")){
+				CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+				mHandler.sendMessage(mHandler.obtainMessage(
+						NOTIFY_CMD_RECEIVED, cd));
+				mService.registertoList(mReceiver);
+				return LAUNCH_MEMO;
+			}
 			else if(Compare.equalsIgnoreCase("wifi")||Compare.equalsIgnoreCase("bluetooth")){
 	
 					Log.d("kk", "value=" + p.getProperty(Compare));
@@ -1038,7 +1047,9 @@ class NanoHTTPD {
 				Log.d("handler_","value="+value);
 				branch=LAUNCH_MEMO;
 				launch_uri = value;
-				Log.i("kk","inside luanch= lunch="+ launch_uri);
+				Log.i("LAUNCH","inside luanch= lunch="+ launch_uri);
+				Log.d("LAUNCH","branch= "+branch);
+				
 			}
 		};
 		

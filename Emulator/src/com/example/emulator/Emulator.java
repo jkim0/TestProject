@@ -242,17 +242,7 @@ public class Emulator extends Activity {
 					
 				}
 			}
-		});
-//
-//		public void toggle_wifi(boolean status){
-//			 WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-//		        if (status == true && !wifiManager.isWifiEnabled()) {
-//		            wifiManager.setWifiEnabled(true);
-//		        } else if (status == false && wifiManager.isWifiEnabled()) {
-//		            wifiManager.setWifiEnabled(false);
-//		        }			
-//		}
-		
+		});		
 	}
 
 	@Override
