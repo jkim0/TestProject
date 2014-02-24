@@ -37,6 +37,7 @@ import android.widget.CompoundButton;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Emulator extends Activity {
@@ -56,8 +57,12 @@ public class Emulator extends Activity {
 	private IntentFilter screenFilter;
 	private Intent forSpinner;
 	private Button btn_start,btn_stop;
+	private Button mWifi_Setting;
 //	private Button btn_wifi, btn_bluetooth, btn_broadcast;
 	EmulatorService mService = null;
+	NetworkInfo mWifiInfo;
+	TextView wifiStatus;
+	
 	
 //List for Device Info
 	private class DeviceInfo{
@@ -127,25 +132,30 @@ public class Emulator extends Activity {
 		//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
-//		btn_wifi=(Button) findViewById(R.id.btn_wifi);
-//		btn_bluetooth=(Button) findViewById(R.id.btn_bluetooth);
-		mBTList = new ArrayList<DeviceInfo>();
-		mWifiList = new ArrayList<DeviceInfo>();
+		mWifi_Setting = (Button)findViewById(R.id.wifi_setting);
 		
-	    //이걸 button click Listener에 달면 에러가 납니다. why??????
-	//찾기 ㅎ시작한다
-	
-	/*
-		mBtAdapter.startDiscovery();
 
-	//Register for broadcast when a device is discovered	
-		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-		this.registerReceiver(mReceiver, filter);
-	
-		//register for broadcast when discovery has finished
-		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-		this.registerReceiver(mReceiver, filter);
-   */		
+		wifiStatus= (TextView) findViewById(R.id.wifi_state);
+		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
+		
+		StringBuilder wifiString= new StringBuilder();
+		wifiString.append("WIFI: ")	
+		.append(mWifiInfo.isAvailable());
+		wifiStatus.setText(wifiString);
+		
+		mWifi_Setting.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
+				startActivity(gpsOptionsIntent); 
+				
+			}
+		});
+
 		//BindService		
 		btn_start.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -168,27 +178,8 @@ public class Emulator extends Activity {
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
-//	
-//		btn_wifi.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//			 
-//			}
-//		});		
-//
-//		btn_bluetooth.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//	
-//			}
-//		});		
-//
-//		btn_broadcast.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {	
-//			}
-//		});		
-		
+
+		/**/
 		Mode_wifi= (Switch) findViewById(R.id.wifi_switch);
 		Mode_wifi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
@@ -213,6 +204,7 @@ public class Emulator extends Activity {
 				}
 			
 		});
+		
 	
 		Mode_blueTooth= (Switch) findViewById(R.id.bluetooth_switch);
 		Mode_blueTooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -258,12 +250,19 @@ public class Emulator extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.emulator, menu);
-		return true;
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		if (mWifiInfo.isAvailable()){
+			StringBuilder wifiString= new StringBuilder();
+			wifiString.append("WIFI: ")	
+			.append(mWifiInfo.isAvailable());
+			wifiStatus.setText(wifiString);
+			btn_start.setEnabled(true);
+			btn_stop.setEnabled(true);
+		}
+		
 	}
-	
 
 
 }

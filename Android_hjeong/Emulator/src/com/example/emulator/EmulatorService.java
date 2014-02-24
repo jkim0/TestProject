@@ -51,7 +51,7 @@ import android.view.KeyEvent;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-@SuppressLint("NewApi")
+
 public class EmulatorService extends Service {
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
@@ -67,6 +67,7 @@ public class EmulatorService extends Service {
 			return EmulatorService.this;
 		}
 	}
+	/**/
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -182,8 +183,8 @@ public class EmulatorService extends Service {
 					pm.userActivity(SystemClock.uptimeMillis(), false);			
 				} else if (value.equalsIgnoreCase("off")) {
 					//screen off
-					pm.goToSleep(2000);
-					pm.wakeUp(2000);
+			//		pm.goToSleep(2000);
+			//		pm.wakeUp(2000);
 				}
 			}
 			else if(cmd.equalsIgnoreCase("memosite")){
@@ -544,7 +545,7 @@ public class EmulatorService extends Service {
 		mNM.cancel(R.string.remote_service_started);
 	
 	}
-	
+/*	
 	public void screenOnOff(String value) throws RemoteException {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 	
@@ -558,7 +559,7 @@ public class EmulatorService extends Service {
 		}
 	}
 
-	
+	*/
 	private void showNotification() {
 		// TODO Auto-generated method stub
 		CharSequence text = getText(R.string.remote_service_started);
