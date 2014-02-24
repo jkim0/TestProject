@@ -57,7 +57,8 @@ public class Emulator extends Activity {
 				Log.d("ACTIVITY","state=="+state);
 				WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 				//if (state==WifiManager.WIFI_STATE_ENABLED)
-				if ( wifiManager.getConnectionInfo() != null)
+				Log.i("###########Check","getConnectionInfo"+wifiManager.getConnectionInfo());
+				if ( mWifiInfo.isConnected())
 				{
 					WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 					int ipAddress = wifiInfo.getIpAddress();
