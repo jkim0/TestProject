@@ -305,7 +305,8 @@ public class EmulatorService extends Service {
 	}
 		    	
 	private void bluetooth_Manager(String cmd, String value){
-		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();	
+		Log.i("Receiver","Log.d");
 		mBtAdapter.enable();
 			if(value.equalsIgnoreCase("on")){
 				mBtAdapter.isEnabled();
@@ -374,7 +375,9 @@ public class EmulatorService extends Service {
 	public void File_Read() throws IOException{
 
 		Information info = new Information();
-		Log.i("####EmulatorService","info : "+info);
+		Log.i("####EmulatorService","info.blutooth : "+info.bluetooth);
+		Log.i("####EmulatorService","info.wifi : "+info.wifi);
+		Log.i("####EmulatorService","info.screen : "+info.screen);
 	//wifi 상태확인 필터
 		IntentFilter wfilter = new IntentFilter();
 		wfilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);		
@@ -409,8 +412,10 @@ public class EmulatorService extends Service {
 		{
 			info.screen = "ON";
 		}
-		
-		Log.i("###EmulatorService###","After info : "+info);
+
+		Log.i("####EmulatorService","info.blutooth : "+info.bluetooth);
+		Log.i("####EmulatorService","info.screen : "+info.screen);
+		Log.i("####EmulatorService","info.wifi : "+info.wifi);
 		
 		
 		write_str="<html>" +
