@@ -469,7 +469,6 @@ public class EmulatorService extends Service {
 		write_str = write_str + "</select> <input type=\"submit\"" + 
 				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
-	
 		}
 	
 	
