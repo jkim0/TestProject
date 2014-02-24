@@ -122,10 +122,13 @@ class NanoHTTPD {
 		
 		if(uri!=null)
 		{
-			Log.i("NanoHTTPD","uri : "+uri);
+			Log.i("NanoHTTPD","uri = "+uri);
 			 if(method.equalsIgnoreCase("GET") || uri.equalsIgnoreCase("/")|| uri.equalsIgnoreCase("/favicon.ico"))
 			 {
 			      uri=write_html;
+			      Log.d("SERVE","uri= "+uri);
+			      Log.d("SERVE","write_html= "+write_html);
+			      
 			 }
 	    }
 		// 여기서 갑자기 post 'index2.html' 생김 / uri 발생
@@ -318,6 +321,8 @@ class NanoHTTPD {
 		Log.i("NanoHTTPD","pinfo bluetooth : "+pinfo.bluetooth);
 		Log.i("NanoHTTPD","pinfo screen : "+pinfo.screen);
 		mhtml = html;
+		Log.d("NANOHTTPD","mhtml="+mhtml.trim());
+	
 		information=pinfo;
 		
 		Log.i("NanoHTTPD","pinfo wifi : "+pinfo.wifi);
@@ -327,7 +332,7 @@ class NanoHTTPD {
 		state = "<text><br>Wifi State : " + information.wifi +
 				"</text>" + "<text><br>Bluetooth State" + information.bluetooth +
 				"</text>" + "<text><br>Screen State" + information.screen + "</text></body></html>";
-		
+		Log.d("NANO","state= "+state);
 		mService = service;
 		myTcpPort = port;
 		mHandlerThread = new HandlerThread("PgsServiceHandler");
@@ -491,7 +496,6 @@ class NanoHTTPD {
 				// in data section, too, read it:
 				if (method.equalsIgnoreCase("POST")) {
 
-					
 					Log.i("POST", "inside");
 					String contentType = "";
 					String contentTypeHeader = header.getProperty("content-type"); 
@@ -524,8 +528,9 @@ class NanoHTTPD {
 					   //Ok, now do the serve()
 				}
 				Log.d("kk","1");
+				Log.d("b4SERVE","write_html= "+write_html.trim());
 				Response r = serve(uri, method, header, parms);
-
+				Log.d("A4SERVE","write_html= "+write_html.trim());
 				Log.d("kk","2");
 				if (r == null){
 					sendError(HTTP_INTERNALERROR,"SERVER INTERNAL ERROR: Serve() returned a null response.");
