@@ -40,23 +40,11 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 public class Emulator extends Activity {
-//
-//	private ConnectivityManager mConnMnger;
-//	private NetworkInfo wifiInfo;
-//	private NetworkInfo mobileInfo;
-//	private WifiManager mWifiMnger;
-//	
-//	public String[] from= new String[]{"bssid","ssid","capablities","frequency","level"};
-//	public int[] to1 = new int[]{R.id.bssid, R.id.ssid, R.id.capabilities, R.id.frequency, R.id.level};
 
-	
 	public final static int SCREEN_ON=1;
 	public final static int SCREEN_OFF=2;
 	public final static int FOR_SPINNER=3;
-	private IntentFilter screenFilter;
-	private Intent forSpinner;
 	private Button btn_start,btn_stop;
-//	private Button btn_wifi, btn_bluetooth, btn_broadcast;
 	EmulatorService mService = null;
 	
 //List for Device Info
@@ -64,7 +52,6 @@ public class Emulator extends Activity {
 		String name;
 		String address;
 		private DeviceInfo(String _name, String _addr){
-
 			this.name = _name;
 			this.address = _addr;
 		}
@@ -125,8 +112,6 @@ public class Emulator extends Activity {
 		//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
-//		btn_wifi=(Button) findViewById(R.id.btn_wifi);
-//		btn_bluetooth=(Button) findViewById(R.id.btn_bluetooth);
 		mBTList = new ArrayList<DeviceInfo>();
 		mWifiList = new ArrayList<DeviceInfo>();
 		
@@ -166,27 +151,6 @@ public class Emulator extends Activity {
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
-//	
-//		btn_wifi.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//			 
-//			}
-//		});		
-//
-//		btn_bluetooth.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//	
-//			}
-//		});		
-//
-//		btn_broadcast.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {	
-//			}
-//		});		
-		
 		Mode_wifi= (Switch) findViewById(R.id.wifi_switch);
 		Mode_wifi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override

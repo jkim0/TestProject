@@ -15,10 +15,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
-
 import com.example.emulator.NanoHTTPD.CommandReceiver;
-
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.Notification;
@@ -64,14 +61,8 @@ public class EmulatorService extends Service {
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
 	public static final int STATUS_CHANGE = 5;
-	public static final int LAUNCH_MEMO=4;
 	public static final int MSG_WIFI_CHECK = 100;
-	public int memo=1;
-	public String user=null;
-	boolean flag = true;
-
 	public Information info;
-	
 	
 	NotificationManager mNM;
 	
@@ -91,8 +82,7 @@ public class EmulatorService extends Service {
 	}
 	
 	public interface sendToClass{
-		public String getStatus(String cmd, String value);
-		public void launchUserCommand(String cmd, String value);
+		public void getstatus(Information info);
 	}
 	
 	private ArrayList<sendToClass> ClassList = new ArrayList<sendToClass>();
@@ -110,18 +100,9 @@ public class EmulatorService extends Service {
 			ClassList.remove(send);
 	}
 	
-	public class notify{
-		public String sCmd;
-		public String sValue;
-		
-		public notify(String arg1, String arg2){
-			sCmd = arg1;
-			sValue = arg2;
-		}
-	}
 	
-	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-		
+	
+	private BroadcastReceiver mReceiver = new BroadcastReceiver() {	
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
@@ -185,7 +166,8 @@ public class EmulatorService extends Service {
 			}
 //			Log.d("STATUS","1)get status = "+nt);
 //			Log.d("STATUS","1++ nt= "+nt.sCmd+"= "+nt.sValue);
-//			 mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
+			
+			 mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, info));
 		}
     };
 	
@@ -201,24 +183,11 @@ public class EmulatorService extends Service {
 			switch(msg.what){
 			case STATUS_CHANGE:
 			    Log.i("Inside Status Change", "WOW");
-                notify mtf= (notify)msg.obj;
+                Information send= (Information)msg.obj;
 				for (int i = 0; i < ClassList.size(); i++) {
 					sendToClass tp = ClassList.get(i);
 					if (tp != null){
-						tp.getStatus(mtf.sCmd, mtf.sValue);	
-					}
-				}
-				break;
-				
-			case LAUNCH_MEMO:	
-				Log.i("service_handler","launch_memo");
-				notify mtf2 = (notify)msg.obj;
-				Log.i("service_handler","size= "+ClassList.size());
-				for( int i=0; i <ClassList.size(); i++){
-					sendToClass tp = ClassList.get(i);
-					if(tp!=null){
-						Log.d("memo","heading to NANO");
-						tp.launchUserCommand(mtf2.sCmd, mtf2.sValue);
+						tp.getstatus(send);	
 					}
 				}
 				break;
@@ -238,14 +207,13 @@ public class EmulatorService extends Service {
 		IntentFilter bfilter = new IntentFilter();
 		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
 		registerReceiver(mReceiver,bfilter);
-		
+	//screenfilter	
 		IntentFilter sfilter = new IntentFilter();
 		sfilter.addAction(Intent.ACTION_SCREEN_OFF);
 		sfilter.addAction(Intent.ACTION_SCREEN_ON);
 		registerReceiver(mReceiver, sfilter);
 		
-		
-		
+	
 		
 		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -289,19 +257,13 @@ public class EmulatorService extends Service {
 	
 	private NanoHTTPD mHttpd = null;
 	private void NanoHttpd() throws IOException {
-		
-			File_Read(null);
-		
+			File_Read();
 			mHttpd = new NanoHTTPD(this, 8091, write_str, info);
 			mHttpd.registerCommandReceiver(mCommandReceiver);
-			Log.d("HTML","html:"+write_str);
-		
 	}
 	
 	//저기 클래스의 interface 를 받아와 (commandReceiver)
 	private NanoHTTPD.CommandReceiver mCommandReceiver = new NanoHTTPD.CommandReceiver() {
-		
-		
 		@Override
 		public void onCommandReceived(String cmd, String value) {
 			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
@@ -316,28 +278,10 @@ public class EmulatorService extends Service {
 					pm.goToSleep(2000);
 					pm.wakeUp(2000);
 				}
-				  notify nt = new notify(cmd, value);
-			  	  mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
-			}
-			else if(cmd.equalsIgnoreCase("memosite")){
-					try {
-						Log.d("MSG","value="+value);
-						File_Read(value);
-						Log.d("MSG","write= "+write_str);
-						  notify nt = new notify("Launch_memo", write_str );
-					  	  mHandler.sendMessage(mHandler.obtainMessage(LAUNCH_MEMO, nt));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}		
-				//parsing value;
-				//send it again and open it
-
 			}
 			else if(cmd.equalsIgnoreCase("keyboard")){
 		
 				keyEvent(theKeyBoard.get(value).toString());
-				notify nt = new notify(cmd, value);
-			  	mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 				//아..왜 파이널로해야되????으앙!	
 			}
 			else if(cmd.equalsIgnoreCase("wifi")){
@@ -345,79 +289,37 @@ public class EmulatorService extends Service {
 				WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 				ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-				notify nt=null;
 					if(value.equalsIgnoreCase("on")){
 						wifiManager.setWifiEnabled(true);
-						nt = new notify(cmd, value);
 					}
 					else if(value.equalsIgnoreCase("off")){
-						wifiManager.setWifiEnabled(false);				
-						nt = new notify(cmd, value);
+						wifiManager.setWifiEnabled(false);		
 					}			
-					mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
-			}
-			else if(cmd.equalsIgnoreCase("broadcast")){
 				
 			}
+	
 			else if(cmd.equalsIgnoreCase("bluetooth")){
 //				bluetooth_Manager(cmd, value);
-				notify nt=null;
 				BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 				mBtAdapter.enable();
 					if(value.equalsIgnoreCase("on")){
 						mBtAdapter.isEnabled();
-						nt = new notify(cmd, value);
 					}
 					else if(value.equalsIgnoreCase("off")){
 						mBtAdapter.disable();
-
-						nt = new notify(cmd, value);
 					}
-					mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 			}
-			else if(cmd.equalsIgnoreCase("getStatus")){
-				
-			}
-			
 			else
 			{
-				notify nt = new notify(cmd, value);
-			  	mHandler.sendMessage(mHandler.obtainMessage(STATUS_CHANGE, nt));
 				Log.i("Not Command","No exist Command");
 			}
 		}
 
 	};
-	private void wifi_Manager(String cmd, String value){	
-		
-		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-			if(value.equalsIgnoreCase("on")){
-				wifiManager.setWifiEnabled(true);
-			}
-			else if(value.equalsIgnoreCase("off")){
-				wifiManager.setWifiEnabled(false);				
-			}
-	}
-		    	
-	private void bluetooth_Manager(String cmd, String value){
-		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-		mBtAdapter.enable();
-			if(value.equalsIgnoreCase("on")){
-				mBtAdapter.isEnabled();
-			}
-			else if(value.equalsIgnoreCase("off")){
-				mBtAdapter.disable();
-			}
 
-	}
-	
-
-	private void keyEvent(String key_value){
-				
+	private void keyEvent(String key_value){		
 		final int input = Integer.parseInt(key_value);
-		Log.d("kb","input="+input);
+		Log.d("keyboard","input="+input);
 		new Thread(new Runnable(){
 			public void run(){
 				new Instrumentation().sendKeyDownUpSync(input);	
@@ -469,7 +371,7 @@ public class EmulatorService extends Service {
 	String write_str;
 	String status="";
 	Boolean check= true;
-	public void File_Read(String tmp) throws IOException{
+	public void File_Read() throws IOException{
 
 		write_str="<html>" +
 					"<head>" +
@@ -479,15 +381,9 @@ public class EmulatorService extends Service {
 		status= "";
 		int user=0;
 		InputStream in_s;
-		if(tmp==null){
-
-			Resources res = getResources();							//res
+					Resources res = getResources();							//res
 			in_s = res.openRawResource(R.raw.cmd);		//cmd.txt를 InputStream에
-		}
-		else {
-			in_s= new ByteArrayInputStream(tmp.getBytes());
-			user=1;
-		}
+		
 	  
 	   rlen=in_s.available();			//Total Length
 	   
@@ -527,11 +423,6 @@ public class EmulatorService extends Service {
 		write_str = write_str + "</select> <input type=\"submit\"" + 
 				"value =" +"\"send\"" + "/>" 
 						+ "</form>";
-	
-		if(user==1){
-			write_str +=  "<form method=\"post\"> <select name=\"refresh\"></select><input type=\"submit\" value=\"go back to main menu\"/></form>";
-
-					}
 	}
 	
     public void Parsing(String parsing){
