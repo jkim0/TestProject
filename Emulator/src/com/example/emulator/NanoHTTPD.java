@@ -1036,6 +1036,15 @@ class NanoHTTPD {
 					Log.d("zuckay","="+tmp);
 					txt= txt.replace(tmp, cmd +" : "+value);
 					Log.d("zuckay", "text="+ txt);				
+					
+					
+					if(branch==LAUNCH_MEMO){
+						launch_uri=txt;
+					}
+					else{
+						mhtml=txt;
+					}
+					
 					//	<text><br>keyboard : keycode_13 </text>
 				}
 //				Response R = serveFile(null,header,true);
