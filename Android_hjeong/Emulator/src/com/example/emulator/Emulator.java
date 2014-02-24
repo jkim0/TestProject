@@ -144,15 +144,12 @@ public class Emulator extends Activity {
 		wifiString.append("WIFI: ")	
 		.append(mWifiInfo.isAvailable());
 		wifiStatus.setText(wifiString);
-		
 		mWifi_Setting.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
 				startActivity(gpsOptionsIntent); 
-				
 			}
 		});
 
@@ -205,7 +202,7 @@ public class Emulator extends Activity {
 			
 		});
 		
-	
+
 		Mode_blueTooth= (Switch) findViewById(R.id.bluetooth_switch);
 		Mode_blueTooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
@@ -236,17 +233,7 @@ public class Emulator extends Activity {
 					
 				}
 			}
-		});
-//
-//		public void toggle_wifi(boolean status){
-//			 WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-//		        if (status == true && !wifiManager.isWifiEnabled()) {
-//		            wifiManager.setWifiEnabled(true);
-//		        } else if (status == false && wifiManager.isWifiEnabled()) {
-//		            wifiManager.setWifiEnabled(false);
-//		        }			
-//		}
-		
+		});		
 	}
 
 	@Override
@@ -263,6 +250,4 @@ public class Emulator extends Activity {
 		}
 		
 	}
-
-
 }

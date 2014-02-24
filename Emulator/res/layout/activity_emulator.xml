@@ -9,12 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Emulator" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
-
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="wrap_content"
@@ -22,52 +16,72 @@
         android:layout_alignBaseline="@+id/btn_start"
         android:layout_alignBottom="@+id/btn_start"
         android:layout_centerHorizontal="true"
+        android:enabled="false"
         android:text="@string/stop" />
+
+    <Switch
+        android:id="@+id/wifi_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/btn_start"
+        android:layout_marginTop="128dp"
+        android:background="@android:color/background_dark"
+        android:checked="false"
+        android:text="@string/wifi_text"
+        android:textColor="@android:color/white"
+        android:textOff="@string/off"
+        android:textOn="@string/on" />
+
+    <Switch
+        android:id="@+id/bluetooth_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/wifi_switch"
+        android:layout_marginTop="14dp"
+        android:background="@android:color/background_dark"
+        android:checked="false"
+        android:text="@string/bluetooth_text"
+        android:textColor="@android:color/white"
+        android:textOff="@string/off"
+        android:textOn="@string/on" />
 
     <Button
         android:id="@+id/btn_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="18dp"
+        android:layout_below="@+id/wifi_enable"
+        android:layout_marginTop="29dp"
+        android:enabled="false"
         android:text="@string/start" />
 
-    <Button
-        android:id="@+id/btn_wifi"
-        style="?android:attr/buttonStyleSmall"
+    <TextView
+        android:id="@+id/wifi_enable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_start"
-        android:layout_marginTop="19dp"
-        android:text="@string/wifi" />
+        android:layout_alignLeft="@+id/btn_start"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="43dp"
+        android:text="@string/enable"
+        android:textSize="22sp" />
 
-      <Switch
-          android:id="@+id/wifi_switch"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentLeft="true"
-          android:layout_below="@+id/btn_wifi"
-          android:layout_marginTop="128dp"
-          android:background="@android:color/background_dark"
-          android:checked="false"
-          android:text="@string/wifi_text"
-          android:textColor="@android:color/white"
-          android:textOff="@string/off"
-          android:textOn="@string/on" />
+    <Button
+        android:id="@+id/wifi_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/wifi_enable"
+        android:layout_alignBottom="@+id/wifi_enable"
+        android:layout_toRightOf="@+id/wifi_enable"
+        android:text="@string/wifisetting" />
 
-      <Switch
-          android:id="@+id/bluetooth_switch"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentLeft="true"
-          android:layout_below="@+id/wifi_switch"
-          android:layout_marginTop="14dp"
-          android:background="@android:color/background_dark"
-          android:checked="false"
-          android:text="@string/bluetooth_text"
-          android:textColor="@android:color/white"
-          android:textOff="@string/off"
-          android:textOn="@string/on" />
+    <TextView
+        android:id="@+id/wifi_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/wifi_setting"
+        android:layout_alignLeft="@+id/wifi_enable"
+        android:text="@string/state"
+        android:textSize="22sp" />
 
 </RelativeLayout>
