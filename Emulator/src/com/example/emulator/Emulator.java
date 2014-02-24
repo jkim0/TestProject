@@ -41,50 +41,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Emulator extends Activity {
-//
-//	private ConnectivityManager mConnMnger;
-//	private NetworkInfo wifiInfo;
-//	private NetworkInfo mobileInfo;
-//	private WifiManager mWifiMnger;
-//	
-//	public String[] from= new String[]{"bssid","ssid","capablities","frequency","level"};
-//	public int[] to1 = new int[]{R.id.bssid, R.id.ssid, R.id.capabilities, R.id.frequency, R.id.level};
-
 	
 	public final static int SCREEN_ON=1;
 	public final static int SCREEN_OFF=2;
 	public final static int FOR_SPINNER=3;
 	private IntentFilter screenFilter;
-	private Intent forSpinner;
 	private Button btn_start,btn_stop;
 	private Button mWifi_Setting;
-//	private Button btn_wifi, btn_bluetooth, btn_broadcast;
 	EmulatorService mService = null;
 	NetworkInfo mWifiInfo;
 	TextView wifiStatus;
-	
-	
-//List for Device Info
-	private class DeviceInfo{
-		String name;
-		String address;
-		private DeviceInfo(String _name, String _addr){
-
-			this.name = _name;
-			this.address = _addr;
-		}
-		private String getName(){
-			return name;
-		}
-		private String getAddress(){
-			return address;
-		}
-	}
-	
-	
-	private BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-	private ArrayList<DeviceInfo> mBTList,mWifiList = null;
-	private Switch Mode_wifi,Mode_blueTooth;
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		@Override
@@ -100,29 +66,6 @@ public class Emulator extends Activity {
 		}
 	};
 	
-
-	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			if(BluetoothDevice.ACTION_FOUND.equalsIgnoreCase(action)){
-				BluetoothDevice device =intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				if(device.getBondState() !=BluetoothDevice.BOND_BONDED){
-				DeviceInfo di = new DeviceInfo("device.getName()","device.getAddress()");
-				mBTList.add(di);
-				}
-			}
-			else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equalsIgnoreCase(action)){
-				setProgressBarIndeterminateVisibility(false);
-				if( mBTList.size()==0){
-					// 검색되는 장치가 하나도없습니다.
-					Log.e("BlueTooth","There is no any device able to connected");
-//					String noDevices = getText(R.string.none_found).toString();
-//					mNewDevicesArrayAdapter.add(noDevices);
-				}
-			}
-		}
-	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -175,65 +118,6 @@ public class Emulator extends Activity {
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
-
-		/**/
-		Mode_wifi= (Switch) findViewById(R.id.wifi_switch);
-		Mode_wifi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				boolean status= isChecked;
-				WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-				ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-				NetworkInfo mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
-
-				        if (status == true && !wifiManager.isWifiEnabled()) {
-				            wifiManager.setWifiEnabled(true);				 
-				            Toast.makeText(getApplicationContext(), "wifiInfo =" + mWifiInfo, Toast.LENGTH_LONG).show();
-				             Log.d("WIFI_on","available = "+mWifiInfo.isAvailable());
-				             Log.d("WIFI_on","available = "+mWifiInfo.isConnected());
-				        } else if (status == false && wifiManager.isWifiEnabled()) {
-				            wifiManager.setWifiEnabled(false);
-				            Toast.makeText(getApplicationContext(), "wifiInfo = "+ mWifiInfo, Toast.LENGTH_LONG).show();
-				            Log.d("WIFI_off","available = "+mWifiInfo.isAvailable());
-				             Log.d("WIFI_off","available = "+mWifiInfo.isConnected()); 
-				        
-				        }			
-				}
-			
-		});
-		
-
-		Mode_blueTooth= (Switch) findViewById(R.id.bluetooth_switch);
-		Mode_blueTooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				// 연결을 클릭한다면
-				
-				if(isChecked==true){
-					mBtAdapter.cancelDiscovery();
-					//이제 호출 그만하고, 연결할꺼야
-					//getremotedevice 
-					Log.d("BT","howmany bluetooth connections?= "+ mBTList.size());
-					//연결?
-					String addr=null;
-					
-					for(int i=0; i< mBTList.size();i++){	
-					 addr= mBTList.get(i).getAddress();
-					}
-					BluetoothDevice device = mBtAdapter.getRemoteDevice(addr);
-					Boolean check=true;
-					while(check){
-						if (mBtAdapter.isEnabled()){
-							Toast.makeText(Emulator.this,"BLUETOOTH is connected " , Toast.LENGTH_LONG).show();
-							break;
-						}
-					}
-				}
-				else{
-					
-				}
-			}
-		});		
 	}
 
 	@Override
