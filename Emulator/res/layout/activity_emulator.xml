@@ -59,9 +59,9 @@
         android:layout_alignLeft="@+id/btn_start"
         android:layout_below="@+id/wifi_state"
         android:layout_marginTop="62dp"
-        android:text="@string/wifi_ip"
-        android:textSize="22sp" />
-
+        android:textSize="22sp" 
+         android:text="@string/wifi_ips"/>
+		
     <TextView
         android:id="@+id/wifi_enable"
         android:layout_width="wrap_content"

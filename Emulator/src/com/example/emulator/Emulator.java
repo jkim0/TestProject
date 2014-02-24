@@ -56,13 +56,12 @@ public class Emulator extends Activity {
 				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
 				Log.d("ACTIVITY","state=="+state);
 				WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+				WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+				int ipAddress = wifiInfo.getIpAddress();
 				//if (state==WifiManager.WIFI_STATE_ENABLED)
-				Log.i("###########Check","getConnectionInfo"+wifiManager.getConnectionInfo());
-				if ( mWifiInfo.isConnected())
+				if ( ipAddress != 0)
 				{
-					WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-					int ipAddress = wifiInfo.getIpAddress();
-					 String sIp = String.format("%d.%d.%d.%d",
+					String sIp = String.format("%d.%d.%d.%d",
 						       (ipAddress & 0xff),
 						       (ipAddress >> 8 & 0xff),
 						       (ipAddress >> 16 & 0xff),
@@ -94,9 +93,9 @@ public class Emulator extends Activity {
 		//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
 		btn_stop= (Button) findViewById(R.id.btn_stop);
-		mWifi_Setting = (Button)findViewById(R.id.wifi_setting);
+		mWifi_Setting = (Button)findViewById(R.id.ip_setting);
 		
-
+		wifi_ip = (TextView) findViewById(R.id.wifi_ip);
 		wifiStatus= (TextView) findViewById(R.id.wifi_state);
 		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		mWifiInfo = mConnectivityManager.getNetworkInfo(mConnectivityManager.TYPE_WIFI);
