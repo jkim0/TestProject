@@ -484,7 +484,6 @@ public class EmulatorService extends Service {
 				write_str = write_str + "</select> <input type=\"submit\"" +"value =" +"\"send\"" + "/>" 
 						+ "</form>" +
 						"<text><br><br></text>";
-				flag = true;
 			}else{			//한 줄 띄기가 아닐 때만 Parsing을 호출
 				Parsing(str);
 			}
@@ -498,15 +497,6 @@ public class EmulatorService extends Service {
 			write_str +=  "<form method=\"post\"> <select name=\"refresh\"></select><input type=\"submit\" value=\"go back to main menu\"/></form>";
 
 					}
-	 Log.d("status","stats=" +status);
-		Add_status();
-
-	}
-    
-	 public void Add_status(){
-
-	    	write_str = write_str + status; 	    	
-	    	write_str = write_str + "</body></html>";
 	}
 	    
     public void Parsing(String parsing){
@@ -518,35 +508,35 @@ public class EmulatorService extends Service {
 				if(parsing != str_partition){		//#이 있다는 것
 			
 					int space_index=str_partition.indexOf(' ');
-					if(space_index != -1){
+					if(space_index != -1)
+					{
 						str_partition = str_partition.trim();
 					}
 					
 					submit_cmd = str_partition;
 					write_str = write_str + "<textarea rows=1 cols=10>"
 							+ str_partition + "</textarea>";
-					status = status + "<text><br>" + str_partition + " : ";
-//					Log.i("######","String:"+str_partition);
 				}
-				else{
+				else
+				{
 
 					stoken1 = new StringTokenizer( parsing, "-" );
 					str_partition = stoken1.nextToken();
 					if(parsing != str_partition){			//-이 있다는 것
 				
 						int space_index=str_partition.indexOf(' ');
-						if(space_index != -1){
+						if(space_index != -1)
+						{
 							str_partition = str_partition.trim();
-						}
-					
-	//					Log.i("-------","String:"+str_partition);	
+						}	
 						write_str = write_str + "<text><br></text><text>"
 								+ str_partition + "<br></text>" +
 								"<form method=\"post\">" +
 								"<select name=\"" + submit_cmd + "\">";
 					}
 					
-					else{									//command
+					else
+					{									//command
 
 						int length = str_partition.length();
 						int index = str_partition.indexOf('.');
@@ -554,33 +544,13 @@ public class EmulatorService extends Service {
 											
 						String Cmd = str_partition.substring(index+1, length);
 						
-						if(space_index != -1){
+						if(space_index != -1)
+						{
 							Cmd = Cmd.trim();
 						}
-	//					Log.i("****Command*****","String:"+Cmd);
+						
 						write_str = write_str + "<option value=\"" + Cmd + "\"" + "selected>"+ 
 								Cmd +"</option>";
-						
-						if(flag)
-						{
-							if(Cmd.equalsIgnoreCase("off") || Cmd.equalsIgnoreCase("on"))
-							{
-								if(submit_cmd.equalsIgnoreCase("screen"))
-								{
-									status = status + "on" + "</text>";
-								}
-								else
-								{
-									status = status + "off" + "</text>";
-								}
-							}
-							
-					       else
-						   	{
-								status = status + "</text>";
-							}
-							flag = false;
-						}
 					}
 				}
 			}	

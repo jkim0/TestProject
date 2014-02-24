@@ -25,10 +25,13 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -304,6 +307,36 @@ class NanoHTTPD {
 
 	private final int NOTIFY_CMD_RECEIVED = 0;
 
+	public class Information{
+		public boolean wifi;
+		public boolean bluetooth;
+		public boolean screen;
+		
+		Information()
+		{
+			wifi = false;
+			bluetooth = false;
+			screen = false;
+		}
+		
+		boolean getValue_wifi()
+		{
+			return wifi;
+		}
+		
+		boolean getValue_bluetooth()
+		{
+			return bluetooth;
+		}
+		
+		boolean getValue_screen()
+		{
+			return screen;
+		}
+	}
+	
+	
+	
 	private class CmdData {
 		public String mCmd;
 		public String mValue;
