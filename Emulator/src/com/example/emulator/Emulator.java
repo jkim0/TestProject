@@ -8,11 +8,16 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -40,11 +45,35 @@ public class Emulator extends Activity {
 		}
 	};
 	
+	private BroadcastReceiver wReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			Log.d("ACTIVITY","action = "+action);
+			if(WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)){	
+				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
+				Log.d("ACTIVITY","state=="+state);
+				if (state==WifiManager.WIFI_STATE_ENABLED){
+					StringBuilder wifiString= new StringBuilder();
+					wifiString.append("WIFI: ")	
+					.append(mWifiInfo.isAvailable());
+					wifiStatus.setText(wifiString);
+					btn_start.setEnabled(true);
+					btn_stop.setEnabled(true);
+				}
+			}
+			}
+		};
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 	
 		super.onCreate(savedInstanceState);
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);		
+		registerReceiver(wReceiver,filter);
+		
 		setContentView(R.layout.activity_emulator);
 		//make Button	
 		btn_start= (Button) findViewById(R.id.btn_start);
@@ -59,6 +88,9 @@ public class Emulator extends Activity {
 		StringBuilder wifiString= new StringBuilder();
 		wifiString.append("WIFI: ")	
 		.append(mWifiInfo.isAvailable());
+	
+		registerReceiver(wReceiver,filter);
+		
 		wifiStatus.setText(wifiString);
 		mWifi_Setting.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -98,14 +130,7 @@ public class Emulator extends Activity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		
-		if (mWifiInfo.isAvailable()){
-			StringBuilder wifiString= new StringBuilder();
-			wifiString.append("WIFI: ")	
-			.append(mWifiInfo.isAvailable());
-			wifiStatus.setText(wifiString);
-			btn_start.setEnabled(true);
-			btn_stop.setEnabled(true);
-		}
+		
 		
 	}
 
