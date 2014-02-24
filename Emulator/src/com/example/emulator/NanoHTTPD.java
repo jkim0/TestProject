@@ -51,6 +51,7 @@ import com.example.emulator.EmulatorService;
 import com.example.emulator.NanoHTTPD;
 import com.example.emulator.NanoHTTPD.CommandReceiver;
 class NanoHTTPD {
+	public String write_html=null;
 	public String mhtml=null;
 	public String state=null;
 	public Information information= new Information();
@@ -118,6 +119,15 @@ class NanoHTTPD {
 	}
 	//servefile을 호출한
 	public Response serve(String uri, String method, Properties header,Properties parms) {
+		
+		if(uri!=null)
+		{
+			Log.i("NanoHTTPD","uri : "+uri);
+			 if(method.equalsIgnoreCase("GET") || uri.equalsIgnoreCase("/")|| uri.equalsIgnoreCase("/favicon.ico"))
+			 {
+			      uri=write_html;
+			 }
+	    }
 		// 여기서 갑자기 post 'index2.html' 생김 / uri 발생
 		Log.d("kk","inside_serve");
 		myOut.println(method + " '" + uri + "' ");
@@ -142,7 +152,6 @@ class NanoHTTPD {
 					+ parms.getProperty(value) + "'");
 		}
 		
-		Log.e("CHECK", "myRootDir:" + myRootDir);
 		return serveFile(uri, header, true);
 	}
 
@@ -806,7 +815,7 @@ class NanoHTTPD {
 	private int myTcpPort;
 	private final ServerSocket myServerSocket;
 	private Thread myThread;
-	private File myRootDir;
+	
 
 	// ==================================================
 	// File server code
@@ -816,11 +825,10 @@ class NanoHTTPD {
 	 * Serves file from homeDir and its' subdirectories (only). Uses only URI,
 	 * ignores all headers and HTTP parameters.
 	 */
-	public Response serveFile(String user_write, Properties header, boolean allowDirectoryListing) {
-		String write_html=null;
+	public Response serveFile(String uri, Properties header, boolean allowDirectoryListing) {
 		write_html = mhtml + state;
 		Log.d("SERVEFILE", "header=" + header);
-		Log.d("SERVEFILE","user_write="+user_write);
+		 
 		Response res = null;
 		Log.e("CHECK", "ADL:" + allowDirectoryListing);
 
@@ -838,15 +846,9 @@ class NanoHTTPD {
 			InputStream is;
 			long fileLen;
 			
-			if(user_write==null){
-				is = new ByteArrayInputStream(write_html.getBytes());
-				fileLen = write_html.length();
-			}
-			else{
-					Log.d("SERVEFILE","come");
-					is = new ByteArrayInputStream(user_write.getBytes());
-					fileLen = user_write.length();		
-			}
+			is = new ByteArrayInputStream(write_html.getBytes());
+			fileLen = write_html.length();		
+			
 		
 			res = new Response(HTTP_OK, mime,is);
 			res.addHeader("Content-Length", "" + fileLen);
