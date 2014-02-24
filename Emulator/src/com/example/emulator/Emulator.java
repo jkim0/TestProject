@@ -1,6 +1,5 @@
 package com.example.emulator;
 
-
 import com.example.emulator.EmulatorService.LocalBinder;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
@@ -122,11 +121,7 @@ public class Emulator extends Activity {
 			public void onClick(View v) {		
 				Intent intent = new Intent(Emulator.this, EmulatorService.class);
 				bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
-				Toast.makeText(Emulator.this, "Bind()" ,Toast.LENGTH_SHORT).show();
-				Intent i = new Intent(Intent.ACTION_VIEW);
-				Uri u= Uri.parse("http://localhost:8091");
-				i.setData(u);
-				startActivity(i);	
+				Toast.makeText(Emulator.this, "Bind()" ,Toast.LENGTH_SHORT).show();	
 			}
 		});
 		

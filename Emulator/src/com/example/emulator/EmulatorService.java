@@ -406,7 +406,7 @@ public class EmulatorService extends Service {
 		}
 		BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 		
-		if(mBtAdapter.enable())
+		if(mBtAdapter.isEnabled())
 		{
 			info.bluetooth = "ON";
 		}

@@ -325,8 +325,8 @@ class NanoHTTPD {
 		Log.i("NanoHTTPD","pinfo screen : "+pinfo.screen);
 		
 		state = "<text><br>Wifi State : " + information.wifi +
-				"</text>" + "<text><br>Bluetooth State" + information.bluetooth +
-				"</text>" + "<text><br>Screen State" + information.screen + "</text></body></html>";
+				"</text>" + "<text><br>Bluetooth State : " + information.bluetooth +
+				"</text>" + "<text><br>Screen State : " + information.screen + "</text></body></html>";
 		
 		mService = service;
 		myTcpPort = port;
@@ -710,8 +710,8 @@ class NanoHTTPD {
 			{
 				information=istate;
 				state = "<text><br>Wifi State : " + istate.wifi +
-						"</text>" + "<text><br>Bluetooth State" + istate.bluetooth +
-						"</text>" + "<text><br>Screen State" + istate.screen + "</text></body></html>"; 
+						"</text>" + "<text><br>Bluetooth State : " + istate.bluetooth +
+						"</text>" + "<text><br>Screen State : " + istate.screen + "</text></body></html>"; 
 			}
 
 		};
@@ -772,8 +772,7 @@ class NanoHTTPD {
 													// partial sends, see
 													// serveFile()
 					byte[] buff = new byte[theBufferSize];
-					char yjk1;
-					int i = 0;
+
 					while (pending > 0) {
 						int read = data.read(buff, 0,
 								((pending > theBufferSize) ? theBufferSize : pending));
@@ -782,7 +781,6 @@ class NanoHTTPD {
 							break;
 						out.write(buff, 0, read);
 						pending -= read;
-				
 					}
 
 				}
@@ -852,8 +850,8 @@ class NanoHTTPD {
 			
 			res = new Response(HTTP_OK, mime,is);
 			res.addHeader("Content-Length", "" + fileLen);
-			res.addHeader("Accept-Ranges", "bytes"); 
 		}
+		res.addHeader("Accept-Ranges", "bytes"); 
 		// Announce that the file
 		// server accepts partial													
 		// content requestes
