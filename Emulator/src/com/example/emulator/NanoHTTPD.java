@@ -127,7 +127,7 @@ class NanoHTTPD {
 			 {
 			      uri=write_html;
 			      Log.d("SERVE","uri= "+uri);
-			      Log.d("SERVE","write_html= "+write_html);
+			      //Log.d("SERVE","write_html= "+write_html);
 			      
 			 }
 	    }
@@ -529,9 +529,9 @@ class NanoHTTPD {
 					   //Ok, now do the serve()
 				}
 				Log.d("kk","1");
-				Log.d("b4SERVE","write_html= "+write_html.trim());
+				//Log.d("b4SERVE","write_html= "+write_html.trim());
 				Response r = serve(uri, method, header, parms);
-				Log.d("A4SERVE","write_html= "+write_html.trim());
+				//Log.d("A4SERVE","write_html= "+write_html.trim());
 				Log.d("kk","2");
 				if (r == null){
 					sendError(HTTP_INTERNALERROR,"SERVER INTERNAL ERROR: Serve() returned a null response.");
@@ -832,7 +832,7 @@ class NanoHTTPD {
 	public Response serveFile(String uri, Properties header, boolean allowDirectoryListing) {
 		write_html = mhtml + state;
 		Log.d("SERVEFILE", "header=" + header);
-		Log.i("###Response serveFile###","write_html : "+write_html);
+		//Log.i("###Response serveFile###","write_html : "+write_html);
 		Response res = null;
 		Log.e("CHECK", "ADL:" + allowDirectoryListing);
 

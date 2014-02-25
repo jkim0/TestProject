@@ -37,7 +37,7 @@ public class Emulator extends Activity {
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
 			Toast.makeText(Emulator.this, "onserviceDisConnected" ,Toast.LENGTH_SHORT).show();
-			
+			mService =null;
 		}
 		@Override
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
@@ -150,8 +150,9 @@ public class Emulator extends Activity {
 		btn_stop.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
 				unbindService(mConnection);
+				
+				Log.d("UNBIND","unbindservice");
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});

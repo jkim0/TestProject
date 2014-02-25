@@ -248,15 +248,19 @@ public class EmulatorService extends Service {
 				Log.d("screen","value= "+value);
 				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 				if (value.equalsIgnoreCase("on")) {
+					Log.i("###YYS###", "Screen on");
+					pm.wakeUp(2000);
 					//screen on
 					pm.userActivity(SystemClock.uptimeMillis(), false);			
 				} else if (value.equalsIgnoreCase("off")) {
+					Log.i("###YYS###", "Screen off");
 					//screen off
 					pm.goToSleep(2000);
 					pm.wakeUp(2000);
 				}
 				
 			}
+			
 
 			else if(cmd.equalsIgnoreCase("keyboard")){
 		
@@ -272,7 +276,8 @@ public class EmulatorService extends Service {
 						wifiManager.setWifiEnabled(true);
 					}
 					else if(value.equalsIgnoreCase("off")){
-						wifiManager.setWifiEnabled(false);	
+						wifiManager.setWifiEnabled(false);
+						mHttpd.unregisterCommandReceiver(mCommandReceiver);
 					}			
 			}
 			else if(cmd.equalsIgnoreCase("bluetooth")){
@@ -335,7 +340,9 @@ public class EmulatorService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Toast.makeText(this, "Service Destroy", Toast.LENGTH_SHORT).show();
 		mNM.cancel(R.string.remote_service_started);
+		mHttpd.unregisterCommandReceiver(mCommandReceiver);
 	
 	}
 	
