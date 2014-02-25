@@ -20,5 +20,6 @@
 	<string name="broadcast">broadcast</string>
 	<string name="enable">Wifi enable</string>
 	<string name="wifisetting">Setting</string>
+	<string name="wifi_ips">wifi_ips</string>
 	
 </resources>

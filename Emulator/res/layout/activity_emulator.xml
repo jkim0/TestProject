@@ -18,28 +18,20 @@
         android:layout_centerHorizontal="true"
         android:enabled="false"
         android:text="@string/stop" />
-
-    <Button
-        android:id="@+id/btn_start"
+   
+   
+   <TextView
+        android:id="@+id/wifi_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/wifi_enable"
-        android:layout_marginTop="29dp"
-        android:enabled="false"
-        android:text="@string/start" />
-
-    <TextView
-        android:id="@+id/wifi_enable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btn_start"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="43dp"
-        android:text="@string/enable"
+        android:layout_above="@+id/wifi_setting"
+        android:layout_alignLeft="@+id/wifi_enable"
+        android:text="@string/state"
         android:textSize="22sp" />
+   
 
     <Button
-        android:id="@+id/wifi_setting"
+        android:id="@+id/ip_setting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/wifi_enable"
@@ -47,13 +39,37 @@
         android:layout_toRightOf="@+id/wifi_enable"
         android:text="@string/wifisetting" />
 
-    <TextView
-        android:id="@+id/wifi_state"
+    
+
+    <Button
+        android:id="@+id/btn_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/wifi_setting"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ip_setting"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="48dp"
+        android:enabled="false"
+        android:text="@string/start" />
+
+    <TextView
+        android:id="@+id/wifi_ip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btn_start"
+        android:layout_below="@+id/wifi_state"
+        android:layout_marginTop="62dp"
+        android:textSize="22sp" 
+         android:text="@string/wifi_ips"/>
+		
+    <TextView
+        android:id="@+id/wifi_enable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/wifi_enable"
-        android:text="@string/state"
+        android:layout_below="@+id/wifi_state"
+        android:layout_marginTop="20dp"
+        android:text="@string/enable"
         android:textSize="22sp" />
 
 </RelativeLayout>
