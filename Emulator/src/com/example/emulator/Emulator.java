@@ -60,6 +60,15 @@ public class Emulator extends Activity {
 				WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 				WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 				int ipAddress = wifiInfo.getIpAddress();
+				
+				
+				if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+					mWifiInfo= intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+						if(mWifiInfo.isConnected()) {
+    
+							Log.d("Inetify", "Wifi is connected: " + String.valueOf(mWifiInfo));
+						}
+				}
 				//if (state==WifiManager.WIFI_STATE_ENABLED)
 				if( ipAddress != 0)
 				{
