@@ -50,6 +50,8 @@ public class Emulator extends Activity {
 	private BroadcastReceiver wReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			Log.i("####BroadcastReceiver####","BroadcastReceiver Call");
+			
 			String action = intent.getAction();
 			Log.d("ACTIVITY","action = "+action);
 			if(WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)){	
@@ -59,8 +61,18 @@ public class Emulator extends Activity {
 				WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 				int ipAddress = wifiInfo.getIpAddress();
 				//if (state==WifiManager.WIFI_STATE_ENABLED)
-				if ( ipAddress != 0)
+				if( ipAddress != 0)
 				{
+					Log.i("####IFIFIFIFIF####","IP Address");
+				}
+				
+				if(mWifiInfo.getState() != null)
+				{
+					Log.i("####IFIFIFIFIF####","getstate");
+				}
+				if ( mWifiInfo.isConnected() )
+				{
+					Log.i("####IFIFIFIFIF####","Network Connected Button Enalbe");
 					String sIp = String.format("%d.%d.%d.%d",
 						       (ipAddress & 0xff),
 						       (ipAddress >> 8 & 0xff),
@@ -129,6 +141,7 @@ public class Emulator extends Activity {
 		btn_stop.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				
 				unbindService(mConnection);
 				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}

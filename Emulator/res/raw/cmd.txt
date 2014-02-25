@@ -1,22 +1,17 @@
 # screen
-- value
+- State
 1. on
 2. off
 
 # bluetooth
-- state
+- State
 1. on
 2. off
 
 # wifi
-- state
+- State
 1. on
 2. off
-
-#userCommand
-- function
-1.on
-2.off
 
 #keyboard
 - function
@@ -241,4 +236,4 @@
 219. KEYCODE_ASSIST
 220. KEYCODE_BRIGHTNESS_DOWN
 221. KEYCODE_BRIGHTNESS_UP
-222. KEYCODE_MEDIA_AUDIO_TRACK    
+222. KEYCODE_MEDIA_AUDIO_TRACK
