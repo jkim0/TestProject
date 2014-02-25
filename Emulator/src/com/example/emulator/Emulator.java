@@ -63,7 +63,7 @@ public class Emulator extends Activity {
 						}
 				}
 			
-			if(WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)){	
+				if(WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)){	
 				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
 				Log.d("ACTIVITY","state=="+state);
 				WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -161,8 +161,8 @@ public class Emulator extends Activity {
 			public void onClick(View v) {
 				unbindService(mConnection);
 				
-				Log.d("UNBIND","unbindservice");
-				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
+//				Log.d("UNBIND","unbindservice");
+//				Toast.makeText(Emulator.this, "UnBind()" ,Toast.LENGTH_SHORT).show();
 			}
 		});
 	}
