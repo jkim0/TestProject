@@ -54,6 +54,15 @@ public class Emulator extends Activity {
 			
 			String action = intent.getAction();
 			Log.d("ACTIVITY","action = "+action);
+					
+				if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+					mWifiInfo= intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+						if(mWifiInfo.isConnected()) {
+    
+							Log.d("Inetify", "1)Wifi is connected: " + String.valueOf(mWifiInfo));
+						}
+				}
+			
 			if(WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)){	
 				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
 				Log.d("ACTIVITY","state=="+state);
@@ -66,7 +75,7 @@ public class Emulator extends Activity {
 					mWifiInfo= intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 						if(mWifiInfo.isConnected()) {
     
-							Log.d("Inetify", "Wifi is connected: " + String.valueOf(mWifiInfo));
+							Log.d("Inetify", "2)Wifi is connected: " + String.valueOf(mWifiInfo));
 						}
 				}
 				//if (state==WifiManager.WIFI_STATE_ENABLED)

@@ -696,7 +696,7 @@ class NanoHTTPD {
 					return;
 			}
 			Log.d("kk", "value=" + p.getProperty(Compare));
-			CmdData cd = new CmdData(Compare, p.getProperty(Compare));
+			CmdData cd = new CmdData(Compare, p.getProperty(Compare).trim());
 			mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
 			if(!Compare.equalsIgnoreCase("keyboard")){
 				mService.registertoList(mReceiver);
@@ -704,9 +704,6 @@ class NanoHTTPD {
 			
 		}
 
-			
-
-		
 	
 			// dot anything.
 	
