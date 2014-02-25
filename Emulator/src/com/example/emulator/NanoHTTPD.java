@@ -24,7 +24,6 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
-
 import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
@@ -43,7 +42,6 @@ import android.os.SystemClock;
 import android.os.TransactionTooLargeException;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.example.emulator.EmulatorService.sendToClass;
 import com.example.emulator.NanoHTTPD.HTTPSession;
 import com.example.emulator.NanoHTTPD.Response;
@@ -279,16 +277,6 @@ class NanoHTTPD {
 	}
 
 	private void notifyCommandReceived(String cmd, String value) {
-//		if (mService != null) {
-//			if (cmd.equalsIgnoreCase("screen")) {
-//				try {
-//					mService.screenOnOff(value);
-//				} catch (RemoteException ex) {
-//					Log.e(TAG, "exception occured when request screen on/off.",//							ex);
-//				}
-//				return;
-//			}
-//		}
 		for (int i = 0; i < mCommandReceivers.size(); i++) {
 			CommandReceiver cr = mCommandReceivers.get(i);
 			if (cr != null)
@@ -317,22 +305,12 @@ class NanoHTTPD {
 	}
 
 	public NanoHTTPD(EmulatorService service, int port, String html, Information pinfo) throws IOException {
-		Log.i("NanoHTTPD","pinfo wifi : "+pinfo.wifi);
-		Log.i("NanoHTTPD","pinfo bluetooth : "+pinfo.bluetooth);
-		Log.i("NanoHTTPD","pinfo screen : "+pinfo.screen);
-		mhtml = html;
-		Log.d("NANOHTTPD","mhtml="+mhtml.trim());
 	
 		information=pinfo;
-		
-		Log.i("NanoHTTPD","pinfo wifi : "+pinfo.wifi);
-		Log.i("NanoHTTPD","pinfo bluetooth : "+pinfo.bluetooth);
-		Log.i("NanoHTTPD","pinfo screen : "+pinfo.screen);
-		
+		mhtml =html;
 		state = "<text><br>Wifi State : " + information.wifi +
-				"</text>" + "<text><br>Bluetooth State" + information.bluetooth +
-				"</text>" + "<text><br>Screen State" + information.screen + "</text></body></html>";
-		Log.d("NANO","state= "+state);
+				"</text>" + "<text><br>Bluetooth State : " + information.bluetooth +
+				"</text>" + "<text><br>Screen State : " + information.screen + "</text></body></html>";
 
 		mService = service;
 		myTcpPort = port;
@@ -828,10 +806,7 @@ class NanoHTTPD {
 	 */
 	public Response serveFile(String uri, Properties header, boolean allowDirectoryListing) {
 		write_html = mhtml + state;
-		Log.d("SERVEFILE", "header=" + header);
-		//Log.i("###Response serveFile###","write_html : "+write_html);
 		Response res = null;
-		Log.e("CHECK", "ADL:" + allowDirectoryListing);
 
 		// 파일이 디렉토리면 트루, 근데 fulse야 그렇다면 디렉토리 아니라는거지.
 		// Make sure we won't die of an exception later

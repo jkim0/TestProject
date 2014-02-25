@@ -116,7 +116,8 @@ public class Emulator extends Activity {
 	
 		super.onCreate(savedInstanceState);
 		IntentFilter filter = new IntentFilter();
-		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);		
+		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);	
+		filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
 		registerReceiver(wReceiver,filter);
 		
 		setContentView(R.layout.activity_emulator);

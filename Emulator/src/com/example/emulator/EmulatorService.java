@@ -59,6 +59,14 @@ import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class EmulatorService extends Service {
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		// TODO Auto-generated method stub
+		return super.onUnbind(intent);
+	}
+
+
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
 	public static final int STATUS_CHANGE = 5;
@@ -83,7 +91,11 @@ public class EmulatorService extends Service {
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
+		try {
+			NanoHttpd();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return mbinder;
 	}
 	
@@ -205,22 +217,8 @@ public class EmulatorService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-//		bfilter.addAction(BluetoothAdapter.STATE_ON);
-//		bfilter.addAction(BluetoothAdapter.STATE_OFF);
-//		bfilter.addAction(BluetoothDevice.ACTION_FOUND);
-//		bfilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-//		bfilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-//		bfilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-//		
-		
 		mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification();
-		try {
-			NanoHttpd();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	private NanoHTTPD mHttpd = null;
@@ -244,6 +242,8 @@ public class EmulatorService extends Service {
 		@Override
 		public void onCommandReceived(String cmd, String value) {
 			Log.d(TAG, "onCommandReceived cmd = " + cmd + " value = " + value);
+			Log.d("SCREEN","value.len = "+value.length());
+			
 			if (cmd.equalsIgnoreCase("screen")) {
 				Log.d("screen","value= "+value);
 				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -252,7 +252,7 @@ public class EmulatorService extends Service {
 					pm.wakeUp(2000);
 					//screen on
 					pm.userActivity(SystemClock.uptimeMillis(), false);			
-				} else if (value.equalsIgnoreCase("off")) {
+				}else if (value.equalsIgnoreCase("off")) {
 					Log.i("###YYS###", "Screen off");
 					//screen off
 					pm.goToSleep(2000);
@@ -278,6 +278,7 @@ public class EmulatorService extends Service {
 					else if(value.equalsIgnoreCase("off")){
 						wifiManager.setWifiEnabled(false);
 						mHttpd.unregisterCommandReceiver(mCommandReceiver);
+						mHttpd.stop();
 					}			
 			}
 			else if(cmd.equalsIgnoreCase("bluetooth")){
@@ -343,7 +344,7 @@ public class EmulatorService extends Service {
 		Toast.makeText(this, "Service Destroy", Toast.LENGTH_SHORT).show();
 		mNM.cancel(R.string.remote_service_started);
 		mHttpd.unregisterCommandReceiver(mCommandReceiver);
-	
+		mHttpd.stop();
 	}
 	
 	public void screenOnOff(String value) throws RemoteException {
