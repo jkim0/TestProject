@@ -16,7 +16,7 @@
         android:layout_alignBaseline="@+id/btn_start"
         android:layout_alignBottom="@+id/btn_start"
         android:layout_centerHorizontal="true"
-        android:enabled="false"
+        
         android:text="@string/stop" />
    
    
@@ -49,7 +49,7 @@
         android:layout_below="@+id/ip_setting"
         android:layout_marginLeft="25dp"
         android:layout_marginTop="48dp"
-        android:enabled="false"
+    
         android:text="@string/start" />
 
     <TextView

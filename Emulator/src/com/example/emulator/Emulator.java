@@ -79,15 +79,7 @@ public class Emulator extends Activity {
 						}
 				}
 				//if (state==WifiManager.WIFI_STATE_ENABLED)
-				if( ipAddress != 0)
-				{
-					Log.i("####IFIFIFIFIF####","IP Address");
-				}
 				
-				if(mWifiInfo.getState() != null)
-				{
-					Log.i("####IFIFIFIFIF####","getstate");
-				}
 				if ( mWifiInfo.isConnected() )
 				{
 					Log.i("####IFIFIFIFIF####","Network Connected Button Enalbe");
@@ -97,8 +89,7 @@ public class Emulator extends Activity {
 						       (ipAddress >> 16 & 0xff),
 						       (ipAddress >> 24 & 0xff));
 					
-					Toast.makeText(Emulator.this, sIp, Toast.LENGTH_LONG).show();
-					wifi_ip.setText("Ip:" + sIp);
+					wifi_ip.setText("Ip:" + sIp + "Port: 8091 ");
 					StringBuilder wifiString= new StringBuilder();
 					wifiString.append("WIFI: ")	
 					.append(mWifiInfo.isAvailable());
