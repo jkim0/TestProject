@@ -652,27 +652,13 @@ class NanoHTTPD {
 			Log.e("NanoHttpdError", "" + Compare);
 			Log.e("chekc memo","memo= "+ p.getProperty(Compare));
 			// //여기서 추가
-			if (Compare.equalsIgnoreCase("screen")){
-				if(p.getProperty(Compare).equalsIgnoreCase(information.screen)){
-					return;
-				}
-			}
-			else if(Compare.equalsIgnoreCase("wifi")){
+			
+			if(Compare.equalsIgnoreCase("wifi")){
 				if(p.getProperty(Compare).equalsIgnoreCase(information.wifi)){
 					return;
 				}
 			}
-			else if(Compare.equalsIgnoreCase("bluetooth")){
-				if(p.getProperty(Compare).equalsIgnoreCase(information.bluetooth)){
-					return;
-				}
-			}
-			else if(Compare.equalsIgnoreCase("keyboard")){
-				
-			}
-			else{
-					return;
-			}
+			
 			Log.d("kk", "value=" + p.getProperty(Compare));
 			CmdData cd = new CmdData(Compare, p.getProperty(Compare).trim());
 			mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
