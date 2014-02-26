@@ -64,38 +64,38 @@ public class Emulator extends Activity {
 				}
 			
 				if(WifiManager.WIFI_STATE_CHANGED_ACTION.equalsIgnoreCase(action)){	
-				int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
-				Log.d("ACTIVITY","state=="+state);
-				WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-				WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-				int ipAddress = wifiInfo.getIpAddress();
-				
-				
-				if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-					mWifiInfo= intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-						if(mWifiInfo.isConnected()) {
-    
-							Log.d("Inetify", "2)Wifi is connected: " + String.valueOf(mWifiInfo));
-						}
-				}
-				//if (state==WifiManager.WIFI_STATE_ENABLED)
-				
-				if ( mWifiInfo.isConnected() )
-				{
-					Log.i("####IFIFIFIFIF####","Network Connected Button Enalbe");
-					String sIp = String.format("%d.%d.%d.%d",
-						       (ipAddress & 0xff),
-						       (ipAddress >> 8 & 0xff),
-						       (ipAddress >> 16 & 0xff),
-						       (ipAddress >> 24 & 0xff));
+					int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
+					Log.d("ACTIVITY","state=="+state);
+					WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+					WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+					int ipAddress = wifiInfo.getIpAddress();
 					
-					wifi_ip.setText("Ip:" + sIp + "Port: 8091 ");
-					StringBuilder wifiString= new StringBuilder();
-					wifiString.append("WIFI: ")	
-					.append(mWifiInfo.isAvailable());
-					wifiStatus.setText(wifiString);
-					btn_start.setEnabled(true);
-					btn_stop.setEnabled(true);
+					
+					if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+						mWifiInfo= intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+							if(mWifiInfo.isConnected()) {
+		
+								Log.d("Inetify", "2)Wifi is connected: " + String.valueOf(mWifiInfo));
+							}
+					}
+					//if (state==WifiManager.WIFI_STATE_ENABLED)
+					
+					if ( mWifiInfo.isConnected() )
+					{
+						Log.i("####IFIFIFIFIF####","Network Connected Button Enalbe");
+						String sIp = String.format("%d.%d.%d.%d",
+							       (ipAddress & 0xff),
+							       (ipAddress >> 8 & 0xff),
+							       (ipAddress >> 16 & 0xff),
+							       (ipAddress >> 24 & 0xff));
+						
+						wifi_ip.setText("Ip:" + sIp + "Port: 8091 ");
+						StringBuilder wifiString= new StringBuilder();
+						wifiString.append("WIFI: ")	
+						.append(mWifiInfo.isAvailable());
+						wifiStatus.setText(wifiString);
+						btn_start.setEnabled(true);
+						btn_stop.setEnabled(true);
 				}
 			}
 			}
@@ -110,6 +110,11 @@ public class Emulator extends Activity {
 		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);	
 		filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
 		registerReceiver(wReceiver,filter);
+		
+		IntentFilter network_filter = new IntentFilter();
+		network_filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);	
+		network_filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+		registerReceiver(networkReceiver,filter);
 		
 		setContentView(R.layout.activity_emulator);
 		//make Button	
@@ -132,8 +137,13 @@ public class Emulator extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
-				startActivity(gpsOptionsIntent); 
+			//	Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
+			//	startActivity(gpsOptionsIntent); 
+				
+				Intent intent = new Intent(Intent.ACTION_MAIN);
+				intent.setComponent(new ComponentName("com.android.settings","com.android.settings.WirelessSettings"));
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
 			}
 		});
 
@@ -158,5 +168,54 @@ public class Emulator extends Activity {
 			}
 		});
 	}
-
+	
+	
+	private BroadcastReceiver networkReceiver = new BroadcastReceiver(){
+	
+	@Override
+    public void onReceive(final Context context, final Intent intent) {
+ 
+        String status = NetworkUtil.getConnectivityStatusString(context);
+ 
+        Toast.makeText(context, status, Toast.LENGTH_LONG).show();
+    }
+};
+	
 }
+
+class NetworkUtil {
+    
+    public static int TYPE_WIFI = 1;
+    public static int TYPE_MOBILE = 2;
+    public static int TYPE_NOT_CONNECTED = 0;
+     
+     
+    public static int getConnectivityStatus(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+ 
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (null != activeNetwork) {
+            if(activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
+                return TYPE_WIFI;
+             
+            if(activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
+                return TYPE_MOBILE;
+        }
+        return TYPE_NOT_CONNECTED;
+    }
+     
+    public static String getConnectivityStatusString(Context context) {
+        int conn = NetworkUtil.getConnectivityStatus(context);
+        String status = null;
+        if (conn == NetworkUtil.TYPE_WIFI) {
+            status = "Wifi enabled";
+        } else if (conn == NetworkUtil.TYPE_MOBILE) {
+            status = "Mobile data enabled";
+        } else if (conn == NetworkUtil.TYPE_NOT_CONNECTED) {
+            status = "Not connected to Internet";
+        }
+        return status;
+    }
+}
+

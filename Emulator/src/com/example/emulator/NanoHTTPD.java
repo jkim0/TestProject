@@ -396,7 +396,7 @@ class NanoHTTPD {
 
 				// Create a BufferedReader for parsing the header.
 				ByteArrayInputStream hbis = new ByteArrayInputStream(buf, 0,
-						rlen); // 기반스트림으로부터 처리하는거야
+						rlen); // byte 기반스트림으로부터 처리하는거야
 				BufferedReader hin = new BufferedReader(new InputStreamReader(
 						hbis)); // reader는 문자기반 스트림
 
