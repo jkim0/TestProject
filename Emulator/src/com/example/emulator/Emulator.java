@@ -142,7 +142,7 @@ public class Emulator extends Activity {
 				
 				Intent intent = new Intent(Intent.ACTION_MAIN);
 				intent.setComponent(new ComponentName("com.android.settings","com.android.settings.WirelessSettings"));
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				
 				startActivity(intent);
 			}
 		});
