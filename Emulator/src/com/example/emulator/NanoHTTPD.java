@@ -657,13 +657,22 @@ class NanoHTTPD {
 				if(p.getProperty(Compare).equalsIgnoreCase(information.wifi)){
 					return;
 				}
+				CmdData cd = new CmdData(Compare, p.getProperty(Compare).trim());
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
+				mService.registertoList(mReceiver);
+				
 			}
+			else if(Compare.equalsIgnoreCase("screen")||Compare.equalsIgnoreCase("bluetooth")){
 			
-			Log.d("kk", "value=" + p.getProperty(Compare));
+			Log.d("PARMS", "value=" + p.getProperty(Compare));
 			CmdData cd = new CmdData(Compare, p.getProperty(Compare).trim());
 			mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));
-			if(!Compare.equalsIgnoreCase("keyboard")){
-				mService.registertoList(mReceiver);
+			mService.registertoList(mReceiver);
+			}
+			
+			else if(Compare.equalsIgnoreCase("keyboard")){
+				CmdData cd = new CmdData(Compare, p.getProperty(Compare).trim());
+				mHandler.sendMessage(mHandler.obtainMessage(NOTIFY_CMD_RECEIVED, cd));				
 			}
 			
 		}
