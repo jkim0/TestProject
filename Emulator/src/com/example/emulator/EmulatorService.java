@@ -70,11 +70,8 @@ public class EmulatorService extends Service {
 	public static final String TAG = "EmulatorService";
 	public final static int SCREEN_ON = 1;
 	public static final int STATUS_CHANGE = 5;
-	public static final int LAUNCH_MEMO=4;
 	public static final int MSG_WIFI_CHECK = 100;
-	public int memo=1;
-	public String user=null;
-	boolean flag = true;
+	
 	public Information info=null;
 	
 	
@@ -246,17 +243,17 @@ public class EmulatorService extends Service {
 			
 			if (cmd.equalsIgnoreCase("screen")) {
 				Log.d("screen","value= "+value);
-				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+				PowerManager pms = (PowerManager) getSystemService(Context.POWER_SERVICE);
 				if (value.equalsIgnoreCase("on")) {
 					Log.i("###YYS###", "Screen on");
-					pm.wakeUp(2000);
+					pms.wakeUp(2000);
 					//screen on
-					pm.userActivity(SystemClock.uptimeMillis(), false);			
+					pms.userActivity(SystemClock.uptimeMillis(), false);			
 				}else if (value.equalsIgnoreCase("off")) {
 					Log.i("###YYS###", "Screen off");
 					//screen off
-					pm.goToSleep(2000);
-					pm.wakeUp(2000);
+					pms.goToSleep(2000);
+					pms.wakeUp(2000);
 				}
 				
 			}
@@ -347,20 +344,6 @@ public class EmulatorService extends Service {
 		mHttpd.stop();
 	}
 	
-	public void screenOnOff(String value) throws RemoteException {
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-	
-		if (value.equalsIgnoreCase("on")) {
-			//screen on
-			pm.userActivity(SystemClock.uptimeMillis(), false);			
-		} else if (value.equalsIgnoreCase("off")) {
-			//screen off
-			pm.goToSleep(2000);
-			pm.wakeUp(2000);
-		}
-	}
-
-	
 	private void showNotification() {
 		// TODO Auto-generated method stub
 		CharSequence text = getText(R.string.remote_service_started);
@@ -418,8 +401,8 @@ public class EmulatorService extends Service {
 		{
 			info.bluetooth = "ON";
 		}
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		if(pm.isScreenOn())
+		PowerManager pmf = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		if(pmf.isScreenOn())
 		{
 			info.screen = "ON";
 		}
