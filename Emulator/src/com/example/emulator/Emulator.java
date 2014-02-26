@@ -137,11 +137,8 @@ public class Emulator extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-			//	Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
-			//	startActivity(gpsOptionsIntent); 
-				
-				Intent intent = new Intent(Intent.ACTION_MAIN);
-				intent.setComponent(new ComponentName("com.android.settings","com.android.settings.WirelessSettings"));
+			
+				Intent intent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
 				
 				startActivity(intent);
 			}
